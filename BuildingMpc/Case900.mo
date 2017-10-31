@@ -4,7 +4,7 @@ model Case900
   extends Modelica.Icons.Example;
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,
-    redeclare package Medium = Solarwind.Media.DryAir,
+    redeclare package Medium = BuildingMpc.Media.DryAir,
     redeclare IDEAS.Buildings.Components.ZoneAirModels.WellMixedAir
                                                     airModel(massDynamics=
           Modelica.Fluid.Types.Dynamics.SteadyState),
@@ -47,7 +47,7 @@ model Case900
     "Simulation information manager for climate data"
     annotation (Placement(transformation(extent={{-100,60},{-80,80}})));
   IBPSA.Fluid.Sources.Boundary_pT bou(nPorts=1, redeclare package Medium =
-        Solarwind.Media.DryAir)
+        BuildingMpc.Media.DryAir)
     annotation (Placement(transformation(extent={{-46,30},{-26,50}})));
   Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow preHeaFlo(final
       alpha=0) annotation (Placement(transformation(extent={{40,-22},{20,-2}})));
