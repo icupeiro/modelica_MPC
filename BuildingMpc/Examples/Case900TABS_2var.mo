@@ -70,7 +70,7 @@ model Case900TABS_2var "MPC template based on bestest case 900"
     A_floor=rectangularZoneTemplate.A,
   energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial)
     annotation (Placement(transformation(extent={{16,-70},{36,-50}})));
-  IBPSA.Fluid.Sources.Boundary_pT source(
+  IBPSA.Fluid.Sources.Boundary_pT sink(
     nPorts=2,
     redeclare package Medium = IDEAS.Media.Water,
     use_T_in=true) annotation (Placement(transformation(
@@ -97,14 +97,14 @@ equation
       thickness=0.5));
   connect(embeddedPipe.heatPortEmb, boundaryWall.port_emb) annotation (Line(
         points={{26,-50},{26,-50},{26,-38},{2,-38}}, color={191,0,0}));
-  connect(embeddedPipe.port_b, source.ports[1]) annotation (Line(points={{36,-60},
-        {54,-60},{54,-82},{-76,-82},{-76,-60}},        color={0,127,255}));
-  connect(optVar2.y, source.T_in) annotation (Line(points={{-65,-24},{-58,-24},
-          {-58,-34},{-74,-34},{-74,-38}}, color={0,0,127}));
+  connect(embeddedPipe.port_b, sink.ports[1]) annotation (Line(points={{36,-60},
+          {54,-60},{54,-82},{-76,-82},{-76,-60}}, color={0,127,255}));
+  connect(optVar2.y, sink.T_in) annotation (Line(points={{-65,-24},{-58,-24},{-58,
+          -34},{-74,-34},{-74,-38}}, color={0,0,127}));
 connect(mflow.port_b, embeddedPipe.port_a)
   annotation (Line(points={{-24,-60},{16,-60}}, color={0,127,255}));
-connect(mflow.port_a, source.ports[2])
-  annotation (Line(points={{-44,-60},{-80,-60}}, color={0,127,255}));
+  connect(mflow.port_a, sink.ports[2])
+    annotation (Line(points={{-44,-60},{-80,-60}}, color={0,127,255}));
 connect(optVar1.y, mflow.m_flow_in) annotation (Line(points={{-65,-10},{-40,
         -10},{-40,-52},{-40,-52}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(

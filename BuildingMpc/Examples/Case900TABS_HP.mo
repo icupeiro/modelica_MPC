@@ -88,62 +88,26 @@ protected
     final control_m_flow=true,
     final m_flow_small=1e-04) "Pressure source"
     annotation (Placement(transformation(extent={{-44,-70},{-24,-50}})));
-public
-  IDEAS.Fluid.HeatExchangers.HeaterCooler_u HP_eva(
-    redeclare package Medium = IDEAS.Media.Water,
-    allowFlowReversal=false,
-    m_flow_nominal=5,
-    dp_nominal=0,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    Q_flow_nominal(displayUnit="kW") = 5000)
-    annotation (Placement(transformation(extent={{60,62},{80,82}})));
-  IDEAS.Fluid.HeatExchangers.PrescribedOutlet HP_con(
-    redeclare package Medium = IDEAS.Media.Water,
-    allowFlowReversal=false,
-    m_flow_nominal=5,
-    dp_nominal=0,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    use_TSet=true,
-    use_X_wSet=false)
-    annotation (Placement(transformation(extent={{-78,-70},{-58,-50}})));
 protected
   IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_source(
     redeclare final package Medium = IDEAS.Media.Water,
     final allowFlowReversal=false,
     final control_m_flow=true,
     final m_flow_small=1e-4) "Pressure source"
-    annotation (Placement(transformation(extent={{0,62},{20,82}})));
+    annotation (Placement(transformation(extent={{40,62},{60,82}})));
 public
   Modelica.Blocks.Sources.RealExpression optVar3
     annotation (Placement(transformation(extent={{-72,80},{-52,100}})));
-  Modelica.Blocks.Sources.RealExpression Q_eva(y=-HP_con.Q_flow*COP.y)
-    annotation (Placement(transformation(extent={{30,80},{50,100}})));
-  IBPSA.Fluid.Sources.Boundary_pT bouW(
+  IBPSA.Fluid.Sources.Boundary_pT sink(
     redeclare package Medium = IDEAS.Media.Water,
     use_T_in=false,
     p=200000,
     nPorts=1) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
-        rotation=0,
-        origin={44,-26})));
-  Modelica.Blocks.Sources.RealExpression COP(y=6.4 - 0.16*(T_con.T - 298.15) + 0.1
-        *(T_eva.T - 288.15))
-    annotation (Placement(transformation(extent={{26,10},{46,30}})));
-  IDEAS.Fluid.Sensors.TemperatureTwoPort T_eva(
-    redeclare package Medium = IDEAS.Media.Water,
-    allowFlowReversal=false,
-    m_flow_nominal=5,
-    tau=0,
-    initType=Modelica.Blocks.Types.Init.SteadyState)
-    annotation (Placement(transformation(extent={{30,62},{50,82}})));
-  IDEAS.Fluid.Sensors.TemperatureTwoPort T_con(
-    redeclare package Medium = IDEAS.Media.Water,
-    allowFlowReversal=false,
-    m_flow_nominal=5,
-    tau=0,
-    initType=Modelica.Blocks.Types.Init.SteadyState)
-    annotation (Placement(transformation(extent={{10,-94},{-10,-74}})));
+        rotation=-90,
+        origin={-78,-50})));
+  Fluid.HeatPumps.HeatPump heatPump
+    annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
     annotation (Line(points={{-26,40},{-8,40},{-8,0}}, color={0,127,255}));
@@ -158,28 +122,23 @@ equation
     annotation (Line(points={{-24,-60},{16,-60}}, color={0,127,255}));
   connect(optVar1.y, m_flow_sink.m_flow_in) annotation (Line(points={{-65,-10},
           {-40,-10},{-40,-52},{-40,-52}}, color={0,0,127}));
-  connect(HP_con.port_b, m_flow_sink.port_a)
-    annotation (Line(points={{-58,-60},{-44,-60}}, color={0,127,255}));
-  connect(optVar2.y, HP_con.TSet) annotation (Line(points={{-65,-24},{-56,-24},
-          {-56,-40},{-92,-40},{-92,-52},{-80,-52}}, color={0,0,127}));
   connect(source.ports[1], m_flow_source.port_a)
-    annotation (Line(points={{-26,72},{0,72}}, color={0,127,255}));
-  connect(HP_eva.port_b, source.ports[2]) annotation (Line(points={{80,72},{88,
-          72},{88,50},{-22,50},{-22,68},{-26,68}}, color={0,127,255}));
+    annotation (Line(points={{-26,72},{40,72}},color={0,127,255}));
   connect(optVar3.y, m_flow_source.m_flow_in) annotation (Line(points={{-51,90},
-          {-22,90},{-22,90},{4,90},{4,80}}, color={0,0,127}));
-  connect(Q_eva.y, HP_eva.u) annotation (Line(points={{51,90},{54,90},{54,78},{
-          58,78}}, color={0,0,127}));
-  connect(T_con.port_a, embeddedPipe.port_b) annotation (Line(points={{10,-84},{
-          58,-84},{58,-60},{36,-60}}, color={0,127,255}));
-  connect(T_con.port_b, HP_con.port_a) annotation (Line(points={{-10,-84},{-92,-84},
-          {-92,-60},{-78,-60}}, color={0,127,255}));
-  connect(m_flow_source.port_b, T_eva.port_a)
-    annotation (Line(points={{20,72},{30,72}}, color={0,127,255}));
-  connect(HP_eva.port_a, T_eva.port_b)
-    annotation (Line(points={{60,72},{50,72}}, color={0,127,255}));
-  connect(bouW.ports[1], embeddedPipe.port_b) annotation (Line(points={{54,-26},
-          {58,-26},{58,-60},{36,-60}}, color={0,127,255}));
+          {-22,90},{44,90},{44,80}},        color={0,0,127}));
+  connect(optVar2.y, heatPump.Tcon_out) annotation (Line(points={{-65,-24},{-60,
+          -24},{-60,-80},{48,-80},{48,-63},{60,-63}}, color={0,0,127}));
+  connect(embeddedPipe.port_b, heatPump.port_a1)
+    annotation (Line(points={{36,-60},{60,-60},{60,-60}}, color={0,127,255}));
+  connect(m_flow_sink.port_a, heatPump.port_b1) annotation (Line(points={{-44,
+          -60},{-70,-60},{-70,-90},{92,-90},{92,-60},{80,-60}}, color={0,127,
+          255}));
+  connect(sink.ports[1], m_flow_sink.port_a) annotation (Line(points={{-78,-60},
+          {-61,-60},{-44,-60}}, color={0,127,255}));
+  connect(m_flow_source.port_b, heatPump.port_a2) annotation (Line(points={{60,
+          72},{60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
+  connect(heatPump.port_b2, source.ports[2]) annotation (Line(points={{60,-48},
+          {44,-48},{44,52},{-26,52},{-26,68}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(
