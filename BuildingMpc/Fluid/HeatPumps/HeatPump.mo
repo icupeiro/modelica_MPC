@@ -62,30 +62,6 @@ public
     annotation (Placement(transformation(extent={{-50,-70},{-70,-50}})));
   Modelica.Blocks.Sources.RealExpression Q_eva(y=-HP_con.Q_flow*COP.y)
     annotation (Placement(transformation(extent={{50,-40},{30,-20}})));
-  Modelica.Fluid.Interfaces.FluidPort_b port_b1(
-    redeclare final package Medium = Medium,
-    m_flow(max=if allowFlowReversal then +Modelica.Constants.inf else 0),
-    h_outflow(start=Medium.h_default))
-    "Fluid connector b (positive design flow direction is from port_a1 to port_b1)"
-    annotation (Placement(transformation(extent={{110,50},{90,70}})));
-  Modelica.Fluid.Interfaces.FluidPort_a port_a1(
-    redeclare final package Medium = Medium,
-    m_flow(min=if allowFlowReversal then -Modelica.Constants.inf else 0),
-    h_outflow(start=Medium.h_default))
-    "Fluid connector a (positive design flow direction is from port_a1 to port_b1)"
-    annotation (Placement(transformation(extent={{-110,50},{-90,70}})));
-  Modelica.Fluid.Interfaces.FluidPort_b port_b2(
-    redeclare final package Medium = Medium,
-    m_flow(max=if allowFlowReversal then +Modelica.Constants.inf else 0),
-     h_outflow(start = Medium.h_default))
-    "Fluid connector b (positive design flow direction is from port_a2 to port_b2)"
-    annotation (Placement(transformation(extent={{-90,-70},{-110,-50}})));
-  Modelica.Fluid.Interfaces.FluidPort_a port_a2(
-    redeclare final package Medium = Medium,
-     m_flow(min=if allowFlowReversal then -Modelica.Constants.inf else 0),
-     h_outflow(start = Medium.h_default))
-    "Fluid connector a (positive design flow direction is from port_a2 to port_b2)"
-    annotation (Placement(transformation(extent={{90,-70},{110,-50}})));
 
   parameter Modelica.SIunits.MassFlowRate m1_flow_nominal
     "Nominal mass flow rate through the condenser"
@@ -111,6 +87,18 @@ public
     annotation (Placement(transformation(extent={{40,-10},{60,10}})));
   Modelica.Blocks.Interfaces.RealOutput W_comp
     annotation (Placement(transformation(extent={{100,-10},{120,10}})));
+  Modelica.Fluid.Interfaces.FluidPort_a port_a1(redeclare package Medium =
+        Medium1)
+    annotation (Placement(transformation(extent={{-110,50},{-90,70}})));
+  Modelica.Fluid.Interfaces.FluidPort_b port_b1(redeclare package Medium =
+        Medium1)
+    annotation (Placement(transformation(extent={{90,50},{110,70}})));
+  Modelica.Fluid.Interfaces.FluidPort_a port_a2(redeclare package Medium =
+        Medium2)
+    annotation (Placement(transformation(extent={{90,-70},{110,-50}})));
+  Modelica.Fluid.Interfaces.FluidPort_b port_b2(redeclare package Medium =
+        Medium2)
+    annotation (Placement(transformation(extent={{-110,-70},{-90,-50}})));
 equation
   connect(HP_eva.port_b, T_eva_out.port_a)
     annotation (Line(points={{-10,-60},{-50,-60}}, color={0,127,255}));
@@ -123,18 +111,18 @@ equation
   connect(Q_eva.y, HP_eva.u) annotation (Line(points={{29,-30},{29,-30},{24,-30},
           {20,-30},{20,-54},{14,-54},{12,-54}},
                                        color={0,0,127}));
-  connect(T_eva_out.port_b, port_b2)
-    annotation (Line(points={{-70,-60},{-100,-60}}, color={0,127,255}));
-  connect(T_eva_in.port_a, port_a2)
-    annotation (Line(points={{70,-60},{100,-60}}, color={0,127,255}));
-  connect(T_con_in.port_a, port_a1) annotation (Line(points={{-70,60},{-100,60}},
-                      color={0,127,255}));
-  connect(T_con_out.port_b, port_b1)
-    annotation (Line(points={{70,60},{100,60}},          color={0,127,255}));
   connect(Tcon_out, HP_con.TSet) annotation (Line(points={{-100,90},{-40,90},{-40,
           68},{-12,68}}, color={0,0,127}));
   connect(Wcomp.y, W_comp)
     annotation (Line(points={{61,0},{110,0}}, color={0,0,127}));
+  connect(port_a1, T_con_in.port_a)
+    annotation (Line(points={{-100,60},{-70,60}}, color={0,127,255}));
+  connect(port_b1, T_con_out.port_b)
+    annotation (Line(points={{100,60},{70,60}}, color={0,127,255}));
+  connect(port_a2, T_eva_in.port_a)
+    annotation (Line(points={{100,-60},{85,-60},{70,-60}}, color={0,127,255}));
+  connect(T_eva_out.port_b, port_b2)
+    annotation (Line(points={{-70,-60},{-100,-60}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
           extent={{-64,80},{76,-80}},
