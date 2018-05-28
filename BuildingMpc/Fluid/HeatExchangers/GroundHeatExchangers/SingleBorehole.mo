@@ -5,9 +5,6 @@ model SingleBorehole "single borehole model for MPC"
       Modelica.Media.Interfaces.PartialMedium "Medium through the borehole"
       annotation (choicesAllMatching = true);
 
-  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
-    borFieDat
-    annotation (Placement(transformation(extent={{-80,40},{-60,60}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.BoreHoles.SingleBoreHoleUTube
     borehole(
     allowFlowReversal=false,
@@ -51,6 +48,9 @@ model SingleBorehole "single borehole model for MPC"
   parameter Modelica.SIunits.PressureDifference dp_nominal
     "Pressure difference through the borehole"
     annotation (Dialog(group="Nominal condition"));
+  parameter
+    IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
+    borFieDat "Borefield parameters";
 equation
   connect(const.y, prescribedTemperature.T)
     annotation (Line(points={{59,60},{42,60},{42,60}}, color={0,0,127}));

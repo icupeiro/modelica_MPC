@@ -115,12 +115,14 @@ public
     dp1_nominal=0)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
-    borFieDat
+    borFieDat(filDat=
+        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.SandBox_validation())
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
   Fluid.HeatExchangers.GroundHeatExchangers.SingleBorehole singleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
     m_flow_nominal=5,
-    dp_nominal=0)
+    dp_nominal=0,
+    borFieDat=borFieDat)
     annotation (Placement(transformation(extent={{52,0},{32,20}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
