@@ -20,7 +20,9 @@ model HeatPump "A heat pump model for optimization"
     redeclare package Medium = Medium1,
     m_flow_nominal=m1_flow_nominal,
     dp_nominal=dp1_nominal,
-    tau=0)
+    tau=0,
+    QMax_flow=Q_nom,
+    QMin_flow=0)
     annotation (Placement(transformation(extent={{-10,50},{10,70}})));
 public
   IDEAS.Fluid.HeatExchangers.HeaterCooler_u HP_eva(
@@ -60,7 +62,7 @@ public
     redeclare package Medium = Medium2,
     m_flow_nominal=m2_flow_nominal)
     annotation (Placement(transformation(extent={{-50,-70},{-70,-50}})));
-  Modelica.Blocks.Sources.RealExpression Q_eva(y=-HP_con.Q_flow*COP.y)
+  Modelica.Blocks.Sources.RealExpression Q_eva(y=-(HP_con.Q_flow - Wcomp.y))
     annotation (Placement(transformation(extent={{50,-40},{30,-20}})));
 
   parameter Modelica.SIunits.MassFlowRate m1_flow_nominal
@@ -99,6 +101,9 @@ public
   Modelica.Fluid.Interfaces.FluidPort_b port_b2(redeclare package Medium =
         Medium2)
     annotation (Placement(transformation(extent={{-110,-70},{-90,-50}})));
+  parameter Modelica.SIunits.HeatFlowRate Q_nom=Modelica.Constants.inf
+    "Heat pump nominal power (heating)"
+    annotation (Dialog(group="Nominal conditions"));
 equation
   connect(HP_eva.port_b, T_eva_out.port_a)
     annotation (Line(points={{-10,-60},{-50,-60}}, color={0,127,255}));

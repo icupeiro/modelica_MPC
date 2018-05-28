@@ -62,9 +62,10 @@ equation
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(
-      StartTime=1420000000,
-      StopTime=1430000000,
-      __Dymola_fixedstepsize=1,
+      StopTime=3.15e+007,
+      __Dymola_NumberOfIntervals=15000,
+      Tolerance=1e-006,
+      __Dymola_fixedstepsize=10,
       __Dymola_Algorithm="Euler"),
     Documentation(info="<html>
 <p>
@@ -82,5 +83,11 @@ First implementation
 </html>"),
     __Dymola_Commands(file=
           "Resources/Scripts/Dymola/Buildings/Validation/Tests/ZoneTemplateVerification.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    __Dymola_experimentSetupOutput(events=false),
+    __Dymola_experimentFlags(
+      Advanced(GenerateVariableDependencies=false, OutputModelicaCode=false),
+      Evaluate=false,
+      OutputCPUtime=false,
+      OutputFlatModelica=false));
 end Case900;

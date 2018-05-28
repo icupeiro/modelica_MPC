@@ -113,17 +113,20 @@ public
     m2_flow_nominal=5,
     dp2_nominal=0,
     m1_flow_nominal=5,
-    dp1_nominal=0)
+    dp1_nominal=0,
+    Q_nom=3000)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
     borFieDat(filDat=
         IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.SandBox_validation())
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.HeatExchangers.GroundHeatExchangers.SingleBorehole singleBorehole(
+  Fluid.HeatExchangers.GroundHeatExchangers.MultipleBorehole
+                                                           singleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
     m_flow_nominal=5,
-    dp_nominal=0,
-    borFieDat=borFieDat)
+    borFieDat=borFieDat,
+    n=6,
+    dp_nominal=100000)
     annotation (Placement(transformation(extent={{52,0},{32,20}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
@@ -160,8 +163,8 @@ equation
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(
-      StartTime=1420000000,
-      StopTime=1430000000,
+      StartTime=1.42e+009,
+      StopTime=1.43e+009,
       __Dymola_fixedstepsize=1,
       __Dymola_Algorithm="Euler"),
     Documentation(info="<html>
@@ -180,5 +183,16 @@ First implementation
 </html>"),
     __Dymola_Commands(file=
           "Resources/Scripts/Dymola/Buildings/Validation/Tests/ZoneTemplateVerification.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    __Dymola_experimentSetupOutput,
+    __Dymola_experimentFlags(
+      Advanced(
+        GenerateVariableDependencies=false,
+        OutputModelicaCode=false,
+        InlineMethod=0,
+        InlineOrder=2,
+        InlineFixedStep=0.001),
+      Evaluate=false,
+      OutputCPUtime=false,
+      OutputFlatModelica=false));
 end Case900GEOTABS;
