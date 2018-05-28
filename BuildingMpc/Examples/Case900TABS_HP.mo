@@ -101,8 +101,8 @@ public
   IBPSA.Fluid.Sources.Boundary_pT sink(
     redeclare package Medium = IDEAS.Media.Water,
     use_T_in=false,
-    p=200000,
-    nPorts=1) annotation (Placement(transformation(
+    nPorts=1,
+    p=200000) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=-90,
         origin={-78,-50})));
