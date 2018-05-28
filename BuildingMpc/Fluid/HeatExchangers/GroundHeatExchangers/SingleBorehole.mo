@@ -32,7 +32,9 @@ model SingleBorehole "single borehole model for MPC"
   Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature[borFieDat.conDat.nVer]
     prescribedTemperature
     annotation (Placement(transformation(extent={{40,50},{20,70}})));
-  Modelica.Blocks.Sources.Constant[borFieDat.conDat.nVer] const(k=soilTemp)
+  Modelica.Blocks.Sources.Constant[borFieDat.conDat.nVer] tempProfile(k=
+        soilTemp)
+    "undisturbed ground temperature, could be included as vertical profile"
     annotation (Placement(transformation(extent={{80,50},{60,70}})));
   parameter Modelica.SIunits.Temperature soilTemp=273.15 + 10.8
     "Undisturbed temperature of the ground";
@@ -52,8 +54,8 @@ model SingleBorehole "single borehole model for MPC"
     IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
     borFieDat "Borefield parameters";
 equation
-  connect(const.y, prescribedTemperature.T)
-    annotation (Line(points={{59,60},{42,60},{42,60}}, color={0,0,127}));
+  connect(tempProfile.y, prescribedTemperature.T)
+    annotation (Line(points={{59,60},{42,60}}, color={0,0,127}));
   connect(prescribedTemperature.port, lay.port_b)
     annotation (Line(points={{20,60},{0,60},{0,50}}, color={191,0,0}));
   connect(lay.port_a, borehole.port_wall) annotation (Line(points={{-4.44089e-016,

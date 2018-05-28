@@ -1,5 +1,5 @@
 within BuildingMpc.Examples;
-model Case900TABS "MPC template based on bestest case 900"
+model Case900TABS "Controller model for the BESTEST Case900 with TABS; the optimization variable is the heat flux through TABS"
   extends Modelica.Icons.Example;
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,

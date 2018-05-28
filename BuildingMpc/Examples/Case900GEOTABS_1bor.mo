@@ -1,5 +1,6 @@
 within BuildingMpc.Examples;
-model Case900TABS_2var "Controller model for the BESTEST Case900 with TABS; the optimization variables are the temperature and the flow through the TABS"
+model Case900GEOTABS_1bor
+ "Controller model for the BESTEST Case900 with TABS and heat pump with a single borehole model; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
   extends Modelica.Icons.Example;
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,
@@ -39,8 +40,9 @@ model Case900TABS_2var "Controller model for the BESTEST Case900 with TABS; the 
     n50=0.822*0.5*20,
     redeclare IDEAS.Buildings.Validation.Data.Glazing.GlaBesTest
       glazingA,
-    T_start=293.15,
-    bouTypFlo=IDEAS.Buildings.Components.Interfaces.BoundaryType.External)
+    bouTypFlo=IDEAS.Buildings.Components.Interfaces.BoundaryType.External,
+    useFluPor=true,
+    T_start=293.15)
     annotation (Placement(transformation(extent={{-20,-20},{0,0}})));
   inner IDEAS.BoundaryConditions.SimInfoManager sim(lineariseJModelica=true)
     "Simulation information manager for climate data"
@@ -68,25 +70,61 @@ model Case900TABS_2var "Controller model for the BESTEST Case900 with TABS; the 
     allowFlowReversal=false,
     m_flow_nominal=5,
     A_floor=rectangularZoneTemplate.A,
-  energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial)
+    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial)
     annotation (Placement(transformation(extent={{16,-70},{36,-50}})));
-  IBPSA.Fluid.Sources.Boundary_pT sink(
-    nPorts=2,
+  IBPSA.Fluid.Sources.Boundary_pT source(
     redeclare package Medium = IDEAS.Media.Water,
-    use_T_in=true) annotation (Placement(transformation(
+    use_T_in=false,
+    p=200000,
+    nPorts=1)      annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
-        rotation=-90,
-        origin={-78,-50})));
+        rotation=0,
+        origin={-36,70})));
   Modelica.Blocks.Sources.RealExpression optVar2
     annotation (Placement(transformation(extent={{-86,-34},{-66,-14}})));
 protected
-  IDEAS.Fluid.Movers.BaseClasses.IdealSource mflow(
-  redeclare final package Medium = IDEAS.Media.Water,
-  final allowFlowReversal=false,
-  final control_m_flow=true,
-  final m_flow_small=0,
-  control_dp=false)     "Pressure source"
-  annotation (Placement(transformation(extent={{-44,-70},{-24,-50}})));
+  IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_sink(
+    redeclare final package Medium = IDEAS.Media.Water,
+    final allowFlowReversal=false,
+    final control_m_flow=true,
+    final m_flow_small=1e-04) "Pressure source"
+    annotation (Placement(transformation(extent={{-44,-70},{-24,-50}})));
+protected
+  IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_source(
+    redeclare final package Medium = IDEAS.Media.Water,
+    final allowFlowReversal=false,
+    final control_m_flow=true,
+    final m_flow_small=1e-4) "Pressure source"
+    annotation (Placement(transformation(extent={{40,62},{60,82}})));
+public
+  Modelica.Blocks.Sources.RealExpression optVar3
+    annotation (Placement(transformation(extent={{-72,80},{-52,100}})));
+  IBPSA.Fluid.Sources.Boundary_pT sink(
+    redeclare package Medium = IDEAS.Media.Water,
+    use_T_in=false,
+    nPorts=1,
+    p=200000) annotation (Placement(transformation(
+        extent={{-10,-10},{10,10}},
+        rotation=-90,
+        origin={-78,-50})));
+  Fluid.HeatPumps.HeatPump heatPump(
+    redeclare package Medium1 = IDEAS.Media.Water,
+    redeclare package Medium2 = IDEAS.Media.Water,
+    m2_flow_nominal=5,
+    dp2_nominal=0,
+    m1_flow_nominal=5,
+    dp1_nominal=0)
+    annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
+  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
+    borFieDat(filDat=
+        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.SandBox_validation())
+    annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
+  Fluid.HeatExchangers.GroundHeatExchangers.SingleBorehole singleBorehole(
+    redeclare package Medium = IDEAS.Media.Water,
+    m_flow_nominal=5,
+    dp_nominal=0,
+    borFieDat=borFieDat)
+    annotation (Placement(transformation(extent={{52,0},{32,20}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
     annotation (Line(points={{-26,40},{-8,40},{-8,0}}, color={0,127,255}));
@@ -97,16 +135,28 @@ equation
       thickness=0.5));
   connect(embeddedPipe.heatPortEmb, boundaryWall.port_emb) annotation (Line(
         points={{26,-50},{26,-50},{26,-38},{2,-38}}, color={191,0,0}));
-  connect(embeddedPipe.port_b, sink.ports[1]) annotation (Line(points={{36,-60},
-          {54,-60},{54,-82},{-76,-82},{-76,-60}}, color={0,127,255}));
-  connect(optVar2.y, sink.T_in) annotation (Line(points={{-65,-24},{-58,-24},{-58,
-          -34},{-74,-34},{-74,-38}}, color={0,0,127}));
-connect(mflow.port_b, embeddedPipe.port_a)
-  annotation (Line(points={{-24,-60},{16,-60}}, color={0,127,255}));
-  connect(mflow.port_a, sink.ports[2])
-    annotation (Line(points={{-44,-60},{-80,-60}}, color={0,127,255}));
-connect(optVar1.y, mflow.m_flow_in) annotation (Line(points={{-65,-10},{-40,
-        -10},{-40,-52},{-40,-52}}, color={0,0,127}));
+  connect(m_flow_sink.port_b, embeddedPipe.port_a)
+    annotation (Line(points={{-24,-60},{16,-60}}, color={0,127,255}));
+  connect(optVar1.y, m_flow_sink.m_flow_in) annotation (Line(points={{-65,-10},
+          {-40,-10},{-40,-52},{-40,-52}}, color={0,0,127}));
+  connect(optVar3.y, m_flow_source.m_flow_in) annotation (Line(points={{-51,90},
+          {-22,90},{44,90},{44,80}},        color={0,0,127}));
+  connect(optVar2.y, heatPump.Tcon_out) annotation (Line(points={{-65,-24},{-60,
+          -24},{-60,-80},{48,-80},{48,-63},{60,-63}}, color={0,0,127}));
+  connect(embeddedPipe.port_b, heatPump.port_a1)
+    annotation (Line(points={{36,-60},{60,-60}}, color={0,127,255}));
+  connect(m_flow_sink.port_a, heatPump.port_b1) annotation (Line(points={{-44,-60},
+          {-70,-60},{-70,-90},{92,-90},{92,-60},{80,-60}}, color={0,127,255}));
+  connect(sink.ports[1], m_flow_sink.port_a) annotation (Line(points={{-78,-60},
+          {-61,-60},{-44,-60}}, color={0,127,255}));
+  connect(m_flow_source.port_b, heatPump.port_a2) annotation (Line(points={{60,72},
+          {60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
+  connect(source.ports[1], m_flow_source.port_a) annotation (Line(points={{-26,70},
+          {-26,72},{-26,72},{40,72}}, color={0,127,255}));
+  connect(heatPump.port_b2, singleBorehole.port_a) annotation (Line(points={{60,
+          -48},{60,-48},{60,10},{52,10}}, color={0,127,255}));
+  connect(singleBorehole.port_b, m_flow_source.port_a) annotation (Line(points={
+          {32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(
@@ -131,4 +181,4 @@ First implementation
     __Dymola_Commands(file=
           "Resources/Scripts/Dymola/Buildings/Validation/Tests/ZoneTemplateVerification.mos"
         "Simulate and plot"));
-end Case900TABS_2var;
+end Case900GEOTABS_1bor;

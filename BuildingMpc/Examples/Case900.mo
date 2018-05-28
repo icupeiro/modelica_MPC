@@ -1,5 +1,5 @@
 within BuildingMpc.Examples;
-model Case900 "MPC template based on bestest case 900"
+model Case900  "Controller model for the BESTEST Case900"
   extends Modelica.Icons.Example;
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,

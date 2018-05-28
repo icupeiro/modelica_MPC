@@ -1,5 +1,6 @@
 within BuildingMpc.Examples;
-model Case900GEOTABS "MPC template based on bestest case 900"
+model Case900GEOTABS
+  "Controller model for the BESTEST Case900 with TABS and heat pump with a borefieldl; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
   extends Modelica.Icons.Example;
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,
@@ -144,19 +145,18 @@ equation
           -24},{-60,-80},{48,-80},{48,-63},{60,-63}}, color={0,0,127}));
   connect(embeddedPipe.port_b, heatPump.port_a1)
     annotation (Line(points={{36,-60},{60,-60}}, color={0,127,255}));
-  connect(m_flow_sink.port_a, heatPump.port_b1) annotation (Line(points={{-44,
-          -60},{-70,-60},{-70,-90},{92,-90},{92,-60},{80,-60}}, color={0,127,
-          255}));
+  connect(m_flow_sink.port_a, heatPump.port_b1) annotation (Line(points={{-44,-60},
+          {-70,-60},{-70,-90},{92,-90},{92,-60},{80,-60}}, color={0,127,255}));
   connect(sink.ports[1], m_flow_sink.port_a) annotation (Line(points={{-78,-60},
           {-61,-60},{-44,-60}}, color={0,127,255}));
-  connect(m_flow_source.port_b, heatPump.port_a2) annotation (Line(points={{60,
-          72},{60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
-  connect(source.ports[1], m_flow_source.port_a) annotation (Line(points={{-26,
-          70},{-26,72},{-26,72},{40,72}}, color={0,127,255}));
+  connect(m_flow_source.port_b, heatPump.port_a2) annotation (Line(points={{60,72},
+          {60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
+  connect(source.ports[1], m_flow_source.port_a) annotation (Line(points={{-26,70},
+          {-26,72},{-26,72},{40,72}}, color={0,127,255}));
   connect(heatPump.port_b2, singleBorehole.port_a) annotation (Line(points={{60,
           -48},{60,-48},{60,10},{52,10}}, color={0,127,255}));
-  connect(singleBorehole.port_b, m_flow_source.port_a) annotation (Line(points=
-          {{32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
+  connect(singleBorehole.port_b, m_flow_source.port_a) annotation (Line(points={
+          {32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(
