@@ -106,7 +106,13 @@ public
         extent={{-10,-10},{10,10}},
         rotation=-90,
         origin={-78,-50})));
-  Fluid.HeatPumps.HeatPump heatPump
+  Fluid.HeatPumps.HeatPump heatPump(
+    redeclare package Medium1 = IDEAS.Media.Water,
+    redeclare package Medium2 = IDEAS.Media.Water,
+    m2_flow_nominal=5,
+    dp2_nominal=0,
+    m1_flow_nominal=5,
+    dp1_nominal=0)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
@@ -129,7 +135,7 @@ equation
   connect(optVar2.y, heatPump.Tcon_out) annotation (Line(points={{-65,-24},{-60,
           -24},{-60,-80},{48,-80},{48,-63},{60,-63}}, color={0,0,127}));
   connect(embeddedPipe.port_b, heatPump.port_a1)
-    annotation (Line(points={{36,-60},{60,-60},{60,-60}}, color={0,127,255}));
+    annotation (Line(points={{36,-60},{60,-60}}, color={0,127,255}));
   connect(m_flow_sink.port_a, heatPump.port_b1) annotation (Line(points={{-44,
           -60},{-70,-60},{-70,-90},{92,-90},{92,-60},{80,-60}}, color={0,127,
           255}));

@@ -86,12 +86,6 @@ public
      h_outflow(start = Medium.h_default))
     "Fluid connector a (positive design flow direction is from port_a2 to port_b2)"
     annotation (Placement(transformation(extent={{90,-70},{110,-50}})));
-  parameter Modelica.SIunits.MassFlowRate m2_flow_nominal
-    "Nominal mass flow rate through the evaporator"
-    annotation (Dialog(group="Nominal conditions"));
-  parameter Modelica.SIunits.PressureDifference dp2_nominal
-    "Pressure difference through the evaporator"
-    annotation (Dialog(group="Nominal conditions"));
 
   parameter Modelica.SIunits.MassFlowRate m1_flow_nominal
     "Nominal mass flow rate through the condenser"
@@ -99,8 +93,15 @@ public
   parameter Modelica.SIunits.PressureDifference dp1_nominal
     "Pressure difference through the condenser"
     annotation (Dialog(group="Nominal conditions"));
-  Modelica.Blocks.Interfaces.RealOutput COP_expr=6.4 - 0.16*(T_con_in.T -
-      298.15) + 0.1*(T_eva_in.T - 288.15) "COP expression of the heat pump"
+  parameter Modelica.SIunits.MassFlowRate m2_flow_nominal
+    "Nominal mass flow rate through the evaporator"
+    annotation (Dialog(group="Nominal conditions"));
+  parameter Modelica.SIunits.PressureDifference dp2_nominal
+    "Pressure difference through the evaporator"
+    annotation (Dialog(group="Nominal conditions"));
+
+  Modelica.Blocks.Interfaces.RealOutput COP_expr=6.4 - 0.16*(T_con_in.T - 298.15)
+       + 0.1*(T_eva_in.T - 288.15) "COP expression of the heat pump"
     annotation (Dialog(tab="Advanced"));
   Modelica.Blocks.Interfaces.RealInput Tcon_out
     "outlet condenser temperature signal"
@@ -130,8 +131,8 @@ equation
                       color={0,127,255}));
   connect(T_con_out.port_b, port_b1)
     annotation (Line(points={{70,60},{100,60}},          color={0,127,255}));
-  connect(Tcon_out, HP_con.TSet) annotation (Line(points={{-100,90},{-40,90},{
-          -40,68},{-12,68}}, color={0,0,127}));
+  connect(Tcon_out, HP_con.TSet) annotation (Line(points={{-100,90},{-40,90},{-40,
+          68},{-12,68}}, color={0,0,127}));
   connect(Wcomp.y, W_comp)
     annotation (Line(points={{61,0},{110,0}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
