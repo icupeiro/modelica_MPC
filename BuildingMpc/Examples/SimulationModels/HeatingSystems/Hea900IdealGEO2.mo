@@ -1,8 +1,6 @@
 within BuildingMpc.Examples.SimulationModels.HeatingSystems;
-model Hea900IdealGEO "ideal geothermal system for case 900"
-  extends IDEAS.Templates.Interfaces.BaseClasses.HeatingSystem(
-  nZones=1, nLoads=0, nEmbPorts=1,nTemSen=1, isCoo=true, nConvPorts=0, nRadPorts=0, Q_design={2570}, QHeaSys=max(0,heatPortEmb[1].Q_flow),
-  QCooTotal=min(0,heatPortEmb[1].Q_flow));
+model Hea900IdealGEO2 "ideal geothermal system for case 900"
+
   IDEAS.Fluid.HeatPumps.Carnot_TCon heaPum(
     redeclare package Medium1 = IDEAS.Media.Water,
     redeclare package Medium2 = IDEAS.Media.Water,
@@ -196,6 +194,8 @@ model Hea900IdealGEO "ideal geothermal system for case 900"
     annotation (Placement(transformation(extent={{-52,86},{-72,106}})));
   Modelica.Blocks.Sources.Constant tabs_set1(k=273.15 + 35)
     annotation (Placement(transformation(extent={{70,-56},{50,-36}})));
+  inner IDEAS.BoundaryConditions.SimInfoManager sim
+    annotation (Placement(transformation(extent={{-98,-98},{-78,-78}})));
 equation
   connect(source_pump.port_a, source.ports[1])
     annotation (Line(points={{112,16},{130,16},{130,-18}}, color={0,127,255}));
@@ -217,8 +217,6 @@ equation
           -12},{-26,-18},{134,-18}}, color={0,127,255}));
   connect(buffTank.ports[1], sink_pump.port_a)
     annotation (Line(points={{-71,38},{-71,38},{-50,38}}, color={0,127,255}));
-  connect(embeddedPipe.heatPortEmb[1], heatPortEmb[1]) annotation (Line(points={{-188,60},
-          {-194,60},{-200,60}},                     color={191,0,0}));
   connect(T_con_out.port_b, buffTank.ports[2]) annotation (Line(points={{-28,80},
           {-68,80},{-68,38},{-69,38}}, color={0,127,255}));
   connect(buffTank.ports[3], tabs_pump.port_a) annotation (Line(points={{-67,38},
@@ -267,4 +265,4 @@ equation
           96},{-118,96},{-118,90.8}},          color={0,0,127}));
   connect(tabs_set1.y, heaPum.TSet) annotation (Line(points={{49,-46},{46,-46},{
           46,-6},{10,-6},{10,44.1}}, color={0,0,127}));
-end Hea900IdealGEO;
+end Hea900IdealGEO2;
