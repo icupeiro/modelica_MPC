@@ -1,4 +1,0 @@
-within BuildingMpc.Examples;
-package Simulations
-extends Modelica.Icons.ExamplesPackage;
-end Simulations;
