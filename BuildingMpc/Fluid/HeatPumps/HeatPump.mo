@@ -32,7 +32,8 @@ public
     Q_flow_nominal(displayUnit="W") = 1,
     m_flow_nominal=m2_flow_nominal,
     dp_nominal=dp2_nominal,
-    redeclare package Medium = Medium2)
+    redeclare package Medium = Medium2,
+    tau=0)
     annotation (Placement(transformation(extent={{10,-70},{-10,-50}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort T_eva_in(
     allowFlowReversal=false,

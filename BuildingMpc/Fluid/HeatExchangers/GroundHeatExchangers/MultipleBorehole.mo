@@ -17,7 +17,7 @@ model MultipleBorehole "multiple borehole model for MPC"
     each borFieDat=borFieDat)
              annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.BoreHoles.BaseClasses.CylindricalGroundLayer
-    lay[borFieDat.conDat.nVer](
+    lay[n,borFieDat.conDat.nVer](
     each soiDat=borFieDat.soiDat,
     each h=borFieDat.conDat.hSeg,
     each r_a=borFieDat.conDat.rBor,
