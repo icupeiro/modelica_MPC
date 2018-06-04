@@ -138,8 +138,8 @@ model Hea900IdealGEO "ideal geothermal system for case 900"
     tau=60,
     use_inputFilter=false,
     addPowerToMedium=false,
-    m_flow_nominal=0.125,
-    allowFlowReversal=false)
+    allowFlowReversal=false,
+    m_flow_nominal=0.125)
     annotation (Placement(transformation(extent={{-130,90},{-150,70}})));
   IDEAS.Fluid.Sources.Boundary_pT sink(
     redeclare package Medium = IDEAS.Media.Water,
@@ -155,12 +155,12 @@ model Hea900IdealGEO "ideal geothermal system for case 900"
     yMax=source_pump.m_flow_nominal,
     yMin=source_pump.m_flow_nominal*0.1,
     reverseAction=true)
-    annotation (Placement(transformation(extent={{134,32},{118,48}})));
+    annotation (Placement(transformation(extent={{184,36},{168,52}})));
   Modelica.Blocks.Sources.Constant source_set(k=3)
-    annotation (Placement(transformation(extent={{164,60},{152,72}})));
+    annotation (Placement(transformation(extent={{214,64},{202,76}})));
   Modelica.Blocks.Sources.RealExpression realExpression(y=T_eva_in.T -
         T_eva_out.T)
-    annotation (Placement(transformation(extent={{172,18},{152,38}})));
+    annotation (Placement(transformation(extent={{222,22},{202,42}})));
   IDEAS.Controls.Continuous.LimPID PID_HP_sink(
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
     k=1,
@@ -190,18 +190,20 @@ model Hea900IdealGEO "ideal geothermal system for case 900"
         extent={{10,-8},{-10,8}},
         rotation=90,
         origin={-178,38})));
-  Modelica.Blocks.Sources.RealExpression heatingMode(y=if runMean.TRm < (273.15
-         + 12.0) then 0.0 else 1.0)
+  Modelica.Blocks.Sources.RealExpression heatingMode(y=if runMean.TRm > (273.15
+         + 15.0) then 0.0 else 1.0)
     annotation (Placement(transformation(extent={{-140,104},{-120,124}})));
-  IDEAS.Controls.Continuous.LimPID PID_HP_sink1(
+  IDEAS.Controls.Continuous.LimPID PID_HP_tabs(
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
     k=1,
     Ti=60,
     yMax=tabs_pump.m_flow_nominal,
-    yMin=tabs_pump.m_flow_nominal*0.1)
+    yMin=tabs_pump.m_flow_nominal*0.1,
+    reverseAction=true)
     annotation (Placement(transformation(extent={{-50,-70},{-66,-54}})));
-  Modelica.Blocks.Sources.RealExpression realExpression2(y=T_tabs_in.T -
-        T_tabs_out.T)
+  Modelica.Blocks.Sources.RealExpression realExpression2(y=if runMean.TRm < (
+        273.15 + 12.0) then (T_tabs_in.T - T_tabs_out.T) elseif runMean.TRm > (
+        15.0 + 273.15) then (-T_tabs_in.T + T_tabs_out.T) else tabs_set.y)
     annotation (Placement(transformation(extent={{-12,-84},{-32,-64}})));
   IDEAS.Controls.ControlHeating.RunningMeanTemperatureEN15251 runMean(each
       TAveDayIni=10.0*ones(7))
@@ -216,14 +218,14 @@ model Hea900IdealGEO "ideal geothermal system for case 900"
     annotation (Placement(transformation(extent={{-68,108},{-84,124}})));
   Modelica.Blocks.Sources.RealExpression realExpression3(y=T_tabs_in.T)
     annotation (Placement(transformation(extent={{-38,90},{-58,110}})));
-  Modelica.Blocks.Tables.CombiTable1D heaCombi(table=[273.15 - 8,273.15 + 35;
-        273.15 + 22,273.15 + 22])
+  Modelica.Blocks.Tables.CombiTable1D heaCombi(table=[273.15 - 8,273.15 + 37;
+        273.15 + 24,273.15 + 24])
     annotation (Placement(transformation(extent={{-18,126},{-38,146}})));
   Modelica.Blocks.Sources.RealExpression realExpression4(y=sim.Te)
     annotation (Placement(transformation(extent={{24,126},{4,146}})));
   Modelica.Blocks.Sources.RealExpression tempControl(y=if runMean.TRm < (273.15
-         + 12.0) then heaCurve.y else 1.0)
-    annotation (Placement(transformation(extent={{-140,130},{-120,150}})));
+         + 12.0) then heaCurve.y else 0.0)
+    annotation (Placement(transformation(extent={{-138,130},{-118,150}})));
   Modelica.Blocks.Logical.Hysteresis hysteresis(uLow=35, uHigh=40)
     annotation (Placement(transformation(extent={{-50,-38},{-30,-18}})));
   Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor temperatureSensor
@@ -235,6 +237,25 @@ model Hea900IdealGEO "ideal geothermal system for case 900"
     annotation (Placement(transformation(extent={{58,92},{38,112}})));
   Modelica.Blocks.Sources.Constant sink_set1(k=273.15 + 40)
     annotation (Placement(transformation(extent={{74,122},{60,136}})));
+  Modelica.Blocks.Tables.CombiTable1D cooCombi(table=[273.15 + 14,273.15 + 25;
+        273.15 + 20,273.15 + 17; 273.15 + 30,273.15 + 15])
+    annotation (Placement(transformation(extent={{180,-80},{160,-60}})));
+  Modelica.Blocks.Sources.RealExpression realExpression6(y=sim.Te)
+    annotation (Placement(transformation(extent={{214,-80},{194,-60}})));
+  IDEAS.Controls.Continuous.LimPID cooCurve(
+    controllerType=Modelica.Blocks.Types.SimpleController.PI,
+    k=1,
+    Ti=60,
+    yMax=source_pump.m_flow_nominal,
+    yMin=0.01*source_pump.m_flow_nominal,
+    reverseAction=true)
+    annotation (Placement(transformation(extent={{132,-74},{116,-58}})));
+  Modelica.Blocks.Sources.RealExpression realExpression7(y=T_tabs_in.T)
+    annotation (Placement(transformation(extent={{160,-96},{140,-76}})));
+  Modelica.Blocks.Sources.RealExpression realExpression8(y=if runMean.TRm > (
+        14.0 + 273.15) then cooCurve.y elseif hysteresis.y then PID_HP_source.y
+         else 0.0)
+    annotation (Placement(transformation(extent={{144,30},{124,50}})));
 equation
   connect(source_pump.port_a, source.ports[1])
     annotation (Line(points={{112,16},{130,16},{130,-18}}, color={0,127,255}));
@@ -266,12 +287,10 @@ equation
           {-114,70},{-114,68},{-114,8},{-38,8}},     color={0,127,255}));
   connect(sink.ports[1], T_con_out.port_a)
     annotation (Line(points={{94,74},{94,80},{-8,80}}, color={0,127,255}));
-  connect(source_set.y, PID_HP_source.u_s) annotation (Line(points={{151.4,66},{
-          144,66},{144,40},{135.6,40}}, color={0,0,127}));
+  connect(source_set.y, PID_HP_source.u_s) annotation (Line(points={{201.4,70},
+          {194,70},{194,44},{185.6,44}},color={0,0,127}));
   connect(realExpression.y, PID_HP_source.u_m)
-    annotation (Line(points={{151,28},{126,28},{126,30.4}}, color={0,0,127}));
-  connect(PID_HP_source.y, source_pump.m_flow_in)
-    annotation (Line(points={{117.2,40},{102,40},{102,28}}, color={0,0,127}));
+    annotation (Line(points={{201,32},{176,32},{176,34.4}}, color={0,0,127}));
   connect(realExpression1.y, PID_HP_sink.u_m)
     annotation (Line(points={{129,92},{104,92},{104,94.4}},
                                                          color={0,0,127}));
@@ -291,13 +310,12 @@ equation
   connect(heatingMode.y, pasCooCon.ctrl) annotation (Line(points={{-119,114},{
           -114,114},{-114,90.8}},
                             color={0,0,127}));
-  connect(realExpression2.y, PID_HP_sink1.u_m) annotation (Line(points={{-33,-74},
+  connect(realExpression2.y, PID_HP_tabs.u_m) annotation (Line(points={{-33,-74},
           {-58,-74},{-58,-71.6}}, color={0,0,127}));
-  connect(tabs_set.y, PID_HP_sink1.u_s) annotation (Line(points={{13,-44},{-4,-44},
+  connect(tabs_set.y, PID_HP_tabs.u_s) annotation (Line(points={{13,-44},{-4,-44},
           {-4,-62},{-48.4,-62}}, color={0,0,127}));
-  connect(PID_HP_sink1.y, tabs_pump.m_flow_in) annotation (Line(points={{-66.8,-62},
-          {-140,-62},{-140,68}},
-                               color={0,0,127}));
+  connect(PID_HP_tabs.y, tabs_pump.m_flow_in) annotation (Line(points={{-66.8,-62},
+          {-140,-62},{-140,68}}, color={0,0,127}));
   connect(watCon.port_a1, buffTank.ports[4]) annotation (Line(points={{-78,80},
           {-76,80},{-72,80},{-72,60},{-72,38},{-70,38},{-66,38},{-65,38}},
                               color={0,127,255}));
@@ -313,7 +331,7 @@ equation
           136},{-52,116},{-66.4,116}}, color={0,0,127}));
   connect(realExpression4.y, heaCombi.u[1])
     annotation (Line(points={{3,136},{-16,136}}, color={0,0,127}));
-  connect(tempControl.y, watCon.ctrl) annotation (Line(points={{-119,140},{-104,
+  connect(tempControl.y, watCon.ctrl) annotation (Line(points={{-117,140},{-104,
           140},{-104,90.8},{-88,90.8}}, color={0,0,127}));
   connect(buffTank.heatPort, temperatureSensor.port)
     annotation (Line(points={{-78,28},{-80,28},{-80,-28}}, color={191,0,0}));
@@ -325,4 +343,12 @@ equation
           102},{14,102},{14,50},{-40,50}}, color={0,0,127}));
   connect(sink_set1.y, heaPum.TSet)
     annotation (Line(points={{59.3,129},{10,129},{10,44.1}}, color={0,0,127}));
+  connect(realExpression6.y, cooCombi.u[1]) annotation (Line(points={{193,-70},
+          {187.5,-70},{182,-70}}, color={0,0,127}));
+  connect(realExpression7.y, cooCurve.u_m) annotation (Line(points={{139,-86},{
+          124,-86},{124,-75.6}}, color={0,0,127}));
+  connect(cooCombi.y[1], cooCurve.u_s) annotation (Line(points={{159,-70},{148,
+          -70},{148,-66},{133.6,-66}}, color={0,0,127}));
+  connect(realExpression8.y, source_pump.m_flow_in)
+    annotation (Line(points={{123,40},{102,40},{102,28}}, color={0,0,127}));
 end Hea900IdealGEO;
