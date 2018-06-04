@@ -4,8 +4,8 @@ extends Modelica.Icons.ExamplesPackage;
 
   model MpcCase900
     extends UnitTests.MPC.BaseClasses.Mpc(
-      final nOut=1,
-      final nOpt=1,
+      final nOut=3,
+      final nOpt=2,
       final nSta=30,
       final nMeas=0,
       final controlTimeStep=3600,
@@ -13,6 +13,10 @@ extends Modelica.Icons.ExamplesPackage;
       final name= "Case900");
     Modelica.Blocks.Interfaces.RealOutput u = getOutput(tableID,1, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput slack = getOutput(tableID,2, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,3, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
     MpcSignalBus bus
       "Bus connector with control variables and outputs"
       annotation (Placement(transformation(extent={{-20,80},{20,120}})));
@@ -20,15 +24,19 @@ extends Modelica.Icons.ExamplesPackage;
     expandable connector MpcSignalBus  "Icon for signal bus"
       extends Modelica.Icons.SignalBus;
     Modelica.Blocks.Interfaces.RealInput u;
+    Modelica.Blocks.Interfaces.RealInput slack;
+    Modelica.Blocks.Interfaces.RealInput Tsta;
     end MpcSignalBus;
   equation
     connect(u, bus.u);
+    connect(slack, bus.slack);
+    connect(Tsta, bus.Tsta);
   end MpcCase900;
 
   model MpcCase900TABS
     extends UnitTests.MPC.BaseClasses.Mpc(
-      final nOut=2,
-      final nOpt=1,
+      final nOut=3,
+      final nOpt=2,
       final nSta=30,
       final nMeas=0,
       final controlTimeStep=3600,
@@ -36,7 +44,9 @@ extends Modelica.Icons.ExamplesPackage;
       final name= "Case900TABS");
     Modelica.Blocks.Interfaces.RealOutput u = getOutput(tableID,1, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,2, time)
+    Modelica.Blocks.Interfaces.RealOutput slack = getOutput(tableID,2, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,3, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     MpcSignalBus bus
       "Bus connector with control variables and outputs"
@@ -45,10 +55,12 @@ extends Modelica.Icons.ExamplesPackage;
     expandable connector MpcSignalBus  "Icon for signal bus"
       extends Modelica.Icons.SignalBus;
     Modelica.Blocks.Interfaces.RealInput u;
+    Modelica.Blocks.Interfaces.RealInput slack;
     Modelica.Blocks.Interfaces.RealInput Tsta;
     end MpcSignalBus;
   equation
     connect(u, bus.u);
+    connect(slack, bus.slack);
     connect(Tsta, bus.Tsta);
   end MpcCase900TABS;
 
@@ -91,7 +103,7 @@ extends Modelica.Icons.ExamplesPackage;
     extends UnitTests.MPC.BaseClasses.Mpc(
       final nOut=5,
       final nOpt=4,
-      final nSta=31,
+      final nSta=30,
       final nMeas=0,
       final controlTimeStep=3600,
       final nModCorCoeff=21,
@@ -130,7 +142,7 @@ extends Modelica.Icons.ExamplesPackage;
     extends UnitTests.MPC.BaseClasses.Mpc(
       final nOut=5,
       final nOpt=4,
-      final nSta=151,
+      final nSta=30,
       final nMeas=0,
       final controlTimeStep=3600,
       final nModCorCoeff=21,

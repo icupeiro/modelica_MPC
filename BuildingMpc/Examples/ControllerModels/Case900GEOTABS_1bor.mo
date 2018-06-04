@@ -68,9 +68,9 @@ model Case900GEOTABS_1bor
       IDEAS.Fluid.HeatExchangers.RadiantSlab.BaseClasses.RadiantSlabChar
       RadSlaCha,
     allowFlowReversal=false,
-    m_flow_nominal=5,
     A_floor=rectangularZoneTemplate.A,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial)
+    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    m_flow_nominal=1)
     annotation (Placement(transformation(extent={{16,-70},{36,-50}})));
   IBPSA.Fluid.Sources.Boundary_pT source(
     redeclare package Medium = IDEAS.Media.Water,
@@ -110,20 +110,23 @@ public
   Fluid.HeatPumps.HeatPump heatPump(
     redeclare package Medium1 = IDEAS.Media.Water,
     redeclare package Medium2 = IDEAS.Media.Water,
-    m2_flow_nominal=5,
     dp2_nominal=0,
-    m1_flow_nominal=5,
     dp1_nominal=0,
-    Q_nom=3000)
+    Q_nom=3000,
+    m1_flow_nominal=1,
+    m2_flow_nominal=1)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
     borFieDat(filDat=
-        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.SandBox_validation())
+        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.Bentonite(
+        steadyState=true), soiDat=
+        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
+        steadyState=true))
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.HeatExchangers.GroundHeatExchangers.SingleBorehole singleBorehole(
+  Fluid.HeatExchangers.GroundHeatExchangers.SimpleBorehole simpleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
-    m_flow_nominal=5,
-    dp_nominal=0,
+    m_flow_nominal=1,
+    soilTemp=273.15 + 10.8,
     borFieDat=borFieDat)
     annotation (Placement(transformation(extent={{52,0},{32,20}})));
 equation
@@ -154,9 +157,9 @@ equation
           {60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
   connect(source.ports[1], m_flow_source.port_a) annotation (Line(points={{-26,70},
           {-26,72},{-26,72},{40,72}}, color={0,127,255}));
-  connect(heatPump.port_b2, singleBorehole.port_a) annotation (Line(points={{60,
+  connect(heatPump.port_b2,simpleBorehole. port_a) annotation (Line(points={{60,
           -48},{60,-48},{60,10},{52,10}}, color={0,127,255}));
-  connect(singleBorehole.port_b, m_flow_source.port_a) annotation (Line(points={
+  connect(simpleBorehole.port_b, m_flow_source.port_a) annotation (Line(points={
           {32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),

@@ -68,15 +68,16 @@ model Case900TABS_HP
       IDEAS.Fluid.HeatExchangers.RadiantSlab.BaseClasses.RadiantSlabChar
       RadSlaCha,
     allowFlowReversal=false,
-    m_flow_nominal=5,
     A_floor=rectangularZoneTemplate.A,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyStateInitial)
+    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    m_flow_nominal=1)
     annotation (Placement(transformation(extent={{16,-70},{36,-50}})));
   IBPSA.Fluid.Sources.Boundary_pT source(
     redeclare package Medium = IDEAS.Media.Water,
     use_T_in=false,
-    T=287.15,
-    nPorts=2)      annotation (Placement(transformation(
+    nPorts=2,
+    p=200000,
+    T=287.15)      annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-36,70})));
@@ -87,14 +88,14 @@ protected
     redeclare final package Medium = IDEAS.Media.Water,
     final allowFlowReversal=false,
     final control_m_flow=true,
-    final m_flow_small=1e-04) "Pressure source"
+    m_flow_small=1E-4)        "Pressure source"
     annotation (Placement(transformation(extent={{-44,-70},{-24,-50}})));
 protected
   IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_source(
     redeclare final package Medium = IDEAS.Media.Water,
     final allowFlowReversal=false,
     final control_m_flow=true,
-    final m_flow_small=1e-4) "Pressure source"
+    final m_flow_small=1E-4) "Pressure source"
     annotation (Placement(transformation(extent={{40,62},{60,82}})));
 public
   Modelica.Blocks.Sources.RealExpression optVar3
@@ -110,11 +111,12 @@ public
   Fluid.HeatPumps.HeatPump heatPump(
     redeclare package Medium1 = IDEAS.Media.Water,
     redeclare package Medium2 = IDEAS.Media.Water,
-    m2_flow_nominal=5,
     dp2_nominal=0,
-    m1_flow_nominal=5,
     dp1_nominal=0,
-    Q_nom=3000)
+    Q_nom=3000,
+    m1_flow_nominal=1,
+    m2_flow_nominal=1,
+    COP_expr=4.5)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
