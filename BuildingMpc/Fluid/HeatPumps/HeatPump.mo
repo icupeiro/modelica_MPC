@@ -20,12 +20,10 @@ model HeatPump "A heat pump model for optimization"
     redeclare package Medium = Medium1,
     m_flow_nominal=m1_flow_nominal,
     dp_nominal=dp1_nominal,
-    tau=0,
     QMax_flow=Q_nom,
-    QMin_flow=0,
-    m_flow_small=1E-2*abs(HP_con.m_flow_nominal))
+    QMin_flow=0)
     annotation (Placement(transformation(extent={{-10,50},{10,70}})));
-public
+
   IDEAS.Fluid.HeatExchangers.HeaterCooler_u HP_eva(
     allowFlowReversal=false,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
@@ -33,9 +31,7 @@ public
     Q_flow_nominal(displayUnit="W") = 1,
     m_flow_nominal=m2_flow_nominal,
     dp_nominal=dp2_nominal,
-    redeclare package Medium = Medium2,
-    tau=0,
-    m_flow_small=1E-2*abs(HP_eva.m_flow_nominal))
+    redeclare package Medium = Medium2)
     annotation (Placement(transformation(extent={{10,-70},{-10,-50}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort T_eva_in(
     allowFlowReversal=false,
@@ -65,7 +61,7 @@ public
     m_flow_nominal=m2_flow_nominal,
     tau=0)
     annotation (Placement(transformation(extent={{-50,-70},{-70,-50}})));
-  Modelica.Blocks.Sources.RealExpression Q_eva(y=-(HP_con.Q_flow - Wcomp.y))
+  Modelica.Blocks.Sources.RealExpression Q_eva(y=-HP_con.Q_flow*4/5)
     annotation (Placement(transformation(extent={{50,-40},{30,-20}})));
 
   parameter Modelica.SIunits.MassFlowRate m1_flow_nominal

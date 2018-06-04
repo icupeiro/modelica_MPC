@@ -5,8 +5,9 @@ model Case900TABS
   MPCs.MpcCase900TABS mpcCase900TABS
     annotation (Placement(transformation(extent={{-90,-22},{-70,-2}})));
   annotation (experiment(
-      StartTime=1420000000,
-      StopTime=1430000000,
-      __Dymola_fixedstepsize=1,
+      StopTime=31536000,
+      __Dymola_NumberOfIntervals=15000,
+      Tolerance=1e-06,
+      __Dymola_fixedstepsize=10,
       __Dymola_Algorithm="Euler"));
 end Case900TABS;

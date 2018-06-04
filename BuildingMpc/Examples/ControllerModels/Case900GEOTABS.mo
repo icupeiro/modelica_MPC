@@ -119,8 +119,8 @@ public
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
     borFieDat
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.HeatExchangers.GroundHeatExchangers.MultipleBorehole
-                                                           singleBorehole(
+  Fluid.HeatExchangers.GroundHeatExchangers.Development.MultipleBorehole
+    singleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
     m_flow_nominal=5,
     borFieDat=borFieDat,
