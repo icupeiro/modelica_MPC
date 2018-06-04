@@ -128,8 +128,8 @@ extends Modelica.Icons.ExamplesPackage;
 
   model MpcCase900GEOTABS_1bor
     extends UnitTests.MPC.BaseClasses.Mpc(
-      final nOut=4,
-      final nOpt=3,
+      final nOut=5,
+      final nOpt=4,
       final nSta=151,
       final nMeas=0,
       final controlTimeStep=3600,
@@ -141,7 +141,9 @@ extends Modelica.Icons.ExamplesPackage;
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,3, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,4, time)
+    Modelica.Blocks.Interfaces.RealOutput slack = getOutput(tableID,4, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,5, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     MpcSignalBus bus
       "Bus connector with control variables and outputs"
@@ -152,12 +154,14 @@ extends Modelica.Icons.ExamplesPackage;
     Modelica.Blocks.Interfaces.RealInput u1;
     Modelica.Blocks.Interfaces.RealInput u2;
     Modelica.Blocks.Interfaces.RealInput u3;
+    Modelica.Blocks.Interfaces.RealInput slack;
     Modelica.Blocks.Interfaces.RealInput Tsta;
     end MpcSignalBus;
   equation
     connect(u1, bus.u1);
     connect(u2, bus.u2);
     connect(u3, bus.u3);
+    connect(slack, bus.slack);
     connect(Tsta, bus.Tsta);
   end MpcCase900GEOTABS_1bor;
 end MPCs;

@@ -7,6 +7,10 @@ model Case900TABS_HP
                                       optVar3(y=mpcCase900TABS_HP.yOpt[3]));
   MPCs.MpcCase900TABS_HP mpcCase900TABS_HP
     annotation (Placement(transformation(extent={{-84,20},{-64,40}})));
-  MPCs.MpcCase900TABS_HP mpcCase900TABS_HP1
-    annotation (Placement(transformation(extent={{-84,20},{-64,40}})));
+  annotation (experiment(
+      StopTime=31536000,
+      __Dymola_NumberOfIntervals=15000,
+      Tolerance=1e-06,
+      __Dymola_fixedstepsize=10,
+      __Dymola_Algorithm="Euler"));
 end Case900TABS_HP;
