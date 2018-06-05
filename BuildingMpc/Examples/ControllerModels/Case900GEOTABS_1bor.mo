@@ -70,7 +70,8 @@ model Case900GEOTABS_1bor
     allowFlowReversal=false,
     A_floor=rectangularZoneTemplate.A,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    m_flow_nominal=1)
+    m_flow_nominal=0.2,
+    dp_nominal=0)
     annotation (Placement(transformation(extent={{16,-70},{36,-50}})));
   IBPSA.Fluid.Sources.Boundary_pT source(
     redeclare package Medium = IDEAS.Media.Water,
@@ -112,9 +113,8 @@ public
     redeclare package Medium2 = IDEAS.Media.Water,
     dp2_nominal=0,
     dp1_nominal=0,
-    Q_nom=3000,
-    m1_flow_nominal=1,
-    m2_flow_nominal=1)
+    m1_flow_nominal=0.2,
+    m2_flow_nominal=0.2)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
     borFieDat(filDat=
@@ -123,11 +123,13 @@ public
         IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
         steadyState=true))
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.HeatExchangers.GroundHeatExchangers.SimpleBorehole simpleBorehole(
+  Fluid.HeatExchangers.GroundHeatExchangers.Development.SingleBorehole
+                                                           singleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
-    m_flow_nominal=1,
     soilTemp=273.15 + 10.8,
-    borFieDat=borFieDat)
+    borFieDat=borFieDat,
+    m_flow_nominal=0.2,
+    dp_nominal=0)
     annotation (Placement(transformation(extent={{52,0},{32,20}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
@@ -157,16 +159,17 @@ equation
           {60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
   connect(source.ports[1], m_flow_source.port_a) annotation (Line(points={{-26,70},
           {-26,72},{-26,72},{40,72}}, color={0,127,255}));
-  connect(heatPump.port_b2,simpleBorehole. port_a) annotation (Line(points={{60,
+  connect(heatPump.port_b2,singleBorehole. port_a) annotation (Line(points={{60,
           -48},{60,-48},{60,10},{52,10}}, color={0,127,255}));
-  connect(simpleBorehole.port_b, m_flow_source.port_a) annotation (Line(points={
+  connect(singleBorehole.port_b, m_flow_source.port_a) annotation (Line(points={
           {32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(
-      StartTime=1420000000,
-      StopTime=1430000000,
-      __Dymola_fixedstepsize=1,
+      StopTime=31536000,
+      __Dymola_NumberOfIntervals=15000,
+      Tolerance=1e-06,
+      __Dymola_fixedstepsize=10,
       __Dymola_Algorithm="Euler"),
     Documentation(info="<html>
 <p>
@@ -184,5 +187,16 @@ First implementation
 </html>"),
     __Dymola_Commands(file=
           "Resources/Scripts/Dymola/Buildings/Validation/Tests/ZoneTemplateVerification.mos"
-        "Simulate and plot"));
+        "Simulate and plot"),
+    __Dymola_experimentSetupOutput,
+    __Dymola_experimentFlags(
+      Advanced(
+        GenerateVariableDependencies=false,
+        OutputModelicaCode=false,
+        InlineMethod=0,
+        InlineOrder=2,
+        InlineFixedStep=0.001),
+      Evaluate=false,
+      OutputCPUtime=false,
+      OutputFlatModelica=false));
 end Case900GEOTABS_1bor;

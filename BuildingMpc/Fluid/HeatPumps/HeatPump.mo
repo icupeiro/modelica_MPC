@@ -19,9 +19,7 @@ model HeatPump "A heat pump model for optimization"
     use_X_wSet=false,
     redeclare package Medium = Medium1,
     m_flow_nominal=m1_flow_nominal,
-    dp_nominal=dp1_nominal,
-    QMax_flow=Q_nom,
-    QMin_flow=0)
+    dp_nominal=dp1_nominal)
     annotation (Placement(transformation(extent={{-10,50},{10,70}})));
 
   IDEAS.Fluid.HeatExchangers.HeaterCooler_u HP_eva(
@@ -31,7 +29,8 @@ model HeatPump "A heat pump model for optimization"
     Q_flow_nominal(displayUnit="W") = 1,
     m_flow_nominal=m2_flow_nominal,
     dp_nominal=dp2_nominal,
-    redeclare package Medium = Medium2)
+    redeclare package Medium = Medium2,
+    tau=0)
     annotation (Placement(transformation(extent={{10,-70},{-10,-50}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort T_eva_in(
     allowFlowReversal=false,
@@ -61,7 +60,7 @@ model HeatPump "A heat pump model for optimization"
     m_flow_nominal=m2_flow_nominal,
     tau=0)
     annotation (Placement(transformation(extent={{-50,-70},{-70,-50}})));
-  Modelica.Blocks.Sources.RealExpression Q_eva(y=-HP_con.Q_flow*4/5)
+  Modelica.Blocks.Sources.RealExpression Q_eva(y=-(HP_con.Q_flow - Wcomp.y))
     annotation (Placement(transformation(extent={{50,-40},{30,-20}})));
 
   parameter Modelica.SIunits.MassFlowRate m1_flow_nominal
@@ -103,6 +102,8 @@ model HeatPump "A heat pump model for optimization"
   parameter Modelica.SIunits.HeatFlowRate Q_nom=Modelica.Constants.inf
     "Heat pump nominal power (heating)"
     annotation (Dialog(group="Nominal conditions"));
+  Modelica.Blocks.Interfaces.RealOutput Q_con
+    annotation (Placement(transformation(extent={{100,74},{120,94}})));
 equation
   connect(HP_eva.port_b, T_eva_out.port_a)
     annotation (Line(points={{-10,-60},{-50,-60}}, color={0,127,255}));
@@ -127,6 +128,8 @@ equation
     annotation (Line(points={{100,-60},{85,-60},{70,-60}}, color={0,127,255}));
   connect(T_eva_out.port_b, port_b2)
     annotation (Line(points={{-70,-60},{-100,-60}}, color={0,127,255}));
+  connect(HP_con.Q_flow, Q_con) annotation (Line(points={{11,68},{12,68},{12,84},
+          {110,84}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
           extent={{-64,80},{76,-80}},

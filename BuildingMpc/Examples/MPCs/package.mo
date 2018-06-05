@@ -142,7 +142,7 @@ extends Modelica.Icons.ExamplesPackage;
     extends UnitTests.MPC.BaseClasses.Mpc(
       final nOut=5,
       final nOpt=4,
-      final nSta=30,
+      final nSta=41,
       final nMeas=0,
       final controlTimeStep=3600,
       final nModCorCoeff=21,

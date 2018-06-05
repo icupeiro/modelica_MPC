@@ -140,14 +140,14 @@ equation
           -24},{-60,-80},{48,-80},{48,-63},{60,-63}}, color={0,0,127}));
   connect(embeddedPipe.port_b, heatPump.port_a1)
     annotation (Line(points={{36,-60},{60,-60}}, color={0,127,255}));
-  connect(m_flow_sink.port_a, heatPump.port_b1) annotation (Line(points={{-44,-60},
-          {-70,-60},{-70,-90},{92,-90},{92,-60},{80,-60}}, color={0,127,255}));
   connect(sink.ports[1], m_flow_sink.port_a) annotation (Line(points={{-78,-60},
-          {-61,-60},{-44,-60}}, color={0,127,255}));
+          {-44,-60}},           color={0,127,255}));
   connect(m_flow_source.port_b, heatPump.port_a2) annotation (Line(points={{60,72},
           {60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
   connect(heatPump.port_b2, source.ports[2]) annotation (Line(points={{60,-48},{
           44,-48},{44,52},{-26,52},{-26,68}}, color={0,127,255}));
+  connect(m_flow_sink.port_a, heatPump.port_b1) annotation (Line(points={{-44,
+          -60},{-44,-90},{80,-90},{80,-60}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(

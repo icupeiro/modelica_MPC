@@ -4,7 +4,8 @@ model Case900GEOTABS_1bor
   extends BuildingMpc.Examples.ControllerModels.Case900GEOTABS_1bor(
     optVar3(y=mpcCase900GEOTABS_1bor.yOpt[3]),
     optVar1(y=mpcCase900GEOTABS_1bor.yOpt[1]),
-    optVar2(y=mpcCase900GEOTABS_1bor.yOpt[2]));
+    optVar2(y=mpcCase900GEOTABS_1bor.yOpt[2]),
+    singleBorehole(dp_nominal=0));
   MPCs.MpcCase900GEOTABS_1bor mpcCase900GEOTABS_1bor
     annotation (Placement(transformation(extent={{-94,20},{-74,40}})));
                                                                      annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(

@@ -40,8 +40,8 @@ model Case900TABS
     n50=0.822*0.5*20,
     redeclare IDEAS.Buildings.Validation.Data.Glazing.GlaBesTest
       glazingA,
-    T_start=293.15,
-    bouTypFlo=IDEAS.Buildings.Components.Interfaces.BoundaryType.External)
+    bouTypFlo=IDEAS.Buildings.Components.Interfaces.BoundaryType.External,
+    T_start=293.15)
     annotation (Placement(transformation(extent={{-20,-20},{0,0}})));
   inner IDEAS.BoundaryConditions.SimInfoManager sim(lineariseJModelica=true)
     "Simulation information manager for climate data"
