@@ -123,8 +123,7 @@ public
         IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
         steadyState=true))
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.HeatExchangers.GroundHeatExchangers.Development.SingleBorehole
-                                                           singleBorehole(
+  Fluid.HeatExchangers.GroundHeatExchangers.SingleBorehole singleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
     soilTemp=273.15 + 10.8,
     borFieDat=borFieDat,
@@ -159,10 +158,10 @@ equation
           {60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
   connect(source.ports[1], m_flow_source.port_a) annotation (Line(points={{-26,70},
           {-26,72},{-26,72},{40,72}}, color={0,127,255}));
-  connect(heatPump.port_b2,singleBorehole. port_a) annotation (Line(points={{60,
+  connect(heatPump.port_b2, singleBorehole.port_a) annotation (Line(points={{60,
           -48},{60,-48},{60,10},{52,10}}, color={0,127,255}));
-  connect(singleBorehole.port_b, m_flow_source.port_a) annotation (Line(points={
-          {32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
+  connect(singleBorehole.port_b, m_flow_source.port_a) annotation (Line(points=
+          {{32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(

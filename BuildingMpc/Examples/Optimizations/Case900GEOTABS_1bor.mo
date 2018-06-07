@@ -2,10 +2,10 @@ within BuildingMpc.Examples.Optimizations;
 model Case900GEOTABS_1bor
   "Controller model for the BESTEST Case900 with TABS and heat pump with a single borehole model; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
   extends BuildingMpc.Examples.ControllerModels.Case900GEOTABS_1bor(
+    singleBorehole(dp_nominal=0),
     optVar3(y=mpcCase900GEOTABS_1bor.yOpt[3]),
     optVar1(y=mpcCase900GEOTABS_1bor.yOpt[1]),
-    optVar2(y=mpcCase900GEOTABS_1bor.yOpt[2]),
-    singleBorehole(dp_nominal=0));
+    optVar2(y=mpcCase900GEOTABS_1bor.yOpt[2]));
   MPCs.MpcCase900GEOTABS_1bor mpcCase900GEOTABS_1bor
     annotation (Placement(transformation(extent={{-94,20},{-74,40}})));
                                                                      annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
@@ -33,7 +33,7 @@ First implementation
     __Dymola_Commands(file=
           "Resources/Scripts/Dymola/Buildings/Validation/Tests/ZoneTemplateVerification.mos"
         "Simulate and plot"),
-    __Dymola_experimentSetupOutput,
+    __Dymola_experimentSetupOutput(events=false),
     __Dymola_experimentFlags(
       Advanced(
         GenerateVariableDependencies=false,

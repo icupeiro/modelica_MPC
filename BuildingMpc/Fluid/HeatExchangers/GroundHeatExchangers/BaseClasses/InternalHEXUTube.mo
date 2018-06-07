@@ -67,7 +67,7 @@ model InternalHEXUTube
     "Convective and thermal resistance at fluid 2"
      annotation (Placement(transformation(extent={{-100,-18},{-80,2}})));
 
-  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.BoreHoles.BaseClasses.InternalResistancesUTube
+  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Boreholes.BaseClasses.InternalResistancesOneUTube
     intResUTub(
     dynFil=dynFil,
     T_start=T_start,
@@ -163,7 +163,7 @@ protected
   parameter Real Rar= (Ra-2*(RCondPipe + RConv))/borFieDat.conDat.hSeg;
 
 equation
-    assert(borFieDat.conDat.singleUTube,
+    assert(borFieDat.conDat.borHolCon == IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Types.BoreHoleConfiguration.SingleUTube,
   "This model should be used for single U-type borefield, not double U-type. 
   Check that the record General has been correctly parametrized");
   if dynFil then

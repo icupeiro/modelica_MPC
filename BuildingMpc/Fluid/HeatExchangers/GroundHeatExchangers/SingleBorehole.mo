@@ -1,4 +1,4 @@
-within BuildingMpc.Fluid.HeatExchangers.GroundHeatExchangers.Development;
+within BuildingMpc.Fluid.HeatExchangers.GroundHeatExchangers;
 model SingleBorehole "single borehole model for MPC"
 
   replaceable package Medium =
@@ -9,7 +9,6 @@ model SingleBorehole "single borehole model for MPC"
     borehole(
     allowFlowReversal=false,
     computeFlowResistance=false,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     redeclare package Medium = Medium,
     m_flow_nominal=m_flow_nominal,
@@ -17,19 +16,21 @@ model SingleBorehole "single borehole model for MPC"
     intHex(
     Q2_flow(       nominal = -65*borFieDat.conDat.hSeg),
     Q1_flow( nominal = 65*borFieDat.conDat.hSeg)),
-    borFieDat=borFieDat)                annotation (Placement(transformation(
+    borFieDat=borFieDat,
+    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState)
+                                        annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={0,0})));
   BaseClasses.CylindricalGroundLayer
     lay[borFieDat.conDat.nVer](
-    each soiDat=borFieDat.soiDat,
     each h=borFieDat.conDat.hSeg,
     each r_a=borFieDat.conDat.rBor,
-    each r_b=borFieDat.conDat.rExt,
+    each r_b=3,
     each nSta=borFieDat.conDat.nHor,
     each TInt_start=borFieDat.conDat.T_start,
-    each TExt_start=borFieDat.conDat.T_start) annotation (Placement(
+    each TExt_start=borFieDat.conDat.T_start,
+    each soiDat=borFieDat.soiDat)                   annotation (Placement(
         transformation(
         extent={{-10,-10},{10,10}},
         rotation=90,
