@@ -74,6 +74,315 @@ package BuildingMpc "Library of models for building MPC applications"
               coordinateSystem(preserveAspectRatio=false)));
       end Case900GEOLoads;
 
+      model Case900GEOTABS
+      "Controller model for the BESTEST Case900 with TABS and heat pump with a single borehole model; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
+        extends Modelica.Icons.Example;
+        IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
+          h=2.7,
+          redeclare package Medium = BuildingMpc.Media.DryAir,
+          redeclare IDEAS.Buildings.Components.ZoneAirModels.WellMixedAir
+                                                          airModel(massDynamics=
+                Modelica.Fluid.Types.Dynamics.SteadyState),
+          bouTypA=IDEAS.Buildings.Components.Interfaces.BoundaryType.OuterWall,
+          bouTypB=IDEAS.Buildings.Components.Interfaces.BoundaryType.OuterWall,
+          bouTypC=IDEAS.Buildings.Components.Interfaces.BoundaryType.OuterWall,
+          bouTypCei=IDEAS.Buildings.Components.Interfaces.BoundaryType.OuterWall,
+          hasWinCei=false,
+          redeclare IDEAS.Buildings.Validation.Data.Constructions.LightRoof conTypCei,
+          redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyFloor
+                                                  conTypFlo,
+          redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyWall
+                                                 conTypA,
+          redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyWall
+                                                 conTypB,
+          redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyWall
+                                                 conTypC,
+          redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyWall
+                                                 conTypD,
+          hasWinA=true,
+          fracA=0,
+          redeclare IDEAS.Buildings.Components.Shading.Interfaces.ShadingProperties
+            shaTypA,
+          hasWinB=false,
+          hasWinC=false,
+          hasWinD=false,
+          bouTypD=IDEAS.Buildings.Components.Interfaces.BoundaryType.OuterWall,
+          aziA=IDEAS.Types.Azimuth.S,
+          mSenFac=0.822,
+          l=8,
+          w=6,
+          A_winA=12,
+          n50=0.822*0.5*20,
+          redeclare IDEAS.Buildings.Validation.Data.Glazing.GlaBesTest
+            glazingA,
+          bouTypFlo=IDEAS.Buildings.Components.Interfaces.BoundaryType.External,
+          useFluPor=true,
+          T_start=293.15)
+          annotation (Placement(transformation(extent={{-20,-20},{0,0}})));
+        inner IDEAS.BoundaryConditions.SimInfoManager sim(lineariseJModelica=true)
+          "Simulation information manager for climate data"
+          annotation (Placement(transformation(extent={{-100,60},{-80,80}})));
+        IBPSA.Fluid.Sources.Boundary_pT bou(nPorts=1, redeclare package Medium =
+              BuildingMpc.Media.DryAir)
+          annotation (Placement(transformation(extent={{-46,30},{-26,50}})));
+        Modelica.Blocks.Sources.RealExpression optVar1(y=mpcCase900GEOTABS.yOpt[
+            1])
+          annotation (Placement(transformation(extent={{-86,-20},{-66,0}})));
+        IDEAS.Buildings.Components.BoundaryWall boundaryWall(
+          redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyFloor
+            constructionType,
+          inc=IDEAS.Types.Tilt.Floor,
+          azi=rectangularZoneTemplate.aziA,
+          A=rectangularZoneTemplate.A) annotation (Placement(transformation(
+              extent={{-6,-10},{6,10}},
+              rotation=90,
+              origin={-8,-38})));
+        IDEAS.Fluid.HeatExchangers.RadiantSlab.EmbeddedPipe embeddedPipe(
+          redeclare package Medium = IDEAS.Media.Water,
+          massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+          redeclare
+            IDEAS.Fluid.HeatExchangers.RadiantSlab.BaseClasses.RadiantSlabChar
+            RadSlaCha,
+          allowFlowReversal=false,
+          A_floor=rectangularZoneTemplate.A,
+          energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+          m_flow_nominal=0.2,
+          dp_nominal=0)
+          annotation (Placement(transformation(extent={{16,-70},{36,-50}})));
+        IBPSA.Fluid.Sources.Boundary_pT source(
+          redeclare package Medium = IDEAS.Media.Water,
+          use_T_in=false,
+          p=200000,
+          nPorts=1)      annotation (Placement(transformation(
+              extent={{-10,-10},{10,10}},
+              rotation=0,
+              origin={-36,70})));
+        Modelica.Blocks.Sources.RealExpression optVar2(y=mpcCase900GEOTABS.yOpt[
+            2])
+          annotation (Placement(transformation(extent={{-86,-34},{-66,-14}})));
+    protected
+        IDEAS.Fluid.Movers.FlowControlled_m_flow   m_flow_sink(
+          redeclare final package Medium = IDEAS.Media.Water,
+          final allowFlowReversal=false,
+          final m_flow_small=1e-04,
+        energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+        massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+        m_flow_nominal=0.2,
+        addPowerToMedium=false,
+        use_inputFilter=false)      "Pressure source"
+          annotation (Placement(transformation(extent={{-44,-70},{-24,-50}})));
+    protected
+        IDEAS.Fluid.Movers.FlowControlled_m_flow   m_flow_source(
+          redeclare final package Medium = IDEAS.Media.Water,
+          final allowFlowReversal=false,
+          final m_flow_small=1e-4,
+        energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+        massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+        m_flow_nominal=0.5,
+        addPowerToMedium=false,
+        use_inputFilter=false)     "Pressure source"
+          annotation (Placement(transformation(extent={{40,62},{60,82}})));
+    public
+        Modelica.Blocks.Sources.RealExpression optVar3(y=mpcCase900GEOTABS.yOpt[
+            3])
+          annotation (Placement(transformation(extent={{-72,80},{-52,100}})));
+        IBPSA.Fluid.Sources.Boundary_pT sink(
+          redeclare package Medium = IDEAS.Media.Water,
+          use_T_in=false,
+          nPorts=1,
+          p=200000) annotation (Placement(transformation(
+              extent={{-10,-10},{10,10}},
+              rotation=-90,
+              origin={-78,-50})));
+        Fluid.HeatPumps.HeatPump heatPump(
+          redeclare package Medium1 = IDEAS.Media.Water,
+          redeclare package Medium2 = IDEAS.Media.Water,
+          dp2_nominal=0,
+          dp1_nominal=0,
+          m1_flow_nominal=0.2,
+        m2_flow_nominal=0.5)
+          annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
+        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
+          borFieDat(filDat=
+              IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.Bentonite(
+              steadyState=true), soiDat=
+              IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
+              steadyState=true))
+          annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
+        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BorefieldOneUTube_r
+                                                                 borefieldOneUTube_r(
+          redeclare package Medium = IDEAS.Media.Water,
+          borFieDat=borFieDat,
+          dp_nominal=0,
+        m_flow_nominal=0.5,
+        allowFlowReversal=false,
+        energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+        massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+          r=r)
+          annotation (Placement(transformation(extent={{52,0},{32,20}})));
+      MPCs.MpcCase900GEOTABS mpcCase900GEOTABS(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect)
+        annotation (Placement(transformation(extent={{-90,16},{-70,36}})));
+      Modelica.Blocks.Sources.Constant const(k=273.15 + 10.8)
+        annotation (Placement(transformation(extent={{78,34},{66,46}})));
+    public
+        Modelica.Blocks.Sources.RealExpression[10] TGround(y=borefieldOneUTube_r.TSoi[1:10])
+          "temperatures on the RC network"
+          annotation (Placement(transformation(extent={{-100,36},{-80,56}})));
+        Modelica.Blocks.Sources.RealExpression TGroundExt(y=borefieldOneUTube_r.TSoi[11]) "temperature of the external boundary"
+          annotation (Placement(transformation(extent={{-74,36},{-54,56}})));
+
+
+        Modelica.Blocks.Sources.RealExpression[10] intCapacity1Update(y= borefieldOneUTube_r.borHol.intHex.intResUTub.capFil1.T);
+          Modelica.Blocks.Sources.RealExpression[10] intCapacity2Update(y= borefieldOneUTube_r.borHol.intHex.intResUTub.capFil2.T)
+          annotation (Placement(transformation(extent={{-100,-6},{-80,14}})));
+
+        parameter Modelica.SIunits.Radius r_a = borFieDat.conDat.rBor "Internal radius";
+        parameter Modelica.SIunits.Radius r_b = 3 "External radius";
+        parameter Integer nSta = borFieDat.conDat.nHor;
+        parameter Real gridFac(min=1) = 2 "Grid factor for spacing";
+        parameter Real gridFac_sum(fixed=false);
+        parameter Real gridFac_sum_old(fixed=false);
+        parameter Modelica.SIunits.Radius r[nSta + 1](each fixed=false)
+          "Radius to the boundary of the i-th domain";
+
+        Modelica.Blocks.Sources.RealExpression[30] envelopeUpdate(y= {rectangularZoneTemplate.winA.heaCapGla.T,
+      rectangularZoneTemplate.outA.port_emb[1].T,
+      rectangularZoneTemplate.outA.extCon.port_a.T,
+      rectangularZoneTemplate.outA.layMul.port_gain[2].T,
+      rectangularZoneTemplate.propsBusInt[1].surfRad.T,
+      rectangularZoneTemplate.outA.layMul.monLay[3].monLayDyn.T[2],
+      rectangularZoneTemplate.outB.port_emb[1].T,
+      rectangularZoneTemplate.outB.extCon.port_a.T,
+      rectangularZoneTemplate.outB.layMul.port_gain[2].T,
+      rectangularZoneTemplate.propsBusInt[2].surfRad.T,
+      rectangularZoneTemplate.outB.layMul.monLay[3].monLayDyn.T[2],
+      rectangularZoneTemplate.outC.port_emb[1].T,
+      rectangularZoneTemplate.outC.extCon.port_a.T,
+      rectangularZoneTemplate.outC.layMul.port_gain[2].T,
+      rectangularZoneTemplate.propsBusInt[3].surfRad.T,
+      rectangularZoneTemplate.outC.layMul.monLay[3].monLayDyn.T[2],
+      rectangularZoneTemplate.outD.port_emb[1].T,
+      rectangularZoneTemplate.outD.extCon.port_a.T,
+      rectangularZoneTemplate.outD.layMul.port_gain[2].T,
+      rectangularZoneTemplate.propsBusInt[4].surfRad.T,
+      rectangularZoneTemplate.outD.layMul.monLay[3].monLayDyn.T[2],
+      rectangularZoneTemplate.outCei.port_emb[1].T,
+      rectangularZoneTemplate.outCei.extCon.port_a.T,
+      rectangularZoneTemplate.outCei.layMul.port_gain[2].T,
+      rectangularZoneTemplate.propsBusInt[6].surfRad.T,
+      rectangularZoneTemplate.airModel.vol.dynBal.U,
+      rectangularZoneTemplate.gainRad.T,
+      boundaryWall.port_emb[1].T,
+      boundaryWall.layMul.port_b.T,
+      boundaryWall.intCon_a.port_a.T})
+          annotation (Placement(transformation(extent={{-74,-6},{-54,14}})));
+      initial algorithm
+        for i in 0:nSta - 3 - 1 loop
+          if i == 0 then
+            gridFac_sum := gridFac^i;
+            gridFac_sum_old := gridFac_sum;
+          else
+            gridFac_sum := gridFac_sum_old + gridFac^i;
+            gridFac_sum_old := gridFac_sum;
+          end if;
+        end for;
+      initial equation
+        r[1] = r_a;
+        r[2] = r_a + sqrt(borFieDat.soiDat.k/borFieDat.soiDat.c/borFieDat.soiDat.d*60) "eskilson minimum length";
+        r[3] = r_a + 2*sqrt(borFieDat.soiDat.k/borFieDat.soiDat.c/borFieDat.soiDat.d*60);
+        r[4] = r_a + 3*sqrt(borFieDat.soiDat.k/borFieDat.soiDat.c/borFieDat.soiDat.d*60);
+
+        for i in 5:nSta + 1 loop
+          r[i] = r[i - 1] + (r_b - r[4])/gridFac_sum*gridFac^(i - 5);
+        end for;
+
+      equation
+        connect(bou.ports[1], rectangularZoneTemplate.port_a)
+          annotation (Line(points={{-26,40},{-8,40},{-8,0}}, color={0,127,255}));
+        connect(rectangularZoneTemplate.proBusFlo, boundaryWall.propsBus_a)
+          annotation (Line(
+            points={{-10,-16},{-10,-33}},
+            color={255,204,51},
+            thickness=0.5));
+        connect(embeddedPipe.heatPortEmb, boundaryWall.port_emb) annotation (Line(
+              points={{26,-50},{26,-50},{26,-38},{2,-38}}, color={191,0,0}));
+        connect(m_flow_sink.port_b, embeddedPipe.port_a)
+          annotation (Line(points={{-24,-60},{16,-60}}, color={0,127,255}));
+        connect(optVar1.y, m_flow_sink.m_flow_in) annotation (Line(points={{-65,-10},
+              {-40,-10},{-40,-48},{-34,-48}},   color={0,0,127}));
+        connect(optVar3.y, m_flow_source.m_flow_in) annotation (Line(points={{-51,90},
+              {-22,90},{50,90},{50,84}},          color={0,0,127}));
+        connect(optVar2.y, heatPump.Tcon_out) annotation (Line(points={{-65,-24},{-60,
+                -24},{-60,-80},{48,-80},{48,-63},{60,-63}}, color={0,0,127}));
+        connect(embeddedPipe.port_b, heatPump.port_a1)
+          annotation (Line(points={{36,-60},{60,-60}}, color={0,127,255}));
+        connect(m_flow_sink.port_a, heatPump.port_b1) annotation (Line(points={{-44,-60},
+                {-70,-60},{-70,-90},{92,-90},{92,-60},{80,-60}}, color={0,127,255}));
+        connect(sink.ports[1], m_flow_sink.port_a) annotation (Line(points={{-78,-60},
+                {-61,-60},{-44,-60}}, color={0,127,255}));
+        connect(m_flow_source.port_b, heatPump.port_a2) annotation (Line(points={{60,72},
+                {60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
+        connect(source.ports[1], m_flow_source.port_a) annotation (Line(points={{-26,70},
+                {-26,72},{-26,72},{40,72}}, color={0,127,255}));
+      connect(heatPump.port_b2, borefieldOneUTube_r.port_a) annotation (Line(
+            points={{60,-48},{60,-48},{60,10},{52,10}}, color={0,127,255}));
+      connect(borefieldOneUTube_r.port_b, m_flow_source.port_a) annotation (
+          Line(points={{32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
+      connect(const.y, borefieldOneUTube_r.TGro) annotation (Line(points={{65.4,
+              40},{58,40},{58,16},{54,16}}, color={0,0,127}));
+              for i in 1:30 loop
+        connect(envelopeUpdate[i].y, mpcCase900GEOTABS.uSta[i]);
+              end for;
+              for i in 1:10 loop
+               connect(intCapacity1Update[i].y, mpcCase900GEOTABS.uSta[29+2*i]);
+               connect(intCapacity2Update[i].y, mpcCase900GEOTABS.uSta[30+2*i]);
+              end for;
+              for i in 1:10 loop
+                for j in 1:9 loop
+                  connect(TGround[j].y, mpcCase900GEOTABS.uSta[50+10*(j-1)+i]);
+                end for;
+              end for;
+              for i in 1:10 loop
+                connect(TGroundExt.y, mpcCase900GEOTABS.uSta[140+i]);
+              end for;
+
+        annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+              coordinateSystem(preserveAspectRatio=false)),
+          experiment(
+            StopTime=31536000,
+            __Dymola_NumberOfIntervals=15000,
+            Tolerance=1e-06,
+            __Dymola_fixedstepsize=10,
+            __Dymola_Algorithm="Euler"),
+          Documentation(info="<html>
+<p>
+Template for setting up MPC problem using BESTEST case 900 example model. 
+Realexpression <code>optVar</code> can be used as a template for
+an optimisation variable.
+</p>
+</html>",       revisions="<html>
+<ul>
+<li>
+November 14, 2016 by Filip Jorissen:<br/>
+First implementation
+</li>
+</ul>
+</html>"),__Dymola_Commands(file=
+                "Resources/Scripts/Dymola/Buildings/Validation/Tests/ZoneTemplateVerification.mos"
+              "Simulate and plot"),
+          __Dymola_experimentSetupOutput,
+          __Dymola_experimentFlags(
+            Advanced(
+              GenerateVariableDependencies=false,
+              OutputModelicaCode=false,
+              InlineMethod=0,
+              InlineOrder=2,
+              InlineFixedStep=0.001),
+            Evaluate=false,
+            OutputCPUtime=false,
+            OutputFlatModelica=false));
+      end Case900GEOTABS;
+
       package Envelope
         model Bui900TABS "model to determine the load of the geothermal borefield"
           extends IDEAS.Buildings.Validation.BaseClasses.Structure.Bui900(
@@ -1183,7 +1492,7 @@ First implementation
       end Case900GEOTABS_1bor;
 
       model Case900GEOTABS
-        "Controller model for the BESTEST Case900 with TABS and heat pump with a borefieldl; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
+      "Controller model for the BESTEST Case900 with TABS and heat pump with a single borehole model; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
         extends Modelica.Icons.Example;
         IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
           h=2.7,
@@ -1252,9 +1561,9 @@ First implementation
             RadSlaCha,
           allowFlowReversal=false,
           A_floor=rectangularZoneTemplate.A,
-        energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-        m_flow_nominal=0.2,
-        dp_nominal=0)
+          energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+          m_flow_nominal=0.2,
+          dp_nominal=0)
           annotation (Placement(transformation(extent={{16,-70},{36,-50}})));
         IBPSA.Fluid.Sources.Boundary_pT source(
           redeclare package Medium = IDEAS.Media.Water,
@@ -1296,19 +1605,24 @@ First implementation
           redeclare package Medium2 = IDEAS.Media.Water,
           dp2_nominal=0,
           dp1_nominal=0,
-          Q_nom=3000,
-        m2_flow_nominal=0.5,
-        m1_flow_nominal=0.5)
+          m1_flow_nominal=0.2,
+        m2_flow_nominal=0.5)
           annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
         IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
-          borFieDat
+          borFieDat(filDat=
+              IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.Bentonite(
+              steadyState=true), soiDat=
+              IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
+              steadyState=true))
           annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-        Fluid.HeatExchangers.GroundHeatExchangers.Development.MultipleBorehole multipleBorehole(
-        redeclare package Medium = IDEAS.Media.Water,
-        borFieDat=borFieDat,
-        m_flow_nominal=0.5,
-        dp_nominal=0)
-        annotation (Placement(transformation(extent={{52,0},{32,20}})));
+        Fluid.HeatExchangers.GroundHeatExchangers.Development.MultipleBorehole
+                                                                 multipleBorehole(
+          redeclare package Medium = IDEAS.Media.Water,
+          soilTemp=273.15 + 10.8,
+          borFieDat=borFieDat,
+          dp_nominal=0,
+        m_flow_nominal=0.5)
+          annotation (Placement(transformation(extent={{52,0},{32,20}})));
       equation
         connect(bou.ports[1], rectangularZoneTemplate.port_a)
           annotation (Line(points={{-26,40},{-8,40},{-8,0}}, color={0,127,255}));
@@ -1344,9 +1658,10 @@ First implementation
         annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
               coordinateSystem(preserveAspectRatio=false)),
           experiment(
-            StartTime=1.42e+009,
-            StopTime=1.43e+009,
-            __Dymola_fixedstepsize=1,
+            StopTime=31536000,
+            __Dymola_NumberOfIntervals=15000,
+            Tolerance=1e-06,
+            __Dymola_fixedstepsize=10,
             __Dymola_Algorithm="Euler"),
           Documentation(info="<html>
 <p>
@@ -1495,11 +1810,11 @@ First implementation
 
       model Case900GEOTABS
         "Controller model for the BESTEST Case900 with TABS and heat pump with a borefieldl; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
-          extends BuildingMpc.Examples.ControllerModels.Case900GEOTABS(
-          optVar3(y=mpcCase900GEOTABS.yOpt[3]),
+        extends BuildingMpc.Examples.ControllerModels.Case900GEOTABS(
           optVar1(y=mpcCase900GEOTABS.yOpt[1]),
-          optVar2(y=mpcCase900GEOTABS.yOpt[2]));
-        MPCs.MpcCase900GEOTABS_1bor mpcCase900GEOTABS
+          optVar2(y=mpcCase900GEOTABS.yOpt[2]),
+          optVar3(y=mpcCase900GEOTABS.yOpt[3]));
+        MPCs.MpcCase900GEOTABS mpcCase900GEOTABS
           annotation (Placement(transformation(extent={{-94,20},{-74,40}})));
 
 
@@ -1725,9 +2040,9 @@ First implementation
 
       model MpcCase900GEOTABS
         extends UnitTests.MPC.BaseClasses.Mpc(
-          final nOut=4,
-          final nOpt=3,
-          final nSta=251,
+          final nOut=16,
+          final nOpt=4,
+          final nSta=150,
           final nMeas=0,
           final controlTimeStep=3600,
           final nModCorCoeff=21,
@@ -1738,7 +2053,31 @@ First implementation
           annotation (Placement(transformation(extent={{96,50},{116,70}})));
         Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,3, time)
           annotation (Placement(transformation(extent={{96,50},{116,70}})));
-        Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,4, time)
+        Modelica.Blocks.Interfaces.RealOutput slack = getOutput(tableID,4, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,5, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround1 = getOutput(tableID,6, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround2 = getOutput(tableID,7, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround3 = getOutput(tableID,8, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround4 = getOutput(tableID,9, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround5 = getOutput(tableID,10, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround6 = getOutput(tableID,11, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround7 = getOutput(tableID,12, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround8 = getOutput(tableID,13, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround9 = getOutput(tableID,14, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput TGround10 = getOutput(tableID,15, time)
+          annotation (Placement(transformation(extent={{96,50},{116,70}})));
+        Modelica.Blocks.Interfaces.RealOutput W_comp = getOutput(tableID,16, time)
           annotation (Placement(transformation(extent={{96,50},{116,70}})));
         MpcSignalBus bus
           "Bus connector with control variables and outputs"
@@ -1749,13 +2088,37 @@ First implementation
         Modelica.Blocks.Interfaces.RealInput u1;
         Modelica.Blocks.Interfaces.RealInput u2;
         Modelica.Blocks.Interfaces.RealInput u3;
+        Modelica.Blocks.Interfaces.RealInput slack;
         Modelica.Blocks.Interfaces.RealInput Tsta;
+        Modelica.Blocks.Interfaces.RealInput TGround1;
+        Modelica.Blocks.Interfaces.RealInput TGround2;
+        Modelica.Blocks.Interfaces.RealInput TGround3;
+        Modelica.Blocks.Interfaces.RealInput TGround4;
+        Modelica.Blocks.Interfaces.RealInput TGround5;
+        Modelica.Blocks.Interfaces.RealInput TGround6;
+        Modelica.Blocks.Interfaces.RealInput TGround7;
+        Modelica.Blocks.Interfaces.RealInput TGround8;
+        Modelica.Blocks.Interfaces.RealInput TGround9;
+        Modelica.Blocks.Interfaces.RealInput TGround10;
+        Modelica.Blocks.Interfaces.RealInput W_comp;
         end MpcSignalBus;
       equation
         connect(u1, bus.u1);
         connect(u2, bus.u2);
         connect(u3, bus.u3);
+        connect(slack, bus.slack);
         connect(Tsta, bus.Tsta);
+        connect(TGround1, bus.TGround1);
+        connect(TGround2, bus.TGround2);
+        connect(TGround3, bus.TGround3);
+        connect(TGround4, bus.TGround4);
+        connect(TGround5, bus.TGround5);
+        connect(TGround6, bus.TGround6);
+        connect(TGround7, bus.TGround7);
+        connect(TGround8, bus.TGround8);
+        connect(TGround9, bus.TGround9);
+        connect(TGround10, bus.TGround10);
+        connect(W_comp, bus.W_comp);
       end MpcCase900GEOTABS;
     end MPCs;
 
@@ -1926,18 +2289,12 @@ First implementation
             each nSta=borFieDat.conDat.nHor,
             each TInt_start=borFieDat.conDat.T_start,
             each TExt_start=borFieDat.conDat.T_start,
-            each soiDat=borFieDat.soiDat)                   annotation (Placement(
+            each soiDat=borFieDat.soiDat,
+          steadyStateInitial=false)                         annotation (Placement(
                 transformation(
                 extent={{-10,-10},{10,10}},
                 rotation=90,
                 origin={0,40})));
-          Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature[borFieDat.conDat.nVer]
-            prescribedTemperature
-            annotation (Placement(transformation(extent={{40,50},{20,70}})));
-          Modelica.Blocks.Sources.Constant[borFieDat.conDat.nVer] tempProfile(k=
-                soilTemp)
-            "undisturbed ground temperature, could be included as vertical profile"
-            annotation (Placement(transformation(extent={{80,50},{60,70}})));
           parameter Modelica.SIunits.Temperature soilTemp=273.15 + 10.8
             "Undisturbed temperature of the ground";
           Modelica.Fluid.Interfaces.FluidPort_a port_a(redeclare package Medium =
@@ -1972,17 +2329,21 @@ First implementation
               Medium.T_default,
               Medium.X_default)) "Dynamic viscosity of the fluid";
 
+      public
+          Modelica.Thermal.HeatTransfer.Components.HeatCapacitor[borFieDat.conDat.nVer] Cground(der_T(
+                fixed=true),
+          C=Modelica.Constants.inf,
+          T(start=soilTemp, fixed=true))
+            annotation (Placement(transformation(extent={{-12,72},{12,96}})));
         equation
-          connect(tempProfile.y, prescribedTemperature.T)
-            annotation (Line(points={{59,60},{42,60}}, color={0,0,127}));
-          connect(prescribedTemperature.port, lay.port_b)
-            annotation (Line(points={{20,60},{0,60},{0,50}}, color={191,0,0}));
           connect(lay.port_a, borehole.port_wall) annotation (Line(points={{-4.44089e-16,
                   30},{0,30},{0,10}}, color={191,0,0}));
           connect(port_a, borehole.port_a)
             annotation (Line(points={{-100,0},{-10,0}},         color={0,127,255}));
           connect(borehole.port_b, port_b)
             annotation (Line(points={{10,0},{100,0}},         color={0,127,255}));
+        connect(Cground.port, lay.port_b)
+          annotation (Line(points={{0,72},{0,50}}, color={191,0,0}));
                          annotation (Placement(transformation(extent={{-10,-10},{10,10}})),
                       Icon(coordinateSystem(preserveAspectRatio=false), graphics={
                 Rectangle(
@@ -2290,7 +2651,7 @@ First implementation
             parameter Modelica.SIunits.Temperature TExt_start=293.15
               "Initial temperature at port_b, used if steadyStateInitial = false"
               annotation (Dialog(group="Initialization", enable=not steadyStateInitial));
-            parameter Boolean steadyStateInitial=true
+            parameter Boolean steadyStateInitial=false
               "true initializes dT(0)/dt=0, false initializes T(0) at fixed temperature using T_a_start and T_b_start"
               annotation (Dialog(group="Initialization"), Evaluate=true);
 
@@ -2305,8 +2666,8 @@ First implementation
 
             parameter Modelica.SIunits.Radius r[nSta + 1](each fixed=false)
               "Radius to the boundary of the i-th domain";
-            parameter Real beta[nSta] = 2*ones(nSta);
-            Modelica.Thermal.HeatTransfer.Components.ThermalResistor[nSta] Rsoil(R = {1/G[i] for i in 1:nSta})
+            Modelica.Thermal.HeatTransfer.Components.ThermalConductor
+                                                                    [nSta+1] Gsoil(G=G)
               "Borehole resistance" annotation (Placement(transformation(
                   extent={{12,-12},{-12,12}},
                   rotation=180,
@@ -2326,9 +2687,9 @@ First implementation
             final parameter Modelica.SIunits.Density d=soiDat.d
               "Density of the material";
 
-            parameter Modelica.SIunits.ThermalConductance G[nSta] = cat(1, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(rC[1]/r_a)}, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(rC[i]/rC[i - 1]) for i in 2:nSta-1}, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(r_b/rC[nSta])})
+            parameter Modelica.SIunits.ThermalConductance G[nSta+1] = cat(1, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(rC[1]/r_a)}, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(rC[i]/rC[i - 1]) for i in 2:nSta}, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(r_b/rC[nSta])})
               "Heat conductance between the temperature nodes";
-            parameter Modelica.SIunits.HeatCapacity C[nSta] = {d*Modelica.Constants.pi*c*h*((r[i+1]^2 - (r[i])^2)) for i in 1:nSta}
+            parameter Modelica.SIunits.HeatCapacity C[nSta] =   {d*Modelica.Constants.pi*c*h*((r[i+1]^2 - (r[i])^2)) for i in 1:nSta}
                   "Heat capacity of each state";
             parameter Real gridFac_sum(fixed=false);
             parameter Real gridFac_sum_old(fixed=false);
@@ -2355,25 +2716,16 @@ First implementation
 
           equation
 
-            connect(port_a, Rsoil[1].port_a)
+            connect(port_a,Gsoil [1].port_a)
               annotation (Line(points={{-100,0},{-12,0}}, color={191,0,0}));
-            connect(Rsoil[nSta].port_a, Csoil[nSta].port)  annotation (Line(points={{-12,0},
-                    {-10,0},{-10,32},{0,32},{0,42}},
-                                                color={191,0,0}));
-            connect(Rsoil[nSta].port_b, port_b)
+            connect(Gsoil[nSta+1].port_b, port_b)
               annotation (Line(points={{12,0},{100,0}}, color={191,0,0}));
-            connect(Rsoil[nSta].port_b, Csoil[nSta].port);
-            for i in 1:(nSta-1) loop
-              connect(Rsoil[i].port_a, Csoil[i].port);
-              connect(Rsoil[i].port_b, Rsoil[i+1].port_a) annotation (Line(points={{12,0},{28,0},{28,
+            connect(Gsoil[nSta].port_b, Csoil[nSta].port);
+            for i in 1:(nSta) loop
+              connect(Gsoil[i].port_b,Gsoil [i+1].port_a) annotation (Line(points={{12,0},{28,0},{28,
                     -22},{-24,-22},{-24,0},{-12,0},{-12,1.44329e-15}}, color={191,0,0}));
-            end for;
-
-
-
-
-
-
+              connect(Gsoil[i].port_b, Csoil[i].port);
+            end for
             annotation (
               Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{
                       100,100}})),
@@ -2498,6 +2850,13 @@ First implementation.
 </li>
 </ul>
 </html>"));
+
+
+
+
+
+
+
           end CylindricalGroundLayer;
 
           model InternalHEXUTube
@@ -3296,6 +3655,678 @@ First implementation.
 </html>"));
           end CylindricalGroundLayerNAL;
         end BaseClasses;
+
+        package Validation
+          model BorHolValidation
+            extends Modelica.Icons.Example;
+
+            IBPSA.Fluid.Sources.Boundary_pT source(
+            redeclare package Medium = IDEAS.Media.Water,
+            use_T_in=false,
+            nPorts=4,
+            p=200000,
+            T=277.15)        annotation (Placement(transformation(
+                  extent={{-10,-10},{10,10}},
+                  rotation=0,
+                  origin={-86,30})));
+        public
+            Modelica.Blocks.Sources.RealExpression m_flow(y=0.2)
+            annotation (Placement(transformation(extent={{-72,80},{-52,100}})));
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
+              borFieDat(filDat=
+                IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.Bentonite(
+                steadyState=true), soiDat=
+                IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
+                steadyState=false))
+              annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
+            SingleBorehole                                           singleBorehole(
+            redeclare package Medium = IDEAS.Media.Water,
+            soilTemp=273.15 + 10.8,
+            borFieDat=borFieDat,
+            dp_nominal=0,
+            m_flow_nominal=0.2)
+              annotation (Placement(transformation(extent={{-10,20},{10,40}})));
+            IDEAS.Fluid.Sensors.TemperatureTwoPort T_out_borCon(
+            allowFlowReversal=false,
+            initType=Modelica.Blocks.Types.Init.SteadyState,
+            tau=0,
+            redeclare package Medium = IDEAS.Media.Water,
+            m_flow_nominal=0.2)
+            annotation (Placement(transformation(extent={{26,20},{46,40}})));
+          SingleBoreholeVal
+            singleBoreholeVal(
+            redeclare package Medium = IDEAS.Media.Water,
+            m_flow_nominal=0.2,
+            dp_nominal=0,
+            borFieDat=borFieDat)
+            annotation (Placement(transformation(extent={{-10,-68},{10,-48}})));
+            IDEAS.Fluid.Sensors.TemperatureTwoPort T_out_borSim(
+            allowFlowReversal=false,
+            initType=Modelica.Blocks.Types.Init.SteadyState,
+            tau=0,
+            redeclare package Medium = IDEAS.Media.Water,
+            m_flow_nominal=0.2)
+            annotation (Placement(transformation(extent={{24,-68},{44,-48}})));
+          Modelica.Blocks.Sources.RealExpression realExpression(y=273.15 + 10.8)
+            annotation (Placement(transformation(extent={{-24,-36},{-4,-16}})));
+        protected
+            IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_borCon(
+            redeclare final package Medium = IDEAS.Media.Water,
+            final allowFlowReversal=false,
+            final control_m_flow=true,
+            final m_flow_small=1e-4) "Pressure source"
+              annotation (Placement(transformation(extent={{-40,20},{-20,40}})));
+        protected
+            IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_borSim(
+            redeclare final package Medium = IDEAS.Media.Water,
+            final allowFlowReversal=false,
+            final control_m_flow=true,
+            final m_flow_small=1e-4) "Pressure source" annotation (Placement(
+                transformation(extent={{-42,-68},{-22,-48}})));
+          equation
+          connect(m_flow_borCon.port_b, singleBorehole.port_a)
+            annotation (Line(points={{-20,30},{-10,30}}, color={0,127,255}));
+          connect(source.ports[1], m_flow_borCon.port_a) annotation (Line(
+                points={{-76,33},{-60,33},{-60,30},{-40,30}}, color={0,127,255}));
+          connect(m_flow.y, m_flow_borCon.m_flow_in) annotation (Line(points={{
+                  -51,90},{-36,90},{-36,38}}, color={0,0,127}));
+          connect(singleBorehole.port_b, T_out_borCon.port_a)
+            annotation (Line(points={{10,30},{26,30}}, color={0,127,255}));
+          connect(T_out_borCon.port_b, source.ports[2]) annotation (Line(points=
+                 {{46,30},{62,30},{62,0},{-66,0},{-66,31},{-76,31}}, color={0,
+                  127,255}));
+          connect(m_flow.y, m_flow_borSim.m_flow_in) annotation (Line(points={{
+                  -51,90},{-44,90},{-44,-16},{-38,-16},{-38,-50}}, color={0,0,
+                  127}));
+          connect(source.ports[3], m_flow_borSim.port_a) annotation (Line(
+                points={{-76,29},{-76,-58},{-42,-58}}, color={0,127,255}));
+          connect(m_flow_borSim.port_b, singleBoreholeVal.port_a)
+            annotation (Line(points={{-22,-58},{-10,-58}}, color={0,127,255}));
+          connect(singleBoreholeVal.port_b, T_out_borSim.port_a)
+            annotation (Line(points={{10,-58},{24,-58}}, color={0,127,255}));
+          connect(T_out_borSim.port_b, source.ports[4]) annotation (Line(points=
+                 {{44,-58},{62,-58},{62,-84},{-76,-84},{-76,27}}, color={0,127,
+                  255}));
+          connect(realExpression.y, singleBoreholeVal.TGround) annotation (Line(
+                points={{-3,-26},{0,-26},{0,-46}}, color={0,0,127}));
+            annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+                  coordinateSystem(preserveAspectRatio=false)),
+            experiment(
+              StopTime=86400,
+              Tolerance=1e-06,
+              __Dymola_fixedstepsize=10,
+              __Dymola_Algorithm="Euler"),
+            __Dymola_experimentSetupOutput,
+            __Dymola_experimentFlags(
+              Advanced(
+                GenerateVariableDependencies=false,
+                OutputModelicaCode=false,
+                InlineMethod=0,
+                InlineOrder=2,
+                InlineFixedStep=0.001),
+              Evaluate=false,
+              OutputCPUtime=false,
+              OutputFlatModelica=false));
+          end BorHolValidation;
+
+          model BorFieValidation
+            extends Modelica.Icons.Example;
+
+            IBPSA.Fluid.Sources.Boundary_pT source(
+            redeclare package Medium = IDEAS.Media.Water,
+            use_T_in=false,
+            nPorts=4,
+            p=200000,
+            T=277.15)        annotation (Placement(transformation(
+                  extent={{-10,-10},{10,10}},
+                  rotation=0,
+                  origin={-86,30})));
+        public
+            Modelica.Blocks.Sources.RealExpression m_flow(y=0.4)
+            annotation (Placement(transformation(extent={{-72,80},{-52,100}})));
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
+              borFieDat(soiDat=
+                IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
+                steadyState=false), filDat=
+                IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.Bentonite(
+                steadyState=false))
+              annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
+            MultipleBoreholeVal                                      multipleBoreholeVal(
+            redeclare package Medium = IDEAS.Media.Water,
+            soilTemp=273.15 + 10.8,
+            borFieDat=borFieDat,
+            dp_nominal=0,
+            m_flow_nominal=0.5)
+              annotation (Placement(transformation(extent={{-10,20},{10,40}})));
+            IDEAS.Fluid.Sensors.TemperatureTwoPort T_out_borCon(
+            allowFlowReversal=false,
+            initType=Modelica.Blocks.Types.Init.SteadyState,
+            tau=0,
+            redeclare package Medium = IDEAS.Media.Water,
+            m_flow_nominal=0.2)
+            annotation (Placement(transformation(extent={{26,20},{46,40}})));
+            IDEAS.Fluid.Sensors.TemperatureTwoPort T_out_borSim(
+            allowFlowReversal=false,
+            initType=Modelica.Blocks.Types.Init.SteadyState,
+            tau=0,
+            redeclare package Medium = IDEAS.Media.Water,
+            m_flow_nominal=0.2)
+            annotation (Placement(transformation(extent={{24,-68},{44,-48}})));
+          Modelica.Blocks.Sources.Constant const(k=273.15 + 10.8)
+            annotation (Placement(transformation(extent={{-30,-40},{-18,-28}})));
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BorefieldOneUTube_r
+                                                                     borefieldOneUTube_r(
+            redeclare package Medium = IDEAS.Media.Water,
+            borFieDat=borFieDat,
+            dp_nominal=0,
+            m_flow_nominal=0.5,
+            allowFlowReversal=false,
+            energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+            massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+            r={3})
+              annotation (Placement(transformation(extent={{-10,-68},{10,-48}})));
+        public
+            Modelica.Blocks.Sources.RealExpression m_flow1(y=
+                borefieldOneUTube_r.TSoi[1])
+            annotation (Placement(transformation(extent={{-30,48},{-10,68}})));
+        protected
+            IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_borCon(
+            redeclare final package Medium = IDEAS.Media.Water,
+            final allowFlowReversal=false,
+            final control_m_flow=true,
+            final m_flow_small=1e-4) "Pressure source"
+              annotation (Placement(transformation(extent={{-40,20},{-20,40}})));
+        protected
+            IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_borSim(
+            redeclare final package Medium = IDEAS.Media.Water,
+            final allowFlowReversal=false,
+            final control_m_flow=true,
+            final m_flow_small=1e-4) "Pressure source" annotation (Placement(
+                transformation(extent={{-42,-68},{-22,-48}})));
+          equation
+          connect(m_flow_borCon.port_b, multipleBoreholeVal.port_a)
+            annotation (Line(points={{-20,30},{-10,30}}, color={0,127,255}));
+          connect(source.ports[1], m_flow_borCon.port_a) annotation (Line(
+                points={{-76,33},{-60,33},{-60,30},{-40,30}}, color={0,127,255}));
+          connect(m_flow.y, m_flow_borCon.m_flow_in) annotation (Line(points={{
+                  -51,90},{-36,90},{-36,38}}, color={0,0,127}));
+          connect(multipleBoreholeVal.port_b, T_out_borCon.port_a)
+            annotation (Line(points={{10,30},{26,30}}, color={0,127,255}));
+          connect(T_out_borCon.port_b, source.ports[2]) annotation (Line(points=
+                 {{46,30},{62,30},{62,0},{-66,0},{-66,31},{-76,31}}, color={0,
+                  127,255}));
+          connect(m_flow.y, m_flow_borSim.m_flow_in) annotation (Line(points={{
+                  -51,90},{-44,90},{-44,-16},{-38,-16},{-38,-50}}, color={0,0,
+                  127}));
+          connect(source.ports[3], m_flow_borSim.port_a) annotation (Line(
+                points={{-76,29},{-76,-58},{-42,-58}}, color={0,127,255}));
+          connect(T_out_borSim.port_b, source.ports[4]) annotation (Line(points=
+                 {{44,-58},{62,-58},{62,-84},{-76,-84},{-76,27}}, color={0,127,
+                  255}));
+          connect(m_flow_borSim.port_b, borefieldOneUTube_r.port_a)
+            annotation (Line(points={{-22,-58},{-10,-58}}, color={0,127,255}));
+          connect(borefieldOneUTube_r.port_b, T_out_borSim.port_a)
+            annotation (Line(points={{10,-58},{24,-58}}, color={0,127,255}));
+          connect(const.y, borefieldOneUTube_r.TGro) annotation (Line(points={{
+                  -17.4,-34},{-14,-34},{-14,-52},{-12,-52}}, color={0,0,127}));
+          connect(m_flow1.y, multipleBoreholeVal.TGround)
+            annotation (Line(points={{-9,58},{0,58},{0,42}}, color={0,0,127}));
+            annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+                  coordinateSystem(preserveAspectRatio=false)),
+            experiment(
+              StopTime=31536000,
+              Tolerance=1e-06,
+              __Dymola_fixedstepsize=10,
+              __Dymola_Algorithm="Euler"),
+            __Dymola_experimentSetupOutput,
+            __Dymola_experimentFlags(Advanced(
+                InlineMethod=0,
+                InlineOrder=2,
+                InlineFixedStep=0.001)));
+          end BorFieValidation;
+
+          model BorFieValidationMod
+            extends Modelica.Icons.Example;
+
+            IBPSA.Fluid.Sources.Boundary_pT source(
+            redeclare package Medium = IDEAS.Media.Water,
+            use_T_in=false,
+            nPorts=4,
+            p=200000,
+            T=277.15)        annotation (Placement(transformation(
+                  extent={{-10,-10},{10,10}},
+                  rotation=0,
+                  origin={-86,30})));
+        public
+            Modelica.Blocks.Sources.RealExpression m_flow(y=0.4)
+            annotation (Placement(transformation(extent={{-72,80},{-52,100}})));
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
+              borFieDat(soiDat=
+                IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
+                steadyState=false), filDat=
+                IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.Bentonite(
+                steadyState=false))
+              annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
+            Development.MultipleBorehole                             multipleBorehole(
+            redeclare package Medium = IDEAS.Media.Water,
+            soilTemp=273.15 + 10.8,
+            borFieDat=borFieDat,
+            dp_nominal=0,
+            m_flow_nominal=0.5)
+              annotation (Placement(transformation(extent={{-10,20},{10,40}})));
+            IDEAS.Fluid.Sensors.TemperatureTwoPort T_out_borCon(
+            allowFlowReversal=false,
+            initType=Modelica.Blocks.Types.Init.SteadyState,
+            tau=0,
+            redeclare package Medium = IDEAS.Media.Water,
+            m_flow_nominal=0.2)
+            annotation (Placement(transformation(extent={{26,20},{46,40}})));
+            IDEAS.Fluid.Sensors.TemperatureTwoPort T_out_borSim(
+            allowFlowReversal=false,
+            initType=Modelica.Blocks.Types.Init.SteadyState,
+            tau=0,
+            redeclare package Medium = IDEAS.Media.Water,
+            m_flow_nominal=0.2)
+            annotation (Placement(transformation(extent={{24,-68},{44,-48}})));
+          Modelica.Blocks.Sources.Constant const(k=273.15 + 10.8)
+            annotation (Placement(transformation(extent={{-30,-40},{-18,-28}})));
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BorefieldOneUTube_r
+                                                                     borefieldOneUTube_r(
+            redeclare package Medium = IDEAS.Media.Water,
+            borFieDat=borFieDat,
+            dp_nominal=0,
+            m_flow_nominal=0.5,
+            allowFlowReversal=false,
+            energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+            massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+            r={3})
+              annotation (Placement(transformation(extent={{-10,-68},{10,-48}})));
+        protected
+            IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_borCon(
+            redeclare final package Medium = IDEAS.Media.Water,
+            final allowFlowReversal=false,
+            final control_m_flow=true,
+            final m_flow_small=1e-4) "Pressure source"
+              annotation (Placement(transformation(extent={{-40,20},{-20,40}})));
+        protected
+            IDEAS.Fluid.Movers.BaseClasses.IdealSource m_flow_borSim(
+            redeclare final package Medium = IDEAS.Media.Water,
+            final allowFlowReversal=false,
+            final control_m_flow=true,
+            final m_flow_small=1e-4) "Pressure source" annotation (Placement(
+                transformation(extent={{-42,-68},{-22,-48}})));
+          equation
+          connect(m_flow_borCon.port_b, multipleBorehole.port_a)
+            annotation (Line(points={{-20,30},{-10,30}}, color={0,127,255}));
+          connect(source.ports[1], m_flow_borCon.port_a) annotation (Line(
+                points={{-76,33},{-60,33},{-60,30},{-40,30}}, color={0,127,255}));
+          connect(m_flow.y, m_flow_borCon.m_flow_in) annotation (Line(points={{
+                  -51,90},{-36,90},{-36,38}}, color={0,0,127}));
+          connect(multipleBorehole.port_b, T_out_borCon.port_a)
+            annotation (Line(points={{10,30},{26,30}}, color={0,127,255}));
+          connect(T_out_borCon.port_b, source.ports[2]) annotation (Line(points=
+                 {{46,30},{62,30},{62,0},{-66,0},{-66,31},{-76,31}}, color={0,
+                  127,255}));
+          connect(m_flow.y, m_flow_borSim.m_flow_in) annotation (Line(points={{
+                  -51,90},{-44,90},{-44,-16},{-38,-16},{-38,-50}}, color={0,0,
+                  127}));
+          connect(source.ports[3], m_flow_borSim.port_a) annotation (Line(
+                points={{-76,29},{-76,-58},{-42,-58}}, color={0,127,255}));
+          connect(T_out_borSim.port_b, source.ports[4]) annotation (Line(points=
+                 {{44,-58},{62,-58},{62,-84},{-76,-84},{-76,27}}, color={0,127,
+                  255}));
+          connect(m_flow_borSim.port_b, borefieldOneUTube_r.port_a)
+            annotation (Line(points={{-22,-58},{-10,-58}}, color={0,127,255}));
+          connect(borefieldOneUTube_r.port_b, T_out_borSim.port_a)
+            annotation (Line(points={{10,-58},{24,-58}}, color={0,127,255}));
+          connect(const.y, borefieldOneUTube_r.TGro) annotation (Line(points={{
+                  -17.4,-34},{-14,-34},{-14,-52},{-12,-52}}, color={0,0,127}));
+            annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+                  coordinateSystem(preserveAspectRatio=false)),
+            experiment(
+              StopTime=31536000,
+              Tolerance=1e-06,
+              __Dymola_fixedstepsize=10,
+              __Dymola_Algorithm="Euler"),
+            __Dymola_experimentSetupOutput,
+            __Dymola_experimentFlags(Advanced(
+                InlineMethod=0,
+                InlineOrder=2,
+                InlineFixedStep=0.001)));
+          end BorFieValidationMod;
+
+          model SingleBoreholeVal "single borehole model for MPC"
+
+            replaceable package Medium =
+                Modelica.Media.Interfaces.PartialMedium "Medium through the borehole"
+                annotation (choicesAllMatching = true);
+
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Boreholes.BoreholeOneUTube
+              borehole(
+              allowFlowReversal=false,
+              computeFlowResistance=false,
+              massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+              redeclare package Medium = Medium,
+              m_flow_nominal=m_flow_nominal,
+              dp_nominal=dp_nominal,
+              intHex(
+              Q2_flow(       nominal = -65*borFieDat.conDat.hSeg),
+              Q1_flow( nominal = 65*borFieDat.conDat.hSeg)),
+              borFieDat=borFieDat,
+            energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+            T_start=285.55)                       annotation (Placement(transformation(
+                  extent={{-10,-10},{10,10}},
+                  rotation=0,
+                  origin={0,0})));
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.GroundHeatTransfer.CylindricalGroundLayer
+              lay[borFieDat.conDat.nVer](
+              each h=borFieDat.conDat.hSeg,
+              each r_a=borFieDat.conDat.rBor,
+              each r_b=3,
+              each nSta=borFieDat.conDat.nHor,
+              each TInt_start=borFieDat.conDat.T_start,
+              each TExt_start=borFieDat.conDat.T_start,
+              each soiDat=borFieDat.soiDat,
+              steadyStateInitial=true)                        annotation (Placement(
+                  transformation(
+                  extent={{-10,-10},{10,10}},
+                  rotation=90,
+                  origin={0,40})));
+            parameter Modelica.SIunits.Temperature soilTemp=273.15 + 10.8
+              "Undisturbed temperature of the ground";
+            Modelica.Fluid.Interfaces.FluidPort_a port_a(redeclare package Medium =
+                  Medium)
+              annotation (Placement(transformation(extent={{-110,-10},{-90,10}})));
+            Modelica.Fluid.Interfaces.FluidPort_b port_b(redeclare package Medium =
+                  Medium)
+              annotation (Placement(transformation(extent={{90,-10},{110,10}})));
+            parameter Modelica.SIunits.MassFlowRate m_flow_nominal
+              "Nominal mass flow rate through the borehole"
+              annotation (Dialog(group="Nominal condition"));
+            parameter Modelica.SIunits.PressureDifference dp_nominal
+              "Pressure difference through the borehole"
+              annotation (Dialog(group="Nominal condition"));
+            parameter
+              IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
+              borFieDat "Borefield parameters";
+          Modelica.Blocks.Interfaces.RealInput TGround annotation (Placement(
+                transformation(
+                extent={{-20,-20},{20,20}},
+                rotation=-90,
+                origin={0,120})));
+          Modelica.Blocks.Routing.Replicator replicator(nout=borFieDat.conDat.nVer)
+            annotation (Placement(transformation(
+                extent={{-4,-4},{4,4}},
+                rotation=-90,
+                origin={4.44089e-16,90})));
+        protected
+              parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
+                Medium.specificHeatCapacityCp(Medium.setState_pTX(
+                Medium.p_default,
+                Medium.T_default,
+                Medium.X_default)) "Specific heat capacity of the fluid";
+            parameter Modelica.SIunits.ThermalConductivity kMed=
+                Medium.thermalConductivity(Medium.setState_pTX(
+                Medium.p_default,
+                Medium.T_default,
+                Medium.X_default)) "Thermal conductivity of the fluid";
+            parameter Modelica.SIunits.DynamicViscosity mueMed=Medium.dynamicViscosity(
+                Medium.setState_pTX(
+                Medium.p_default,
+                Medium.T_default,
+                Medium.X_default)) "Dynamic viscosity of the fluid";
+           Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature[borFieDat.conDat.nVer]
+              prescribedTemperature(T(start=273.15 + 10.8))
+              annotation (Placement(transformation(extent={{-10,-10},{10,10}},
+                rotation=-90,
+                origin={0,70})));
+          equation
+            connect(lay.port_a, borehole.port_wall) annotation (Line(points={{-4.44089e-16,
+                    30},{0,30},{0,10}}, color={191,0,0}));
+            connect(port_a, borehole.port_a)
+              annotation (Line(points={{-100,0},{-10,0}},         color={0,127,255}));
+            connect(borehole.port_b, port_b)
+              annotation (Line(points={{10,0},{100,0}},         color={0,127,255}));
+          connect(prescribedTemperature.port, lay.port_b)
+            annotation (Line(points={{0,60},{0,50}}, color={191,0,0}));
+          connect(prescribedTemperature.T, prescribedTemperature.T)
+            annotation (Line(points={{0,82},{0,82}}, color={0,0,127}));
+          connect(replicator.u, TGround)
+            annotation (Line(points={{0,94.8},{0,120}}, color={0,0,127}));
+          connect(prescribedTemperature.T, replicator.y)
+            annotation (Line(points={{0,82},{0,85.6}}, color={0,0,127}));
+                           annotation (Placement(transformation(extent={{-10,-10},{10,10}})),
+                        Icon(coordinateSystem(preserveAspectRatio=false), graphics={
+                  Rectangle(
+                    extent={{-70,80},{70,-80}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={95,95,95},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-62,-52},{62,-60}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,0},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-62,58},{62,54}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,0},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-62,6},{62,0}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,0},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{54,92},{46,-88}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,255},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-54,-88},{-46,92}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,255},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-72,80},{-62,-80}},
+                    lineColor={0,0,0},
+                    fillColor={192,192,192},
+                    fillPattern=FillPattern.Backward),
+                  Rectangle(
+                    extent={{62,80},{72,-80}},
+                    lineColor={0,0,0},
+                    fillColor={192,192,192},
+                    fillPattern=FillPattern.Backward),
+                  Rectangle(
+                    extent={{-52,-80},{54,-88}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,255},
+                    fillPattern=FillPattern.Solid)}),                      Diagram(
+                  coordinateSystem(preserveAspectRatio=false)));
+          end SingleBoreholeVal;
+
+          model MultipleBoreholeVal "single borehole model for MPC"
+
+            replaceable package Medium =
+                Modelica.Media.Interfaces.PartialMedium "Medium through the borehole"
+                annotation (choicesAllMatching = true);
+
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Boreholes.BoreholeOneUTube
+              borehole(
+              allowFlowReversal=false,
+              computeFlowResistance=false,
+              massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+              redeclare package Medium = Medium,
+              m_flow_nominal=m_flow_nominal,
+              dp_nominal=dp_nominal,
+              intHex(
+              Q2_flow(       nominal = -65*borFieDat.conDat.hSeg),
+              Q1_flow( nominal = 65*borFieDat.conDat.hSeg)),
+              borFieDat=borFieDat,
+            energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+            T_start=285.55)                       annotation (Placement(transformation(
+                  extent={{-10,-10},{10,10}},
+                  rotation=0,
+                  origin={0,0})));
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.GroundHeatTransfer.CylindricalGroundLayer
+              lay[borFieDat.conDat.nVer](
+              each h=borFieDat.conDat.hSeg,
+              each r_a=borFieDat.conDat.rBor,
+              each r_b=3,
+              each nSta=borFieDat.conDat.nHor,
+              each TInt_start=borFieDat.conDat.T_start,
+              each TExt_start=borFieDat.conDat.T_start,
+              each soiDat=borFieDat.soiDat,
+              steadyStateInitial=true)                        annotation (Placement(
+                  transformation(
+                  extent={{-10,-10},{10,10}},
+                  rotation=90,
+                  origin={0,40})));
+            parameter Modelica.SIunits.Temperature soilTemp=273.15 + 10.8
+              "Undisturbed temperature of the ground";
+            Modelica.Fluid.Interfaces.FluidPort_a port_a(redeclare package
+              Medium =
+                  Medium)
+              annotation (Placement(transformation(extent={{-110,-10},{-90,10}})));
+            Modelica.Fluid.Interfaces.FluidPort_b port_b(redeclare package
+              Medium =
+                  Medium)
+              annotation (Placement(transformation(extent={{90,-10},{110,10}})));
+            parameter Modelica.SIunits.MassFlowRate m_flow_nominal
+              "Nominal mass flow rate through the borehole"
+              annotation (Dialog(group="Nominal condition"));
+            parameter Modelica.SIunits.PressureDifference dp_nominal
+              "Pressure difference through the borehole"
+              annotation (Dialog(group="Nominal condition"));
+            parameter
+              IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
+              borFieDat "Borefield parameters";
+          Modelica.Blocks.Interfaces.RealInput TGround annotation (Placement(
+                transformation(
+                extent={{-20,-20},{20,20}},
+                rotation=-90,
+                origin={0,120})));
+          Modelica.Blocks.Routing.Replicator replicator(nout=borFieDat.conDat.nVer)
+            annotation (Placement(transformation(
+                extent={{-4,-4},{4,4}},
+                rotation=-90,
+                origin={4.44089e-16,90})));
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.MassFlowRateMultiplier
+                                               masFloDiv(
+            redeclare package Medium = Medium,
+            k=borFieDat.conDat.nbBh,
+            allowFlowReversal=false)   "Division of flow rate"
+              annotation (Placement(transformation(extent={{-60,-10},{-80,10}})));
+            IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.MassFlowRateMultiplier
+                                               masFloMul(
+            redeclare package Medium = Medium,
+            k=borFieDat.conDat.nbBh,
+            allowFlowReversal=false)   "Mass flow multiplier"
+              annotation (Placement(transformation(extent={{60,-10},{80,10}})));
+        protected
+              parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
+                Medium.specificHeatCapacityCp(Medium.setState_pTX(
+                Medium.p_default,
+                Medium.T_default,
+                Medium.X_default)) "Specific heat capacity of the fluid";
+            parameter Modelica.SIunits.ThermalConductivity kMed=
+                Medium.thermalConductivity(Medium.setState_pTX(
+                Medium.p_default,
+                Medium.T_default,
+                Medium.X_default)) "Thermal conductivity of the fluid";
+            parameter Modelica.SIunits.DynamicViscosity mueMed=Medium.dynamicViscosity(
+                Medium.setState_pTX(
+                Medium.p_default,
+                Medium.T_default,
+                Medium.X_default)) "Dynamic viscosity of the fluid";
+           Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature[borFieDat.conDat.nVer]
+              prescribedTemperature(T(start=273.15 + 10.8))
+              annotation (Placement(transformation(extent={{-10,-10},{10,10}},
+                rotation=-90,
+                origin={0,70})));
+          equation
+            connect(lay.port_a, borehole.port_wall) annotation (Line(points={{-4.44089e-16,
+                    30},{0,30},{0,10}}, color={191,0,0}));
+          connect(prescribedTemperature.port, lay.port_b)
+            annotation (Line(points={{0,60},{0,50}}, color={191,0,0}));
+          connect(prescribedTemperature.T, prescribedTemperature.T)
+            annotation (Line(points={{0,82},{0,82}}, color={0,0,127}));
+          connect(replicator.u, TGround)
+            annotation (Line(points={{0,94.8},{0,120}}, color={0,0,127}));
+          connect(prescribedTemperature.T, replicator.y)
+            annotation (Line(points={{0,82},{0,85.6}}, color={0,0,127}));
+          connect(port_a, masFloDiv.port_b)
+            annotation (Line(points={{-100,0},{-80,0}}, color={0,127,255}));
+          connect(masFloDiv.port_a, borehole.port_a)
+            annotation (Line(points={{-60,0},{-10,0}}, color={0,127,255}));
+          connect(borehole.port_b, masFloMul.port_a)
+            annotation (Line(points={{10,0},{60,0}}, color={0,127,255}));
+          connect(masFloMul.port_b, port_b)
+            annotation (Line(points={{80,0},{100,0}}, color={0,127,255}));
+                           annotation (Placement(transformation(extent={{-10,-10},{10,10}})),
+                        Icon(coordinateSystem(preserveAspectRatio=false), graphics={
+                  Rectangle(
+                    extent={{-70,80},{70,-80}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={95,95,95},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-62,-52},{62,-60}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,0},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-62,58},{62,54}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,0},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-62,6},{62,0}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,0},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{54,92},{46,-88}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,255},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-54,-88},{-46,92}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,255},
+                    fillPattern=FillPattern.Solid),
+                  Rectangle(
+                    extent={{-72,80},{-62,-80}},
+                    lineColor={0,0,0},
+                    fillColor={192,192,192},
+                    fillPattern=FillPattern.Backward),
+                  Rectangle(
+                    extent={{62,80},{72,-80}},
+                    lineColor={0,0,0},
+                    fillColor={192,192,192},
+                    fillPattern=FillPattern.Backward),
+                  Rectangle(
+                    extent={{-52,-80},{54,-88}},
+                    lineColor={0,0,255},
+                    pattern=LinePattern.None,
+                    fillColor={0,0,255},
+                    fillPattern=FillPattern.Solid)}),                      Diagram(
+                  coordinateSystem(preserveAspectRatio=false)));
+          end MultipleBoreholeVal;
+        end Validation;
       end GroundHeatExchangers;
     end HeatExchangers;
 
