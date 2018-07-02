@@ -5,7 +5,7 @@ model SingleBoreHoleUTube "Single U-tube borehole heat exchanger"
   extends IBPSA.Fluid.Interfaces.TwoPortFlowResistanceParameters;
   extends IBPSA.Fluid.Interfaces.LumpedVolumeDeclarations;
 
-  InternalHEXUTube intHex[borFieDat.conDat.nVer](
+  InternalHEXUTube intHex[nSeg](
     redeclare each final package Medium = Medium,
     each final from_dp1=from_dp,
     each final from_dp2=from_dp,
@@ -18,7 +18,6 @@ model SingleBoreHoleUTube "Single U-tube borehole heat exchanger"
     each final T_start=T_start,
     each final dynFil=dynFil,
     each final mSenFac=mSenFac,
-    final dp1_nominal={if i == 1 then dp_nominal else 0 for i in 1:borFieDat.conDat.nVer},
     each final dp2_nominal=0,
     each final m1_flow_nominal=m_flow_nominal,
     each final m2_flow_nominal=m_flow_nominal,
@@ -27,22 +26,32 @@ model SingleBoreHoleUTube "Single U-tube borehole heat exchanger"
     each final allowFlowReversal2=allowFlowReversal,
     each final show_T=show_T,
     each final p1_start=p_start,
-    each final p2_start=p_start) "Discretized borehole segments"
+    each final p2_start=p_start,
+    final dp1_nominal={if i == 1 then dp_nominal else 0 for i in 1:nSeg},
+    hSeg=hSeg,
+    nSeg=nSeg)                   "Discretized borehole segments"
     annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
 
   parameter Boolean dynFil=true
       "Set to false to remove the dynamics of the filling material"
       annotation (Dialog(tab="Dynamics"));
+  parameter Modelica.SIunits.Height hSeg = borFieDat.conDat.hBor/nSeg;
+
   parameter
     IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
-    borFieDat "Borefield parameters"
+    borFieDat(
+  filDat=borFieDat.filDat,
+  soiDat=borFieDat.soiDat,
+  conDat=borFieDat.conDat)=
+                borFieDat "Borefield parameters"
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
+  parameter Integer nSeg(fixed=true);
   Modelica.SIunits.Temperature TWallAve "Average borehole wall temperature";
-  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_wall[borFieDat.conDat.nVer]
+  Modelica.Thermal.HeatTransfer.Interfaces.HeatPort_a port_wall[nSeg]
     "Thermal connection for borehole wall"
     annotation (Placement(transformation(extent={{-10,90},{10,110}})));
 equation
-  TWallAve =sum(intHex[:].port_wall.T)/borFieDat.conDat.nVer;
+  TWallAve =sum(intHex[:].port_wall.T)/nSeg;
 
   connect(port_a, intHex[1].port_a1) annotation (Line(
       points={{-100,5.55112e-016},{-52,5.55112e-016},{-52,6.36364},{-10,6.36364}},
@@ -54,12 +63,12 @@ equation
           -4.54545},{-10,-4.54545}},
       color={0,127,255},
       smooth=Smooth.None));
-  connect(intHex[borFieDat.conDat.nVer].port_b1, intHex[borFieDat.conDat.nVer].port_a2)
+  connect(intHex[nSeg].port_b1, intHex[nSeg].port_a2)
     annotation (Line(
-      points={{10,6},{20,6},{20,-6},{10,-6}},
+      points={{10,6.36364},{20,6.36364},{20,-4.54545},{10,-4.54545}},
       color={0,127,255},
       smooth=Smooth.None));
-  for i in 1:borFieDat.conDat.nVer - 1 loop
+  for i in 1:nSeg - 1 loop
     connect(intHex[i].port_b1, intHex[i + 1].port_a1) annotation (Line(
         points={{10,6.36364},{10,20},{-10,20},{-10,6.36364}},
         color={0,127,255},
@@ -70,7 +79,7 @@ equation
         smooth=Smooth.None));
   end for;
   connect(intHex.port_wall, port_wall)
-    annotation (Line(points={{0,10},{0,10},{0,100}}, color={191,0,0}));
+    annotation (Line(points={{0,10},{0,100}}, color={191,0,0}));
   annotation (
     Dialog(group="Borehole"),
     Dialog(group="Borehole"),

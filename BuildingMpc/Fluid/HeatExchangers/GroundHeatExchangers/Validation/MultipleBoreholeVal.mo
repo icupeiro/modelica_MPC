@@ -1,11 +1,11 @@
-within BuildingMpc.Fluid.HeatExchangers.GroundHeatExchangers.Development;
-model SingleBorehole "single borehole model for MPC"
+within BuildingMpc.Fluid.HeatExchangers.GroundHeatExchangers.Validation;
+model MultipleBoreholeVal "single borehole model for MPC"
 
   replaceable package Medium =
       Modelica.Media.Interfaces.PartialMedium "Medium through the borehole"
       annotation (choicesAllMatching = true);
 
-  BaseClasses.SingleBoreHoleUTube
+  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Boreholes.BoreholeOneUTube
     borehole(
     allowFlowReversal=false,
     computeFlowResistance=false,
@@ -17,31 +17,25 @@ model SingleBorehole "single borehole model for MPC"
     Q2_flow(       nominal = -65*borFieDat.conDat.hSeg),
     Q1_flow( nominal = 65*borFieDat.conDat.hSeg)),
     borFieDat=borFieDat,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState)
-                                        annotation (Placement(transformation(
+  energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+  T_start=285.55)                       annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={0,0})));
-  BaseClasses.CylindricalGroundLayer
+  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.GroundHeatTransfer.CylindricalGroundLayer
     lay[borFieDat.conDat.nVer](
-    each soiDat=borFieDat.soiDat,
     each h=borFieDat.conDat.hSeg,
     each r_a=borFieDat.conDat.rBor,
-    each r_b=borFieDat.conDat.rExt,
+    each r_b=3,
     each nSta=borFieDat.conDat.nHor,
     each TInt_start=borFieDat.conDat.T_start,
-    each TExt_start=borFieDat.conDat.T_start) annotation (Placement(
+    each TExt_start=borFieDat.conDat.T_start,
+    each soiDat=borFieDat.soiDat,
+    steadyStateInitial=true)                        annotation (Placement(
         transformation(
         extent={{-10,-10},{10,10}},
         rotation=90,
         origin={0,40})));
-  Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature[borFieDat.conDat.nVer]
-    prescribedTemperature
-    annotation (Placement(transformation(extent={{40,50},{20,70}})));
-  Modelica.Blocks.Sources.Constant[borFieDat.conDat.nVer] tempProfile(k=
-        soilTemp)
-    "undisturbed ground temperature, could be included as vertical profile"
-    annotation (Placement(transformation(extent={{80,50},{60,70}})));
   parameter Modelica.SIunits.Temperature soilTemp=273.15 + 10.8
     "Undisturbed temperature of the ground";
   Modelica.Fluid.Interfaces.FluidPort_a port_a(redeclare package Medium =
@@ -59,6 +53,28 @@ model SingleBorehole "single borehole model for MPC"
   parameter
     IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
     borFieDat "Borefield parameters";
+Modelica.Blocks.Interfaces.RealInput TGround annotation (Placement(
+      transformation(
+      extent={{-20,-20},{20,20}},
+      rotation=-90,
+      origin={0,120})));
+Modelica.Blocks.Routing.Replicator replicator(nout=borFieDat.conDat.nVer)
+  annotation (Placement(transformation(
+      extent={{-4,-4},{4,4}},
+      rotation=-90,
+      origin={4.44089e-16,90})));
+  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.MassFlowRateMultiplier
+                                     masFloDiv(
+  redeclare package Medium = Medium,
+  k=borFieDat.conDat.nbBh,
+  allowFlowReversal=false)   "Division of flow rate"
+    annotation (Placement(transformation(extent={{-60,-10},{-80,10}})));
+  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.MassFlowRateMultiplier
+                                     masFloMul(
+  redeclare package Medium = Medium,
+  k=borFieDat.conDat.nbBh,
+  allowFlowReversal=false)   "Mass flow multiplier"
+    annotation (Placement(transformation(extent={{60,-10},{80,10}})));
 protected
     parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
       Medium.specificHeatCapacityCp(Medium.setState_pTX(
@@ -75,18 +91,30 @@ protected
       Medium.p_default,
       Medium.T_default,
       Medium.X_default)) "Dynamic viscosity of the fluid";
-
+ Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature[borFieDat.conDat.nVer]
+    prescribedTemperature(T(start=273.15 + 10.8))
+    annotation (Placement(transformation(extent={{-10,-10},{10,10}},
+      rotation=-90,
+      origin={0,70})));
 equation
-  connect(tempProfile.y, prescribedTemperature.T)
-    annotation (Line(points={{59,60},{42,60}}, color={0,0,127}));
-  connect(prescribedTemperature.port, lay.port_b)
-    annotation (Line(points={{20,60},{0,60},{0,50}}, color={191,0,0}));
   connect(lay.port_a, borehole.port_wall) annotation (Line(points={{-4.44089e-16,
           30},{0,30},{0,10}}, color={191,0,0}));
-  connect(port_a, borehole.port_a)
-    annotation (Line(points={{-100,0},{-10,0}},         color={0,127,255}));
-  connect(borehole.port_b, port_b)
-    annotation (Line(points={{10,0},{100,0}},         color={0,127,255}));
+connect(prescribedTemperature.port, lay.port_b)
+  annotation (Line(points={{0,60},{0,50}}, color={191,0,0}));
+connect(prescribedTemperature.T, prescribedTemperature.T)
+  annotation (Line(points={{0,82},{0,82}}, color={0,0,127}));
+connect(replicator.u, TGround)
+  annotation (Line(points={{0,94.8},{0,120}}, color={0,0,127}));
+connect(prescribedTemperature.T, replicator.y)
+  annotation (Line(points={{0,82},{0,85.6}}, color={0,0,127}));
+connect(port_a, masFloDiv.port_b)
+  annotation (Line(points={{-100,0},{-80,0}}, color={0,127,255}));
+connect(masFloDiv.port_a, borehole.port_a)
+  annotation (Line(points={{-60,0},{-10,0}}, color={0,127,255}));
+connect(borehole.port_b, masFloMul.port_a)
+  annotation (Line(points={{10,0},{60,0}}, color={0,127,255}));
+connect(masFloMul.port_b, port_b)
+  annotation (Line(points={{80,0},{100,0}}, color={0,127,255}));
                  annotation (Placement(transformation(extent={{-10,-10},{10,10}})),
               Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
@@ -142,4 +170,4 @@ equation
           fillColor={0,0,255},
           fillPattern=FillPattern.Solid)}),                      Diagram(
         coordinateSystem(preserveAspectRatio=false)));
-end SingleBorehole;
+end MultipleBoreholeVal;

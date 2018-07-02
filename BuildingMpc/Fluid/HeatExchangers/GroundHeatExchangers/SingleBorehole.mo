@@ -17,31 +17,33 @@ model SingleBorehole "single borehole model for MPC"
     Q2_flow(       nominal = -65*borFieDat.conDat.hSeg),
     Q1_flow( nominal = 65*borFieDat.conDat.hSeg)),
     borFieDat=borFieDat,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState)
-                                        annotation (Placement(transformation(
+  energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    nSeg=10)                            annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={0,0})));
   BaseClasses.CylindricalGroundLayer
-    lay[borFieDat.conDat.nVer](
-    each h=borFieDat.conDat.hSeg,
+    lay[nSeg](
     each r_a=borFieDat.conDat.rBor,
     each r_b=3,
-    each nSta=borFieDat.conDat.nHor,
-    each TInt_start=borFieDat.conDat.T_start,
-    each TExt_start=borFieDat.conDat.T_start,
-    each soiDat=borFieDat.soiDat)                   annotation (Placement(
+    each soiDat=borFieDat.soiDat,
+  steadyStateInitial=false,
+    each nSta=nHor,
+    each h=borFieDat.conDat.hBor/nSeg,
+    each TInt_start=T_start,
+    each TExt_start=T_start)                        annotation (Placement(
         transformation(
         extent={{-10,-10},{10,10}},
         rotation=90,
         origin={0,40})));
-  Modelica.Thermal.HeatTransfer.Sources.PrescribedTemperature[borFieDat.conDat.nVer]
-    prescribedTemperature
-    annotation (Placement(transformation(extent={{40,50},{20,70}})));
-  Modelica.Blocks.Sources.Constant[borFieDat.conDat.nVer] tempProfile(k=
-        soilTemp)
-    "undisturbed ground temperature, could be included as vertical profile"
-    annotation (Placement(transformation(extent={{80,50},{60,70}})));
+
+  parameter Integer nSeg(min=1) = 10
+    "Number of segments to use in vertical discretization of the boreholes";
+  parameter Integer nHor(min=1) = 10
+    "Number of cells to use in radial discretization of soil";
+  parameter Modelica.SIunits.Temperature T_start = 273.15 + 10
+    "Initial soil temperature";
+
   parameter Modelica.SIunits.Temperature soilTemp=273.15 + 10.8
     "Undisturbed temperature of the ground";
   Modelica.Fluid.Interfaces.FluidPort_a port_a(redeclare package Medium =
@@ -58,7 +60,11 @@ model SingleBorehole "single borehole model for MPC"
     annotation (Dialog(group="Nominal condition"));
   parameter
     IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
-    borFieDat "Borefield parameters";
+    borFieDat(
+    filDat=borFieDat.filDat,
+    soiDat=borFieDat.soiDat,
+    conDat=borFieDat.conDat)=
+                borFieDat "Borefield parameters";
 protected
     parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
       Medium.specificHeatCapacityCp(Medium.setState_pTX(
@@ -76,17 +82,21 @@ protected
       Medium.T_default,
       Medium.X_default)) "Dynamic viscosity of the fluid";
 
+public
+  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor[nSeg] Cground(der_T(
+        fixed=true),
+  C=Modelica.Constants.inf,
+  T(start=soilTemp, fixed=true))
+    annotation (Placement(transformation(extent={{-12,72},{12,96}})));
 equation
-  connect(tempProfile.y, prescribedTemperature.T)
-    annotation (Line(points={{59,60},{42,60}}, color={0,0,127}));
-  connect(prescribedTemperature.port, lay.port_b)
-    annotation (Line(points={{20,60},{0,60},{0,50}}, color={191,0,0}));
   connect(lay.port_a, borehole.port_wall) annotation (Line(points={{-4.44089e-16,
           30},{0,30},{0,10}}, color={191,0,0}));
   connect(port_a, borehole.port_a)
     annotation (Line(points={{-100,0},{-10,0}},         color={0,127,255}));
   connect(borehole.port_b, port_b)
     annotation (Line(points={{10,0},{100,0}},         color={0,127,255}));
+connect(Cground.port, lay.port_b)
+  annotation (Line(points={{0,72},{0,50}}, color={191,0,0}));
                  annotation (Placement(transformation(extent={{-10,-10},{10,10}})),
               Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(

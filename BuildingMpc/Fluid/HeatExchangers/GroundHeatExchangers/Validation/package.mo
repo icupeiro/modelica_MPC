@@ -1,7 +1,7 @@
 within BuildingMpc.Fluid.HeatExchangers.GroundHeatExchangers;
-package BaseClasses
+package Validation
 
 
 
 
-end BaseClasses;
+end Validation;

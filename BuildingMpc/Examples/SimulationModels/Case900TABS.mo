@@ -1,8 +1,7 @@
 within BuildingMpc.Examples.SimulationModels;
 model Case900TABS "Case900 simulation model"
   extends IDEAS.Buildings.Validation.Cases.Case900(
-    redeclare BuildingMpc.Examples.SimulationModels.Envelope.Bui900TABS
-      building,
+    redeclare BuildingMpc.Examples.SimulationModels.Envelope.Bui900TABS building,
     redeclare HeatingSystems.Hea900TABS heatingSystem,
     redeclare IDEAS.Buildings.Validation.BaseClasses.Occupant.None occupant);
   Modelica.Blocks.Sources.RealExpression[30] states(y=

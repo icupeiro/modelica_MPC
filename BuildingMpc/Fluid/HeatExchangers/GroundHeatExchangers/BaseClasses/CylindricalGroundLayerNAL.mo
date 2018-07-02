@@ -40,7 +40,6 @@ model CylindricalGroundLayerNAL
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor[nSta] Csoil(C=C)
     annotation (Placement(transformation(extent={{-12,42},{12,66}})));
 
-
 protected
   parameter Modelica.SIunits.Radius rC[nSta] = {(r[i] + r[i + 1])/2 for i in 1:nSta}
     "Radius to the center of the i-th domain";

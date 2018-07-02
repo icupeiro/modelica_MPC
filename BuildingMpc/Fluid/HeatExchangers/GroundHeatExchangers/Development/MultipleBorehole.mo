@@ -26,14 +26,16 @@ model MultipleBorehole "multiple borehole model for MPC"
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.MassFlowRateMultiplier
                                      masFloDiv(
     redeclare package Medium = Medium,
-    k=borFieDat.conDat.nbBh,
-    allowFlowReversal=false) "Division of flow rate"
+  allowFlowReversal=false,
+    k=borFieDat.conDat.nbBor)
+                             "Division of flow rate"
     annotation (Placement(transformation(extent={{-60,-10},{-80,10}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.MassFlowRateMultiplier
                                      masFloMul(
     redeclare package Medium = Medium,
-    k=borFieDat.conDat.nbBh,
-    allowFlowReversal=false) "Mass flow multiplier"
+  allowFlowReversal=false,
+    k=borFieDat.conDat.nbBor)
+                             "Mass flow multiplier"
     annotation (Placement(transformation(extent={{60,-10},{80,10}})));
   parameter Modelica.SIunits.Temperature soilTemp=273.15 + 10.8
     "Undisturbed temperature of the ground";
@@ -43,7 +45,7 @@ model MultipleBorehole "multiple borehole model for MPC"
     "Pressure difference through the borehole";
 equation
 
-  assert(borFieDat.conDat.nbBh >= 1, "incorrect amount of boreholes for the borefield");
+  assert(borFieDat.conDat.nbBor >= 1, "incorrect amount of boreholes for the borefield");
 
   connect(port_a, masFloDiv.port_b)
     annotation (Line(points={{-100,0},{-80,0}}, color={0,127,255}));

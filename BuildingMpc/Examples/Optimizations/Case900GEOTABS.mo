@@ -1,13 +1,12 @@
 within BuildingMpc.Examples.Optimizations;
 model Case900GEOTABS
   "Controller model for the BESTEST Case900 with TABS and heat pump with a borefieldl; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
-    extends BuildingMpc.Examples.ControllerModels.Case900GEOTABS(
-    optVar3(y=mpcCase900GEOTABS.yOpt[3]),
+  extends BuildingMpc.Examples.ControllerModels.Case900GEOTABS(
     optVar1(y=mpcCase900GEOTABS.yOpt[1]),
-    optVar2(y=mpcCase900GEOTABS.yOpt[2]));
-  MPCs.MpcCase900GEOTABS_1bor mpcCase900GEOTABS
+    optVar2(y=mpcCase900GEOTABS.yOpt[2]),
+    optVar3(y=mpcCase900GEOTABS.yOpt[3]));
+  MPCs.MpcCase900GEOTABS mpcCase900GEOTABS
     annotation (Placement(transformation(extent={{-94,20},{-74,40}})));
-
 
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),

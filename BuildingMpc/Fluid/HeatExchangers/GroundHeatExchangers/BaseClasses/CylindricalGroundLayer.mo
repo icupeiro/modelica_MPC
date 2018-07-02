@@ -14,7 +14,7 @@ model CylindricalGroundLayer
   parameter Modelica.SIunits.Temperature TExt_start=293.15
     "Initial temperature at port_b, used if steadyStateInitial = false"
     annotation (Dialog(group="Initialization", enable=not steadyStateInitial));
-  parameter Boolean steadyStateInitial=true
+  parameter Boolean steadyStateInitial=false
     "true initializes dT(0)/dt=0, false initializes T(0) at fixed temperature using T_a_start and T_b_start"
     annotation (Dialog(group="Initialization"), Evaluate=true);
 
@@ -29,8 +29,8 @@ model CylindricalGroundLayer
 
   parameter Modelica.SIunits.Radius r[nSta + 1](each fixed=false)
     "Radius to the boundary of the i-th domain";
-  parameter Real beta[nSta] = 2*ones(nSta);
-  Modelica.Thermal.HeatTransfer.Components.ThermalResistor[nSta] Rsoil(R = {1/G[i] for i in 1:nSta})
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor
+                                                          [nSta+1] Gsoil(G=G)
     "Borehole resistance" annotation (Placement(transformation(
         extent={{12,-12},{-12,12}},
         rotation=180,
@@ -43,16 +43,16 @@ protected
   parameter Modelica.SIunits.Radius rC[nSta] = {(r[i] + r[i + 1])/2 for i in 1:nSta}
     "Radius to the center of the i-th domain";
 
-  final parameter Modelica.SIunits.SpecificHeatCapacity c=soiDat.c
+  final parameter Modelica.SIunits.SpecificHeatCapacity c=soiDat.cSoi
     "Specific heat capacity";
-  final parameter Modelica.SIunits.ThermalConductivity k=soiDat.k
+  final parameter Modelica.SIunits.ThermalConductivity k=soiDat.kSoi
     "Thermal conductivity of the material";
-  final parameter Modelica.SIunits.Density d=soiDat.d
+  final parameter Modelica.SIunits.Density d=soiDat.dSoi
     "Density of the material";
 
-  parameter Modelica.SIunits.ThermalConductance G[nSta] = cat(1, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(rC[1]/r_a)}, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(rC[i]/rC[i - 1]) for i in 2:nSta-1}, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(r_b/rC[nSta])})
+  parameter Modelica.SIunits.ThermalConductance G[nSta+1] = cat(1, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(rC[1]/r_a)}, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(rC[i]/rC[i - 1]) for i in 2:nSta}, {2*Modelica.Constants.pi*k*h/Modelica.Math.log(r_b/rC[nSta])})
     "Heat conductance between the temperature nodes";
-  parameter Modelica.SIunits.HeatCapacity C[nSta] = {d*Modelica.Constants.pi*c*h*((r[i+1]^2 - (r[i])^2)) for i in 1:nSta}
+  parameter Modelica.SIunits.HeatCapacity C[nSta] =   {d*Modelica.Constants.pi*c*h*((r[i+1]^2 - (r[i])^2)) for i in 1:nSta}
         "Heat capacity of each state";
   parameter Real gridFac_sum(fixed=false);
   parameter Real gridFac_sum_old(fixed=false);
@@ -79,25 +79,16 @@ initial equation
 
 equation
 
-  connect(port_a, Rsoil[1].port_a)
+  connect(port_a,Gsoil [1].port_a)
     annotation (Line(points={{-100,0},{-12,0}}, color={191,0,0}));
-  connect(Rsoil[nSta].port_a, Csoil[nSta].port)  annotation (Line(points={{-12,0},
-          {-10,0},{-10,32},{0,32},{0,42}},
-                                      color={191,0,0}));
-  connect(Rsoil[nSta].port_b, port_b)
+  connect(Gsoil[nSta+1].port_b, port_b)
     annotation (Line(points={{12,0},{100,0}}, color={191,0,0}));
-  connect(Rsoil[nSta].port_b, Csoil[nSta].port);
-  for i in 1:(nSta-1) loop
-    connect(Rsoil[i].port_a, Csoil[i].port);
-    connect(Rsoil[i].port_b, Rsoil[i+1].port_a) annotation (Line(points={{12,0},{28,0},{28,
+  connect(Gsoil[nSta].port_b, Csoil[nSta].port);
+  for i in 1:(nSta) loop
+    connect(Gsoil[i].port_b,Gsoil [i+1].port_a) annotation (Line(points={{12,0},{28,0},{28,
           -22},{-24,-22},{-24,0},{-12,0},{-12,1.44329e-15}}, color={191,0,0}));
-  end for;
-
-
-
-
-
-
+    connect(Gsoil[i].port_b, Csoil[i].port);
+  end for
   annotation (
     Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{
             100,100}})),
@@ -222,4 +213,5 @@ First implementation.
 </li>
 </ul>
 </html>"));
+
 end CylindricalGroundLayer;
