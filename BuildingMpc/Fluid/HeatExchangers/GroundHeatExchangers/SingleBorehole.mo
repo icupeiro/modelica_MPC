@@ -14,8 +14,8 @@ model SingleBorehole "single borehole model for MPC"
     m_flow_nominal=m_flow_nominal,
     dp_nominal=dp_nominal,
     intHex(
-    Q2_flow(       nominal = -65*borFieDat.conDat.hSeg),
-    Q1_flow( nominal = 65*borFieDat.conDat.hSeg)),
+    Q2_flow(       nominal = -65*borehole.hSeg),
+    Q1_flow( nominal = 65*borehole.hSeg)),
     borFieDat=borFieDat,
   energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     nSeg=10)                            annotation (Placement(transformation(

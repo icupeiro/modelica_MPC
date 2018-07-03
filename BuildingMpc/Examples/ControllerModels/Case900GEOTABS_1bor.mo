@@ -114,7 +114,8 @@ public
     dp2_nominal=0,
     dp1_nominal=0,
     m1_flow_nominal=0.2,
-    m2_flow_nominal=0.2)
+    m2_flow_nominal=0.2,
+    COP_expr=4.5)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
     borFieDat(filDat=

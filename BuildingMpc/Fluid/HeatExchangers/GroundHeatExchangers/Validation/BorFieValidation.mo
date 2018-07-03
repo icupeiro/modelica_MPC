@@ -37,8 +37,7 @@ model BorFieValidation
   m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
   energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
   massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-  T_start=273.15 + 13.5,
-    annotation (uses(Modelica(version="3.2.2"))))
+  T_start=273.15 + 13.5)
   "Borehole connected to a discrete ground model" annotation (
     Placement(transformation(
       extent={{-14,-14},{14,14}},
