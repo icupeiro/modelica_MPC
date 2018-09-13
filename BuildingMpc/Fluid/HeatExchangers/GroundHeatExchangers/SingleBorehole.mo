@@ -59,7 +59,7 @@ model SingleBorehole "single borehole model for MPC"
     "Pressure difference through the borehole"
     annotation (Dialog(group="Nominal condition"));
   parameter
-    IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
+    IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template
     borFieDat(
     filDat=borFieDat.filDat,
     soiDat=borFieDat.soiDat,

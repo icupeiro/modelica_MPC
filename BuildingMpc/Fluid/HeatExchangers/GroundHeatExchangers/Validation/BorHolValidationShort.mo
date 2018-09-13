@@ -7,17 +7,17 @@ model BorHolValidationShort
     "Number of segments to use in vertical discretization of the boreholes";
   parameter Integer nHor(min=1) = 10
     "Number of cells to use in radial discretization of soil";
-  parameter Modelica.SIunits.Temperature T_start = 273.15 + 10.8
+  parameter Modelica.SIunits.Temperature T_start = 273.15 + 13.5
     "Initial soil temperature";
 
-  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
+  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example
     borFieDat(           soiDat=
-      IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
+      IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(
       steadyState=false), filDat=
-        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.Bentonite(
+        IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(
          steadyState=false))
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
-  Modelica.Blocks.Sources.Constant TGroUn(k=273.15 + 10.8)
+  Modelica.Blocks.Sources.Constant TGroUn(k=273.15 + 13.5)
     "Undisturbed ground temperature" annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=270,
@@ -32,7 +32,7 @@ model BorHolValidationShort
         extent={{-10,-10},{10,10}},
         rotation=270,
         origin={-20,70})));
-  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.GroundHeatTransfer.CylindricalGroundLayer
+  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical
     lay[nSeg](
     each soiDat=borFieDat.soiDat,
     each r_a=borFieDat.conDat.rBor,
@@ -46,15 +46,14 @@ model BorHolValidationShort
         rotation=90,
         origin={0,40})));
   replaceable
-    IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Boreholes.BoreholeOneUTube
+    IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube
     borHolDis(
     redeclare package Medium = Medium,
     borFieDat=borFieDat,
     dp_nominal=10,
     m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
   energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-  massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-  T_start=273.15 + 13.5)
+    each TGro_start=(273.15 + 13.5)*ones(10))
   "Borehole connected to a discrete ground model"                  annotation (
       Placement(transformation(
         extent={{-14,-14},{14,14}},
@@ -69,7 +68,7 @@ model BorHolValidationShort
     nPorts=1,
     use_T_in=false,
   m_flow=borFieDat.conDat.mBor_flow_nominal,
-  T=277.15)   "Source" annotation (Placement(transformation(extent={{-76,-10},{
+    T=277.15) "Source" annotation (Placement(transformation(extent={{-76,-10},{
             -56,10}}, rotation=0)));
   IBPSA.Fluid.Sensors.TemperatureTwoPort TBorDisOut(
       redeclare package Medium = Medium, m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
@@ -80,14 +79,14 @@ model BorHolValidationShort
     use_p_in=false,
     use_T_in=false,
     nPorts=2,
-    p=101330,
-    T=283.15) "Sink" annotation (Placement(transformation(extent={{90,-12},{70,
+    p=101330) "Sink" annotation (Placement(transformation(extent={{90,-12},{70,
             8}},  rotation=0)));
   SingleBorehole singleBorehole(
     borFieDat=borFieDat,
     redeclare package Medium = Medium,
     m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
-  dp_nominal=1000000)
+    soilTemp=273.15 + 13.5,
+    dp_nominal=1000000)
     annotation (Placement(transformation(extent={{-10,-70},{10,-50}})));
   IBPSA.Fluid.Sensors.TemperatureTwoPort TBorConOut(
       redeclare package Medium = Medium, m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
@@ -98,7 +97,7 @@ model BorHolValidationShort
   nPorts=1,
   use_T_in=false,
   m_flow=borFieDat.conDat.mBor_flow_nominal,
-  T=277.15)   "Source" annotation (Placement(transformation(extent={{-76,-70},
+    T=277.15) "Source" annotation (Placement(transformation(extent={{-76,-70},
           {-56,-50}}, rotation=0)));
   IBPSA.Fluid.Sensors.TemperatureTwoPort TBorIn1(
   redeclare package Medium = Medium,

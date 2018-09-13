@@ -38,7 +38,7 @@ model SingleBoreHoleUTube "Single U-tube borehole heat exchanger"
   parameter Modelica.SIunits.Height hSeg = borFieDat.conDat.hBor/nSeg;
 
   parameter
-    IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
+    IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template
     borFieDat(
   filDat=borFieDat.filDat,
   soiDat=borFieDat.soiDat,

@@ -43,7 +43,7 @@ model InternalHEXUTube
     "Length of the internal heat exchanger";
   parameter Integer nSeg;
   parameter
-    IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
+    IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template
     borFieDat(
     filDat=borFieDat.filDat,
     soiDat=borFieDat.soiDat,
@@ -66,7 +66,6 @@ model InternalHEXUTube
   Modelica.Blocks.Sources.RealExpression RVol2(y=
    BuildingMpc.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.convectionResistance(
             hSeg=hSeg,
-            rBor=borFieDat.conDat.rBor,
             rTub=borFieDat.conDat.rTub,
             eTub=borFieDat.conDat.eTub,
             kMed=kMed,
@@ -76,7 +75,7 @@ model InternalHEXUTube
     "Convective and thermal resistance at fluid 2"
      annotation (Placement(transformation(extent={{-100,-18},{-80,2}})));
 
-  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Boreholes.BaseClasses.InternalResistancesOneUTube
+  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.InternalResistancesOneUTube
     intResUTub(
     dynFil=dynFil,
     T_start=T_start,
@@ -84,7 +83,6 @@ model InternalHEXUTube
     Rgb_val=Rgb_val,
     Rgg_val=Rgg_val,
     RCondGro_val=RCondGro_val,
-    x=x,
     borFieDat=borFieDat,
     hSeg=hSeg)
     "Internal resistances for a single U-tube configuration"
@@ -173,7 +171,7 @@ protected
   parameter Real Rar= (Ra-2*(RCondPipe + RConv))/hSeg;
 
 equation
-    assert(borFieDat.conDat.borCon == IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Types.BoreholeConfiguration.SingleUTube,
+    assert(borFieDat.conDat.borCon == IBPSA.Fluid.Geothermal.Borefields.Types.BoreholeConfiguration.SingleUTube,
   "This model should be used for single U-type borefield, not double U-type. 
   Check that the record General has been correctly parametrized");
   if dynFil then
