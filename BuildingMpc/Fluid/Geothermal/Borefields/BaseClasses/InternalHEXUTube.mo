@@ -182,8 +182,8 @@ equation
                                 color={0,0,127}));
   connect(RVol1.y, RConv1.Rc) annotation (Line(points={{-79,8},{-40,8},{-40,28},
           {-12,28}}, color={0,0,127}));
-  connect(intResUTub.port_wall, port_wall) annotation (Line(points={{10,0},{26,
-          0},{40,0},{40,100},{0,100}}, color={191,0,0}));
+  connect(intResUTub.port_wall, port_wall) annotation (Line(points={{0,0},{0,0},
+          {40,0},{40,100},{0,100}},    color={191,0,0}));
   connect(vol1.heatPort, RConv1.fluid) annotation (Line(points={{-10,60},{-20,
           60},{-20,40},{6.66134e-016,40}}, color={191,0,0}));
   connect(RConv1.solid, intResUTub.port_1)
@@ -191,7 +191,7 @@ equation
   connect(RConv2.fluid, vol2.heatPort) annotation (Line(points={{0,-40},{20,-40},
           {20,-60},{12,-60}}, color={191,0,0}));
   connect(RConv2.solid, intResUTub.port_2)
-    annotation (Line(points={{0,-16},{0,-16},{0,-10}}, color={191,0,0}));
+    annotation (Line(points={{0,-16},{0,0},{10,0}},    color={191,0,0}));
     annotation (Dialog(tab="Dynamics"),
     Diagram(coordinateSystem(preserveAspectRatio=false, extent={{-100,-120},{100,
             100}})),

@@ -63,13 +63,6 @@ model BorHolValidationShort
       redeclare package Medium = Medium, m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
   tau=0)                                 "Inlet borehole temperature"
     annotation (Placement(transformation(extent={{-50,-10},{-30,10}})));
-  IBPSA.Fluid.Sources.MassFlowSource_T sou(
-    redeclare package Medium = Medium,
-    nPorts=1,
-    use_T_in=false,
-  m_flow=borFieDat.conDat.mBor_flow_nominal,
-    T=277.15) "Source" annotation (Placement(transformation(extent={{-76,-10},{
-            -56,10}}, rotation=0)));
   IBPSA.Fluid.Sensors.TemperatureTwoPort TBorDisOut(
       redeclare package Medium = Medium, m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
   tau=0)                                 "Outlet borehole temperature"
@@ -81,24 +74,10 @@ model BorHolValidationShort
     nPorts=2,
     p=101330) "Sink" annotation (Placement(transformation(extent={{90,-12},{70,
             8}},  rotation=0)));
-  SingleBorehole singleBorehole(
-    borFieDat=borFieDat,
-    redeclare package Medium = Medium,
-    m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
-    soilTemp=273.15 + 13.5,
-    dp_nominal=1000000)
-    annotation (Placement(transformation(extent={{-10,-70},{10,-50}})));
   IBPSA.Fluid.Sensors.TemperatureTwoPort TBorConOut(
       redeclare package Medium = Medium, m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
   tau=0)                                 "Outlet borehole temperature"
     annotation (Placement(transformation(extent={{30,-70},{50,-50}})));
-  IBPSA.Fluid.Sources.MassFlowSource_T sou1(
-  redeclare package Medium = Medium,
-  nPorts=1,
-  use_T_in=false,
-  m_flow=borFieDat.conDat.mBor_flow_nominal,
-    T=277.15) "Source" annotation (Placement(transformation(extent={{-76,-70},
-          {-56,-50}}, rotation=0)));
   IBPSA.Fluid.Sensors.TemperatureTwoPort TBorIn1(
   redeclare package Medium = Medium,
   m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
@@ -108,6 +87,52 @@ Modelica.Blocks.Math.Add add(k2=-1)
   annotation (Placement(transformation(extent={{60,38},{80,58}})));
 Modelica.Blocks.Interfaces.RealOutput error
   annotation (Placement(transformation(extent={{100,38},{120,58}})));
+  Development.OneUTube oneUTube(
+    Tsoil=273.15 + 13.5,
+    redeclare package Medium = Medium,
+    borFieDat=borFieDat,
+    m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
+    dp_nominal=0,
+    TGro_start=(273.15 + 13.5)*ones(10),
+    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState)
+    annotation (Placement(transformation(extent={{-10,-70},{10,-50}})));
+  IBPSA.Fluid.Sources.Boundary_pT sour(
+    redeclare package Medium = Medium,
+    use_p_in=false,
+    nPorts=2,
+    use_T_in=true,
+    p=101330,
+    T=277.15) "Source"
+                     annotation (Placement(transformation(extent={{-96,-36},{
+            -76,-16}},
+                  rotation=0)));
+  Buildings.Fluid.Movers.FlowControlled_m_flow pum1(
+    redeclare package Medium = Medium,
+    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    allowFlowReversal=false,
+    m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
+    addPowerToMedium=false)
+    annotation (Placement(transformation(extent={{-74,-10},{-54,10}})));
+  Buildings.Fluid.Movers.FlowControlled_m_flow pum2(
+    redeclare package Medium = Medium,
+    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    allowFlowReversal=false,
+    m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
+    addPowerToMedium=false)
+    annotation (Placement(transformation(extent={{-74,-70},{-54,-50}})));
+  Buildings.Controls.OBC.CDL.Continuous.Sources.Sine sin1(
+    amplitude=5,
+    freqHz=1/900,
+    offset=273.15 + 6.5)
+    annotation (Placement(transformation(extent={{-100,30},{-80,50}})));
+  Buildings.Controls.OBC.CDL.Continuous.Sources.Pulse pul(
+    width=0.7,
+    period=2700,
+    offset=0,
+    amplitude=5)
+    annotation (Placement(transformation(extent={{-54,28},{-34,48}})));
 equation
   connect(TGroUn.y, preTem.T)
     annotation (Line(points={{-80,79},{-80,70},{-62,70}}, color={0,0,127}));
@@ -117,28 +142,38 @@ equation
     annotation (Line(points={{-10,70},{0,70},{0,50}}, color={191,0,0}));
   connect(lay.port_a, borHolDis.port_wall)
     annotation (Line(points={{0,30},{0,14}}, color={191,0,0}));
-  connect(sou.ports[1], TBorIn.port_a)
-    annotation (Line(points={{-56,0},{-50,0}}, color={0,127,255}));
   connect(TBorIn.port_b, borHolDis.port_a)
     annotation (Line(points={{-30,0},{-14,0}}, color={0,127,255}));
   connect(borHolDis.port_b, TBorDisOut.port_a)
     annotation (Line(points={{14,0},{30,0}}, color={0,127,255}));
   connect(TBorDisOut.port_b, sin.ports[1])
     annotation (Line(points={{50,0},{70,0},{70,0}}, color={0,127,255}));
-  connect(singleBorehole.port_b, TBorConOut.port_a)
-    annotation (Line(points={{10,-60},{30,-60}}, color={0,127,255}));
   connect(TBorConOut.port_b, sin.ports[2])
     annotation (Line(points={{50,-60},{50,-4},{70,-4}}, color={0,127,255}));
-connect(sou1.ports[1], TBorIn1.port_a)
-  annotation (Line(points={{-56,-60},{-50,-60}}, color={0,127,255}));
-connect(TBorIn1.port_b, singleBorehole.port_a)
-  annotation (Line(points={{-30,-60},{-10,-60}}, color={0,127,255}));
 connect(add.y, error)
   annotation (Line(points={{81,48},{110,48}}, color={0,0,127}));
 connect(TBorDisOut.T, add.u1) annotation (Line(points={{40,11},{40,54},
         {58,54}}, color={0,0,127}));
 connect(TBorConOut.T, add.u2) annotation (Line(points={{40,-49},{48,
         -49},{48,42},{58,42}}, color={0,0,127}));
+  connect(TBorIn1.port_b, oneUTube.port_a)
+    annotation (Line(points={{-30,-60},{-10,-60}}, color={0,127,255}));
+  connect(oneUTube.port_b, TBorConOut.port_a)
+    annotation (Line(points={{10,-60},{30,-60}}, color={0,127,255}));
+  connect(pum2.port_b, TBorIn1.port_a)
+    annotation (Line(points={{-54,-60},{-50,-60}}, color={0,127,255}));
+  connect(pum2.port_a, sour.ports[1]) annotation (Line(points={{-74,-60},{-76,
+          -60},{-76,-24}}, color={0,127,255}));
+  connect(sour.ports[2], pum1.port_a) annotation (Line(points={{-76,-28},{-76,
+          -14},{-76,0},{-74,0}}, color={0,127,255}));
+  connect(sin1.y, sour.T_in) annotation (Line(points={{-79,40},{-72,40},{-72,20},
+          {-98,20},{-98,-22}}, color={0,0,127}));
+  connect(pul.y, pum1.m_flow_in) annotation (Line(points={{-33,38},{-22,38},{
+          -22,18},{-64,18},{-64,12}}, color={0,0,127}));
+  connect(pul.y, pum2.m_flow_in) annotation (Line(points={{-33,38},{-22,38},{
+          -22,-40},{-64,-40},{-64,-48}}, color={0,0,127}));
+  connect(pum1.port_b, TBorIn.port_a)
+    annotation (Line(points={{-54,0},{-50,0}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
   experiment(
