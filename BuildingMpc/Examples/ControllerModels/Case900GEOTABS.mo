@@ -41,7 +41,8 @@ model Case900GEOTABS
     redeclare IDEAS.Buildings.Validation.Data.Glazing.GlaBesTest
       glazingA,
     bouTypFlo=IDEAS.Buildings.Components.Interfaces.BoundaryType.External,
-    useFluPor=true,
+    redeclare IDEAS.Buildings.Components.InterzonalAirFlow.AirTight
+      interzonalAirFlow,
     T_start=293.15)
     annotation (Placement(transformation(extent={{-20,-20},{0,0}})));
   inner IDEAS.BoundaryConditions.SimInfoManager sim(lineariseJModelica=true)
@@ -116,28 +117,22 @@ public
     m1_flow_nominal=0.2,
   m2_flow_nominal=0.5)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
-  IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
-    borFieDat(filDat=
-        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.FillingData.Bentonite(
+  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example
+    borFieDat(filDat=IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(
         steadyState=true), soiDat=
-        IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
-        steadyState=true))
+        IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(steadyState=true))
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.Geothermal.Borefields.Development.MultipleBorehole multipleBorehole(
+  Fluid.Geothermal.Borefields.Development.OneUTube multipleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
-    soilTemp=273.15 + 10.8,
     borFieDat=borFieDat,
     dp_nominal=0,
-    m_flow_nominal=0.5)
+    m_flow_nominal=0.5,
+    TGro_start=(273.15 + 13.5)*ones(10),
+    Tsoil=286.65)
     annotation (Placement(transformation(extent={{52,0},{32,20}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
     annotation (Line(points={{-26,40},{-8,40},{-8,0}}, color={0,127,255}));
-  connect(rectangularZoneTemplate.proBusFlo, boundaryWall.propsBus_a)
-    annotation (Line(
-      points={{-10,-16},{-10,-33}},
-      color={255,204,51},
-      thickness=0.5));
   connect(embeddedPipe.heatPortEmb, boundaryWall.port_emb) annotation (Line(
         points={{26,-50},{26,-50},{26,-38},{2,-38}}, color={191,0,0}));
   connect(m_flow_sink.port_b, embeddedPipe.port_a)
@@ -158,10 +153,15 @@ equation
           {60,72},{88,72},{88,-48},{80,-48}}, color={0,127,255}));
   connect(source.ports[1], m_flow_source.port_a) annotation (Line(points={{-26,70},
           {-26,72},{-26,72},{40,72}}, color={0,127,255}));
-connect(heatPump.port_b2, multipleBorehole.port_a) annotation (Line(
-      points={{60,-48},{60,-48},{60,10},{52,10}}, color={0,127,255}));
-connect(multipleBorehole.port_b, m_flow_source.port_a) annotation (Line(
-      points={{32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
+  connect(heatPump.port_b2, multipleBorehole.port_a) annotation (Line(points={{
+          60,-48},{60,-48},{60,10},{52,10}}, color={0,127,255}));
+  connect(multipleBorehole.port_b, m_flow_source.port_a) annotation (Line(
+        points={{32,10},{20,10},{20,72},{40,72}}, color={0,127,255}));
+  connect(boundaryWall.propsBus_a, rectangularZoneTemplate.proBusFlo[1])
+    annotation (Line(
+      points={{-10,-33},{-10,-16}},
+      color={255,204,51},
+      thickness=0.5));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)),
     experiment(
