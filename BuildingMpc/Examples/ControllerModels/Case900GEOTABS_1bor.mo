@@ -124,7 +124,7 @@ public
         IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
         steadyState=true))
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.HeatExchangers.GroundHeatExchangers.SingleBorehole singleBorehole(
+  Fluid.Geothermal.Borefields.SingleBorehole singleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
     soilTemp=273.15 + 10.8,
     borFieDat=borFieDat,

@@ -123,13 +123,12 @@ public
         IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
         steadyState=true))
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.HeatExchangers.GroundHeatExchangers.Development.MultipleBorehole
-                                                           multipleBorehole(
+  Fluid.Geothermal.Borefields.Development.MultipleBorehole multipleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
     soilTemp=273.15 + 10.8,
     borFieDat=borFieDat,
     dp_nominal=0,
-  m_flow_nominal=0.5)
+    m_flow_nominal=0.5)
     annotation (Placement(transformation(extent={{52,0},{32,20}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)

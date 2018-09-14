@@ -1,4 +1,4 @@
 within BuildingMpc.Fluid;
-package HeatExchangers
+package Geothermal
 extends Modelica.Icons.VariantsPackage;
-end HeatExchangers;
+end Geothermal;
