@@ -6,7 +6,7 @@ model OneUTube
       Modelica.Media.Interfaces.PartialMedium "Medium through the borehole"
       annotation (choicesAllMatching = true);
 
-    parameter Modelica.SIunits.Temperature Tsoil=T(fixed=true)
+    parameter Modelica.SIunits.Temperature Tsoil
     "Undisturbed temperature of the ground";
     parameter Integer nSeg = 10
      "Number of segments to use in vertical discretization of the boreholes";
@@ -48,24 +48,24 @@ model OneUTube
     final dynFil=dynFil,
     final m_flow_nominal=m_flow_nominal,
     final dp_nominal=dp_nominal,
-    intHex(RVol1(y=
-            IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
+    final intHex(RVol1(y=
+            BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses.convectionResistance(
             hSeg=borFieDat.conDat.hBor/nSeg,
+            rBor=borFieDat.conDat.rBor,
             rTub=borFieDat.conDat.rTub,
             eTub=borFieDat.conDat.eTub,
             kMed=kMed,
-            muMed=muMed,
+            mueMed=muMed,
             cpMed=cpMed,
-            m_flow=borFieDat.conDat.mBor_flow_nominal,
-            m_flow_nominal=borFieDat.conDat.mBor_flow_nominal)), RVol2(y=
-            IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
+            m_flow_nominal=borFieDat.conDat.mBor_flow_nominal)),                   RVol2(y=
+            BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses.convectionResistance(
             hSeg=borFieDat.conDat.hBor/nSeg,
+            rBor=borFieDat.conDat.rBor,
             rTub=borFieDat.conDat.rTub,
             eTub=borFieDat.conDat.eTub,
             kMed=kMed,
-            muMed=muMed,
+            mueMed=muMed,
             cpMed=cpMed,
-            m_flow=borFieDat.conDat.mBor_flow_nominal,
             m_flow_nominal=borFieDat.conDat.mBor_flow_nominal))))
                      "Borehole"
     annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
