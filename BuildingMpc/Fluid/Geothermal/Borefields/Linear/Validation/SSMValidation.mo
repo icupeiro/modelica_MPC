@@ -45,7 +45,10 @@ protected
 public
   Modelica.Blocks.Sources.Constant const(k=273.15 + 4)
     annotation (Placement(transformation(extent={{-80,40},{-60,60}})));
-  Modelica.Blocks.Sources.Constant const1(k=borFieDat.conDat.mBor_flow_nominal)
+  Modelica.Blocks.Sources.Pulse    pulse(
+    amplitude=borFieDat.conDat.mBor_flow_nominal,
+    width=70,
+    period=2700)
     annotation (Placement(transformation(extent={{-80,0},{-60,20}})));
 
   Development.OneUTube oneUTube(
@@ -94,17 +97,16 @@ public
         steadyState=false), filDat=
         IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(steadyState=false))
     annotation (Placement(transformation(extent={{40,60},{60,80}})));
-  Modelica.Blocks.Math.Add add(k1=-1)
-    annotation (Placement(transformation(extent={{14,28},{34,48}})));
-public
-  Modelica.Blocks.Sources.Constant const2(k=273.15)
-    annotation (Placement(transformation(extent={{-20,60},{0,80}})));
+  Modelica.Blocks.Math.Add err(k1=-1)
+    annotation (Placement(transformation(extent={{60,20},{80,40}})));
+  Modelica.Blocks.Interfaces.RealOutput error
+    annotation (Placement(transformation(extent={{100,20},{120,40}})));
 initial algorithm
   x_start := (273.15+13.5)*ones(nSta);
 equation
   connect(const.y, stateSpace.u[1]) annotation (Line(points={{-59,50},{-40,50},{
           -40,30},{-22,30}}, color={0,0,127}));
-  connect(const1.y, stateSpace.u[2]) annotation (Line(points={{-59,10},{-40,10},
+  connect(pulse.y, stateSpace.u[2]) annotation (Line(points={{-59,10},{-40,10},
           {-40,30},{-22,30}}, color={0,0,127}));
   connect(oneUTube.port_b,TBorConOut. port_a)
     annotation (Line(points={{12,-44},{22,-44}},
@@ -121,12 +123,14 @@ equation
   connect(mFlow.port_b,sin. ports[1])
     annotation (Line(points={{70,-44},{74,-44},{74,-46},{76,-46}},
                                              color={0,127,255}));
-  connect(const1.y, mFlow.m_flow_in)
+  connect(pulse.y, mFlow.m_flow_in)
     annotation (Line(points={{-59,10},{60,10},{60,-32}}, color={0,0,127}));
-  connect(stateSpace.y[1], add.u2)
-    annotation (Line(points={{1,30},{8,30},{8,32},{12,32}}, color={0,0,127}));
   connect(const.y, sou.T_in) annotation (Line(points={{-59,50},{-50,50},{-50,74},
           {-94,74},{-94,-40},{-88,-40}}, color={0,0,127}));
-  connect(const2.y, add.u1)
-    annotation (Line(points={{1,70},{8,70},{8,44},{12,44}}, color={0,0,127}));
+  connect(TBorConOut.T, err.u2)
+    annotation (Line(points={{32,-33},{32,24},{58,24}}, color={0,0,127}));
+  connect(stateSpace.y[1], err.u1) annotation (Line(points={{1,30},{30,30},{30,
+          36},{58,36}}, color={0,0,127}));
+  connect(err.y, error)
+    annotation (Line(points={{81,30},{110,30}}, color={0,0,127}));
 end SSMValidation;
