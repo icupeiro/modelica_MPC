@@ -1,6 +1,6 @@
-within BuildingMpc.Fluid.Geothermal.Borefields.Development;
-model OneUTube
-  "controller model for single-U configuration borefield model"
+within BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses;
+model PartialBorefield
+  "partial controller borefield model"
 
     replaceable package Medium =
       Modelica.Media.Interfaces.PartialMedium "Medium through the borehole"
@@ -30,7 +30,7 @@ model OneUTube
     final allowFlowReversal=allowFlowReversal,
     final k=borFieDat.conDat.nBor) "Division of flow rate"
     annotation (Placement(transformation(extent={{-60,-10},{-80,10}})));
-              IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube                    borHol(
+    replaceable IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube borHol(
     redeclare final package Medium = Medium,
     final borFieDat=borFieDat,
     final nSeg=nSeg,
@@ -48,25 +48,25 @@ model OneUTube
     final dynFil=dynFil,
     final m_flow_nominal=m_flow_nominal,
     final dp_nominal=dp_nominal,
-    final intHex(RVol1(y=
-            BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses.convectionResistance(
-            hSeg=borFieDat.conDat.hBor/nSeg,
-            rBor=borFieDat.conDat.rBor,
+    intHex(RVol1(y=
+            IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
+            hSeg=hSeg,
             rTub=borFieDat.conDat.rTub,
             eTub=borFieDat.conDat.eTub,
             kMed=kMed,
-            mueMed=muMed,
+            muMed=muMed,
             cpMed=cpMed,
-            m_flow_nominal=borFieDat.conDat.mBor_flow_nominal)),                   RVol2(y=
-            BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses.convectionResistance(
-            hSeg=borFieDat.conDat.hBor/nSeg,
-            rBor=borFieDat.conDat.rBor,
+            m_flow=m_flow_nominal,
+            m_flow_nominal=m_flow_nominal)), RVol2(y=
+            IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
+            hSeg=hSeg,
             rTub=borFieDat.conDat.rTub,
             eTub=borFieDat.conDat.eTub,
             kMed=kMed,
-            mueMed=muMed,
+            muMed=muMed,
             cpMed=cpMed,
-            m_flow_nominal=borFieDat.conDat.mBor_flow_nominal))))
+            m_flow=m_flow_nominal,
+            m_flow_nominal=m_flow_nominal))))
                      "Borehole"
     annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
   IBPSA.Fluid.BaseClasses.MassFlowRateMultiplier masFloMul(
@@ -149,6 +149,7 @@ protected
       Medium.T_default,
       Medium.X_default)) "Dynamic viscosity of the fluid";
 
+  parameter Modelica.SIunits.Height hSeg = borFieDat.conDat.hBor/nSeg;
 equation
   connect(port_a, masFloDiv.port_b)
     annotation (Line(points={{-100,0},{-80,0}}, color={0,127,255}));
@@ -229,4 +230,4 @@ connect(Cground.port,lay. port_b)
           fillColor={0,0,255},
           fillPattern=FillPattern.Forward)}), Diagram(coordinateSystem(
           preserveAspectRatio=false)));
-end OneUTube;
+end PartialBorefield;

@@ -1,2 +1,1 @@
-inputBus.TBorIn
-inputBus.mFlow
+inputBus.Qbor

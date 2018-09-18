@@ -79,7 +79,7 @@ model BorHolValidationLong
     p=101330,
     T=283.15) "Sink" annotation (Placement(transformation(extent={{90,-12},{70,
             8}},  rotation=0)));
-  SingleBorehole singleBorehole(
+  Development.SingleBorehole singleBorehole(
     borFieDat=borFieDat,
     redeclare package Medium = Medium,
     m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,

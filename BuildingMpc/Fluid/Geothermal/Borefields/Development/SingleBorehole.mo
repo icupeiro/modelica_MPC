@@ -1,4 +1,4 @@
-within BuildingMpc.Fluid.Geothermal.Borefields;
+within BuildingMpc.Fluid.Geothermal.Borefields.Development;
 model SingleBorehole "single borehole model for MPC"
 
   replaceable package Medium =

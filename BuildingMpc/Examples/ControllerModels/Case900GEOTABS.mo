@@ -122,7 +122,7 @@ public
         steadyState=true), soiDat=
         IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(steadyState=true))
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.Geothermal.Borefields.Development.OneUTube multipleBorehole(
+  Fluid.Geothermal.Borefields.OneUTube multipleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
     borFieDat=borFieDat,
     dp_nominal=0,

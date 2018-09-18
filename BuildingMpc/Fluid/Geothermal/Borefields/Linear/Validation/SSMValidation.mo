@@ -43,15 +43,16 @@ protected
   final parameter Integer[2] Bsize = readMatrixSize(fileName=fileName, matrixName="B") "Size of B matrix of state space model";
   final parameter Integer[2] Csize = readMatrixSize(fileName=fileName, matrixName="C") "Size of C matrix of state space model";
 public
-  Modelica.Blocks.Sources.Constant const(k=273.15 + 4)
+  Modelica.Blocks.Sources.Constant const(k=1)
     annotation (Placement(transformation(extent={{-80,40},{-60,60}})));
   Modelica.Blocks.Sources.Pulse    pulse(
-    amplitude=borFieDat.conDat.mBor_flow_nominal,
     width=70,
-    period=2700)
-    annotation (Placement(transformation(extent={{-80,0},{-60,20}})));
+    period=2700,
+    amplitude=5,
+    offset=273.15 + 4)
+    annotation (Placement(transformation(extent={{-60,0},{-80,20}})));
 
-  Development.OneUTube oneUTube(
+  OneUTube oneUTube(
     borFieDat=borFieDat,
     dp_nominal=0,
     redeclare package Medium = Medium,
@@ -82,10 +83,10 @@ public
     m_flow_nominal=1,
     use_inputFilter=false)
     annotation (Placement(transformation(extent={{50,-54},{70,-34}})));
-  IBPSA.Fluid.Sensors.TemperatureTwoPort TBorIn1(
+  IBPSA.Fluid.Sensors.TemperatureTwoPort TBorIn(
     redeclare package Medium = Medium,
     m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
-    tau=0)                               "Inlet borehole temperature"
+    tau=0) "Inlet borehole temperature"
     annotation (Placement(transformation(extent={{-60,-54},{-40,-34}})));
   IBPSA.Fluid.Sensors.TemperatureTwoPort TBorConOut(
     redeclare package Medium = Medium,
@@ -101,36 +102,35 @@ public
     annotation (Placement(transformation(extent={{60,20},{80,40}})));
   Modelica.Blocks.Interfaces.RealOutput error
     annotation (Placement(transformation(extent={{100,20},{120,40}})));
+  Modelica.Blocks.Sources.RealExpression realExpression(y=mFlow.m_flow*Medium.cp_const
+        *(TBorIn.T - TBorConOut.T))
+    annotation (Placement(transformation(extent={{-80,70},{-60,90}})));
 initial algorithm
   x_start := (273.15+13.5)*ones(nSta);
 equation
-  connect(const.y, stateSpace.u[1]) annotation (Line(points={{-59,50},{-40,50},{
-          -40,30},{-22,30}}, color={0,0,127}));
-  connect(pulse.y, stateSpace.u[2]) annotation (Line(points={{-59,10},{-40,10},
-          {-40,30},{-22,30}}, color={0,0,127}));
   connect(oneUTube.port_b,TBorConOut. port_a)
     annotation (Line(points={{12,-44},{22,-44}},
                                             color={0,127,255}));
-  connect(sou.ports[1],TBorIn1. port_a)
-    annotation (Line(points={{-66,-44},{-60,-44}},
-                                               color={0,127,255}));
-  connect(oneUTube.port_a,TBorIn1. port_b)
-    annotation (Line(points={{-28,-44},{-40,-44}},
-                                               color={0,127,255}));
+  connect(sou.ports[1], TBorIn.port_a)
+    annotation (Line(points={{-66,-44},{-60,-44}}, color={0,127,255}));
+  connect(oneUTube.port_a, TBorIn.port_b)
+    annotation (Line(points={{-28,-44},{-40,-44}}, color={0,127,255}));
   connect(TBorConOut.port_b,mFlow. port_a)
     annotation (Line(points={{42,-44},{50,-44}},
                                              color={0,127,255}));
   connect(mFlow.port_b,sin. ports[1])
     annotation (Line(points={{70,-44},{74,-44},{74,-46},{76,-46}},
                                              color={0,127,255}));
-  connect(pulse.y, mFlow.m_flow_in)
-    annotation (Line(points={{-59,10},{60,10},{60,-32}}, color={0,0,127}));
-  connect(const.y, sou.T_in) annotation (Line(points={{-59,50},{-50,50},{-50,74},
-          {-94,74},{-94,-40},{-88,-40}}, color={0,0,127}));
   connect(TBorConOut.T, err.u2)
     annotation (Line(points={{32,-33},{32,24},{58,24}}, color={0,0,127}));
   connect(stateSpace.y[1], err.u1) annotation (Line(points={{1,30},{30,30},{30,
           36},{58,36}}, color={0,0,127}));
   connect(err.y, error)
     annotation (Line(points={{81,30},{110,30}}, color={0,0,127}));
+  connect(realExpression.y, stateSpace.u[1]) annotation (Line(points={{-59,80},
+          {-38,80},{-38,30},{-22,30}}, color={0,0,127}));
+  connect(const.y, mFlow.m_flow_in) annotation (Line(points={{-59,50},{-48,50},
+          {-48,-18},{60,-18},{60,-32}}, color={0,0,127}));
+  connect(pulse.y, sou.T_in) annotation (Line(points={{-81,10},{-94,10},{-94,
+          -40},{-88,-40}}, color={0,0,127}));
 end SSMValidation;
