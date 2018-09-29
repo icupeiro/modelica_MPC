@@ -4,92 +4,93 @@ model Linearisation
   replaceable package Medium =
       IDEAS.Media.Water "Medium"
       annotation (choicesAllMatching = true);
-
-  Buses.OutputBus                  outputBus annotation (Placement(
-        transformation(extent={{-112,58},{-88,82}}),  iconTransformation(extent=
-           {{-196,-6},{-176,14}})));
-  Buses.InputBus                       inputBus
-    annotation (Placement(transformation(extent={{-114,76},{-88,102}})));
+  parameter Modelica.SIunits.TemperatureDifference dT = 3 "design temperature difference in the borefield";
+  Buses.InputBus inputBus annotation (Placement(transformation(extent={{-120,58},
+            {-80,98}}), iconTransformation(extent={{-208,28},{-188,48}})));
+  Buses.OutputBus outputBus
+    annotation (Placement(transformation(extent={{-120,30},{-80,70}})));
   OneUTube oneUTube(
     borFieDat=borFieDat,
-    dp_nominal=0,
-    redeclare package Medium = Medium,
-    Tsoil=273.15 + 13.5,
-    TGro_start=(273.15 + 13.5)*ones(10),
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    m_flow_nominal=borFieDat.conDat.mBor_flow_nominal)
-    annotation (Placement(transformation(extent={{-32,-20},{8,20}})));
-  IBPSA.Fluid.Sources.Boundary_pT sou(
-    redeclare package Medium = Medium,
-    use_p_in=false,
-    nPorts=1,
-    use_T_in=true,
-    T=277.15) "Source" annotation (Placement(transformation(extent={{-90,-10},{-70,
-            10}}, rotation=0)));
-  IBPSA.Fluid.Sources.Boundary_pT sin(
-    redeclare package Medium = Medium,
-    use_p_in=false,
-    use_T_in=false,
-    nPorts=1) "Sink" annotation (Placement(transformation(extent={{92,-10},{72,10}},
-                  rotation=0)));
-  Buildings.Fluid.Movers.FlowControlled_m_flow mFlow(
-    redeclare package Medium = Medium,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    m_flow_nominal=borFieDat.conDat.mBorFie_flow_nominal,
     allowFlowReversal=false,
-    addPowerToMedium=false,
-    m_flow_nominal=1,
-    use_inputFilter=false)
-    annotation (Placement(transformation(extent={{46,-10},{66,10}})));
-  IBPSA.Fluid.Sensors.TemperatureTwoPort TBorIn(
     redeclare package Medium = Medium,
-    m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
-    tau=0,
-    T(start=273.15 + 13.5)) "Inlet borehole temperature"
-    annotation (Placement(transformation(extent={{-64,-10},{-44,10}})));
-  IBPSA.Fluid.Sensors.TemperatureTwoPort TBorConOut(
+    TGro_start=(273.15 + 13.5)*ones(10),
+    show_T=true,
+    Tsoil=286.65,
+    dp_nominal=borFieDat.conDat.dp_nominal)
+    annotation (Placement(transformation(extent={{-30,-20},{10,20}})));
+  IDEAS.Fluid.Sensors.TemperatureTwoPort TIn(
     redeclare package Medium = Medium,
-    m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
     tau=0,
-    T(start=273.15 + 12.0))              "Outlet borehole temperature"
-    annotation (Placement(transformation(extent={{18,-10},{38,10}})));
+    allowFlowReversal=false,
+    m_flow_nominal=borFieDat.conDat.mBorFie_flow_nominal)
+    annotation (Placement(transformation(extent={{-60,-10},{-40,10}})));
+  IDEAS.Fluid.Sensors.TemperatureTwoPort TOut(
+    allowFlowReversal=false,
+    m_flow_nominal=borFieDat.conDat.mBorFie_flow_nominal,
+    redeclare package Medium = Medium,
+    tau=0) annotation (Placement(transformation(extent={{20,-10},{40,10}})));
   IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example
-    borFieDat(soiDat=IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(
-        steadyState=false), filDat=
-        IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(steadyState=false))
+                                                 borFieDat
     annotation (Placement(transformation(extent={{-80,-60},{-60,-40}})));
-  Modelica.Blocks.Sources.RealExpression realExpression(y=inputBus.Qbor/(mFlow.m_flow
-        *Medium.cp_const))
-    annotation (Placement(transformation(extent={{12,30},{-8,50}})));
-  Modelica.Blocks.Math.Add add(k1=+1)
-    annotation (Placement(transformation(extent={{-64,36},{-84,56}})));
-  Modelica.Blocks.Sources.RealExpression realExpression1(y=inputBus.Qbor/(
-        Medium.cp_const*(TBorIn.T - TBorConOut.T)))
-    annotation (Placement(transformation(extent={{-8,78},{12,98}})));
+  IDEAS.Fluid.Sources.Boundary_ph bou(redeclare package Medium = Medium, nPorts=
+       1) annotation (Placement(transformation(
+        extent={{10,-10},{-10,10}},
+        rotation=-90,
+        origin={-90,-18})));
+protected
+  IDEAS.Fluid.Movers.BaseClasses.IdealSource mFlow(
+    final allowFlowReversal=false,
+    final control_m_flow=true,
+    final m_flow_small=1e-04,
+    redeclare final package Medium = Medium,
+    control_dp=false) "Pressure source"
+    annotation (Placement(transformation(extent={{-10,-10},{10,10}},
+        rotation=90,
+        origin={60,30})));
+  IDEAS.Fluid.HeatExchangers.HeaterCooler_u
+                                          outCon(
+    final massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    redeclare final package Medium = Medium,
+    final allowFlowReversal=false,
+    final m_flow_nominal=borFieDat.conDat.mBorFie_flow_nominal,
+    final tau=0,
+    final energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    dp_nominal=borFieDat.conDat.dp_nominal,
+    Q_flow_nominal=1)
+                   "Model to set outlet conditions"
+    annotation (Placement(transformation(extent={{8,50},{-18,76}})));
+public
+  Modelica.Blocks.Math.Gain gain(k=1/(Medium.cp_const*dT))
+    annotation (Placement(transformation(extent={{-12,16},{8,36}})));
 equation
-  connect(oneUTube.port_b, TBorConOut.port_a)
-    annotation (Line(points={{8,0},{18,0}}, color={0,127,255}));
-  connect(sou.ports[1], TBorIn.port_a)
-    annotation (Line(points={{-70,0},{-64,0}}, color={0,127,255}));
-  connect(oneUTube.port_a, TBorIn.port_b)
-    annotation (Line(points={{-32,0},{-44,0}}, color={0,127,255}));
-  connect(TBorConOut.port_b, mFlow.port_a)
-    annotation (Line(points={{38,0},{46,0}}, color={0,127,255}));
-  connect(mFlow.port_b, sin.ports[1])
-    annotation (Line(points={{66,0},{72,0}}, color={0,127,255}));
-  connect(TBorConOut.T, outputBus.TBorOut) annotation (Line(points={{28,11},{28,
-          70.06},{-99.94,70.06}}, color={0,0,127}), Text(
+  connect(TIn.port_b, oneUTube.port_a)
+    annotation (Line(points={{-40,0},{-30,0}}, color={0,127,255}));
+  connect(oneUTube.port_b, TOut.port_a)
+    annotation (Line(points={{10,0},{20,0}}, color={0,127,255}));
+  connect(TOut.port_b, mFlow.port_a)
+    annotation (Line(points={{40,0},{60,0},{60,20}},
+                                             color={0,127,255}));
+  connect(TOut.T, outputBus.TBorOut) annotation (Line(points={{30,11},{30,50.1},
+          {-99.9,50.1}}, color={0,0,127}), Text(
       string="%second",
       index=1,
       extent={{6,3},{6,3}}));
-  connect(add.y, sou.T_in) annotation (Line(points={{-85,46},{-100,46},{-100,4},
-          {-92,4}}, color={0,0,127}));
-  connect(TBorConOut.T, add.u1)
-    annotation (Line(points={{28,11},{28,52},{-62,52}}, color={0,0,127}));
-  connect(realExpression.y, add.u2)
-    annotation (Line(points={{-9,40},{-62,40}}, color={0,0,127}));
-  connect(realExpression1.y, mFlow.m_flow_in)
-    annotation (Line(points={{13,88},{56,88},{56,12}}, color={0,0,127}));
+  connect(bou.ports[1], TIn.port_a)
+    annotation (Line(points={{-90,-8},{-90,0},{-60,0}}, color={0,127,255}));
+  connect(mFlow.port_b, outCon.port_a)
+    annotation (Line(points={{60,40},{60,63},{8,63}}, color={0,127,255}));
+  connect(outCon.port_b, TIn.port_a)
+    annotation (Line(points={{-18,63},{-60,63},{-60,0}}, color={0,127,255}));
+  connect(gain.y, mFlow.m_flow_in) annotation (Line(points={{9,26},{36,26},{36,
+          24},{52,24}}, color={0,0,127}));
+  connect(outCon.Q_flow, gain.u) annotation (Line(points={{-19.3,70.8},{-40,
+          70.8},{-40,26},{-14,26}}, color={0,0,127}));
+  connect(outCon.u, inputBus.Qbor) annotation (Line(points={{10.6,70.8},{32,
+          70.8},{32,80},{-108,80}}, color={0,0,127}), Text(
+      string="%second",
+      index=1,
+      extent={{6,3},{6,3}}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
 end Linearisation;

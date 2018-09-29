@@ -2,6 +2,7 @@ within BuildingMpc.Examples.SimulationModels;
 package Case900GEOTABS
   model InternalUpdate
     "Controller model for the BESTEST Case900 with TABS and heat pump with a single borehole model; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
+    import BuildingMpc;
     extends Modelica.Icons.Example;
     IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
       h=2.7,
@@ -120,13 +121,13 @@ package Case900GEOTABS
           extent={{-10,-10},{10,10}},
           rotation=-90,
           origin={-78,-50})));
-    Fluid.HeatPumps.HeatPump heatPump(
+    BuildingMpc.Fluid.HeatPumps.HeatPump heatPump(
       redeclare package Medium1 = IDEAS.Media.Water,
       redeclare package Medium2 = IDEAS.Media.Water,
       dp2_nominal=0,
       dp1_nominal=0,
       m1_flow_nominal=0.2,
-    m2_flow_nominal=0.5)
+      m2_flow_nominal=0.5)
       annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
     IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
       borFieDat(filDat=
@@ -273,6 +274,7 @@ First implementation
 
   model StateUpdate
     "Controller model for the BESTEST Case900 with TABS and heat pump with a single borehole model; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
+    import BuildingMpc;
     extends Modelica.Icons.Example;
     IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
       h=2.7,
@@ -391,13 +393,13 @@ First implementation
           extent={{-10,-10},{10,10}},
           rotation=-90,
           origin={-78,-50})));
-    Fluid.HeatPumps.HeatPump heatPump(
+    BuildingMpc.Fluid.HeatPumps.HeatPump heatPump(
       redeclare package Medium1 = IDEAS.Media.Water,
       redeclare package Medium2 = IDEAS.Media.Water,
       dp2_nominal=0,
       dp1_nominal=0,
       m1_flow_nominal=0.2,
-    m2_flow_nominal=0.5)
+      m2_flow_nominal=0.5)
       annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
     IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.ExampleBorefieldData
       borFieDat(filDat=

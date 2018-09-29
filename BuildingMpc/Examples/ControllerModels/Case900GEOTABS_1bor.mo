@@ -1,6 +1,8 @@
 within BuildingMpc.Examples.ControllerModels;
 model Case900GEOTABS_1bor
   "Controller model for the BESTEST Case900 with TABS and heat pump with a single borehole model; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
+  import BuildingMpc;
+  import BuildingMpc;
   extends Modelica.Icons.Example;
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,
@@ -108,7 +110,7 @@ public
         extent={{-10,-10},{10,10}},
         rotation=-90,
         origin={-78,-50})));
-  Fluid.HeatPumps.HeatPump heatPump(
+  BuildingMpc.Fluid.HeatPumps.HeatPump heatPump(
     redeclare package Medium1 = IDEAS.Media.Water,
     redeclare package Medium2 = IDEAS.Media.Water,
     dp2_nominal=0,
@@ -124,7 +126,8 @@ public
         IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.SoilData.SandStone(
         steadyState=true))
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
-  Fluid.Geothermal.Borefields.Development.SingleBorehole singleBorehole(
+  BuildingMpc.Fluid.Geothermal.Borefields.Development.SingleBorehole
+    singleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
     soilTemp=273.15 + 10.8,
     borFieDat=borFieDat,

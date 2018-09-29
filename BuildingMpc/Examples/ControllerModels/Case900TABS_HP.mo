@@ -1,6 +1,7 @@
 within BuildingMpc.Examples.ControllerModels;
 model Case900TABS_HP
   "Controller model for the BESTEST Case900 with TABS and heat pump with an ideal source; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
+  import BuildingMpc;
   extends Modelica.Icons.Example;
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,
@@ -108,7 +109,7 @@ public
         extent={{-10,-10},{10,10}},
         rotation=-90,
         origin={-78,-50})));
-  Fluid.HeatPumps.HeatPump heatPump(
+  BuildingMpc.Fluid.HeatPumps.HeatPump heatPump(
     redeclare package Medium1 = IDEAS.Media.Water,
     redeclare package Medium2 = IDEAS.Media.Water,
     dp2_nominal=0,

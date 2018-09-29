@@ -8,10 +8,10 @@ model CylindricalGroundLayer
   parameter Modelica.SIunits.Height h "Height of the cylinder";
   parameter Modelica.SIunits.Radius r_a "Internal radius";
   parameter Modelica.SIunits.Radius r_b "External radius";
-  parameter Modelica.SIunits.Temperature TInt_start=293.15
+  parameter Modelica.SIunits.Temperature TInt_start
     "Initial temperature at port_a, used if steadyStateInitial = false"
     annotation (Dialog(group="Initialization", enable=not steadyStateInitial));
-  parameter Modelica.SIunits.Temperature TExt_start=293.15
+  parameter Modelica.SIunits.Temperature TExt_start
     "Initial temperature at port_b, used if steadyStateInitial = false"
     annotation (Dialog(group="Initialization", enable=not steadyStateInitial));
   parameter Boolean steadyStateInitial=false
@@ -35,8 +35,7 @@ model CylindricalGroundLayer
         extent={{12,-12},{-12,12}},
         rotation=180,
         origin={0,0})));
-  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor[nSta] Csoil(C=C, der_T(
-        fixed=true))
+  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor[nSta] Csoil(C=C)
     annotation (Placement(transformation(extent={{-12,42},{12,66}})));
 
 protected
@@ -67,6 +66,7 @@ initial algorithm
       gridFac_sum_old := gridFac_sum;
     end if;
   end for;
+
 initial equation
   r[1] = r_a;
   r[2] = r_a + sqrt(k/c/d*60) "eskilson minimum length";
@@ -77,6 +77,14 @@ initial equation
     r[i] = r[i - 1] + (r_b - r[4])/gridFac_sum*gridFac^(i - 5);
   end for;
 
+    if steadyStateInitial then
+      Csoil.T = zeros(nSta);
+    else
+      for i in 1:nSta loop
+        Csoil[i].T = TInt_start + (TExt_start - TInt_start)/Modelica.Math.log(r_b/r_a)
+          *Modelica.Math.log(rC[i]/r_a);
+      end for;
+    end if;
 equation
 
   connect(port_a,Gsoil [1].port_a)

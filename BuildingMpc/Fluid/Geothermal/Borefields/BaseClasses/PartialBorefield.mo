@@ -30,7 +30,7 @@ model PartialBorefield
     final allowFlowReversal=allowFlowReversal,
     final k=borFieDat.conDat.nBor) "Division of flow rate"
     annotation (Placement(transformation(extent={{-60,-10},{-80,10}})));
-    replaceable IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube borHol(
+    replaceable IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.TwoUTube borHol(
     redeclare final package Medium = Medium,
     final borFieDat=borFieDat,
     final nSeg=nSeg,
@@ -46,51 +46,49 @@ model PartialBorefield
     final energyDynamics=energyDynamics,
     final p_start=p_start,
     final dynFil=dynFil,
-    final m_flow_nominal=m_flow_nominal,
-    final dp_nominal=dp_nominal,
-    intHex(RVol1(y=
-            IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
-            hSeg=hSeg,
-            rTub=borFieDat.conDat.rTub,
-            eTub=borFieDat.conDat.eTub,
-            kMed=kMed,
-            muMed=muMed,
-            cpMed=cpMed,
-            m_flow=m_flow_nominal,
-            m_flow_nominal=m_flow_nominal)), RVol2(y=
-            IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
-            hSeg=hSeg,
-            rTub=borFieDat.conDat.rTub,
-            eTub=borFieDat.conDat.eTub,
-            kMed=kMed,
-            muMed=muMed,
-            cpMed=cpMed,
-            m_flow=m_flow_nominal,
-            m_flow_nominal=m_flow_nominal))))
+    final m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
+    final dp_nominal=borFieDat.conDat.dp_nominal)
                      "Borehole"
     annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+//     intHex(RVol1(y=
+//             IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
+//             hSeg=hSeg,
+//             rTub=borFieDat.conDat.rTub,
+//             eTub=borFieDat.conDat.eTub,
+//             kMed=kMed,
+//             muMed=muMed,
+//             cpMed=cpMed,
+//             m_flow=borFieDat.conDat.mBor_flow_nominal,
+//             m_flow_nominal=borFieDat.conDat.mBor_flow_nominal)), RVol2(y=
+//             IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
+//             hSeg=hSeg,
+//             rTub=borFieDat.conDat.rTub,
+//             eTub=borFieDat.conDat.eTub,
+//             kMed=kMed,
+//             muMed=muMed,
+//             cpMed=cpMed,
+//             m_flow=borFieDat.conDat.mBor_flow_nominal,
+//             m_flow_nominal=borFieDat.conDat.mBor_flow_nominal))),
   IBPSA.Fluid.BaseClasses.MassFlowRateMultiplier masFloMul(
     redeclare final package Medium = Medium,
     final allowFlowReversal=allowFlowReversal,
     final k=borFieDat.conDat.nBor) "Mass flow multiplier"
     annotation (Placement(transformation(extent={{60,-10},{80,10}})));
-  BaseClasses.CylindricalGroundLayer
+  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical
     lay[nSeg](
     each r_b=3,
     each soiDat=borFieDat.soiDat,
-    steadyStateInitial=false,
     each h=borFieDat.conDat.hBor/nSeg,
     each r_a=borFieDat.conDat.rBor,
-    TInt_start=TGro_start,
-    TExt_start=Tsoil)                               annotation (Placement(
+    TExt_start=Tsoil,
+    each steadyStateInitial=false,
+    TInt_start=TGro_start)                              annotation (Placement(
         transformation(
         extent={{-10,-10},{10,10}},
         rotation=90,
         origin={0,40})));
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor[nSeg] Cground(
-    C=Modelica.Constants.inf,
-    T(start=Tsoil, fixed=true),
-    der_T(fixed=true))
+    C=Modelica.Constants.inf, T(start=Tsoil, fixed=false))
     annotation (Placement(transformation(extent={{-12,72},{12,96}})));
   parameter Boolean allowFlowReversal=true
     "= false to simplify equations, assuming, but not enforcing, no flow reversal"
@@ -127,10 +125,6 @@ model PartialBorefield
     annotation (Dialog(tab="Dynamics"));
   parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template borFieDat "Borefield data"
     annotation (Placement(transformation(extent={{-80,-80},{-60,-60}})));
-  parameter Modelica.SIunits.MassFlowRate m_flow_nominal
-    "Nominal mass flow rate";
-  parameter Modelica.SIunits.PressureDifference dp_nominal
-    "Pressure difference";
 
 protected
     parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
