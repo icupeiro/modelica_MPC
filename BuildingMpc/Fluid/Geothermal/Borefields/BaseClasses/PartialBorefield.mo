@@ -10,7 +10,7 @@ model PartialBorefield
     "Undisturbed temperature of the ground";
     parameter Integer nSeg = 10
      "Number of segments to use in vertical discretization of the boreholes";
-
+     parameter Real k = 2/(muMed*Modelica.Constants.pi*rTub_in);
   Modelica.Fluid.Interfaces.FluidPort_a port_a(
     p(start=Medium.p_default),
     redeclare final package Medium = Medium,
@@ -46,29 +46,13 @@ model PartialBorefield
     final energyDynamics=energyDynamics,
     final p_start=p_start,
     final dynFil=dynFil,
+         intHex(RVol1(y= RFluPip),
+         RVol2(y= RFluPip)),
     final m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
     final dp_nominal=borFieDat.conDat.dp_nominal)
                      "Borehole"
     annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
-//     intHex(RVol1(y=
-//             IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
-//             hSeg=hSeg,
-//             rTub=borFieDat.conDat.rTub,
-//             eTub=borFieDat.conDat.eTub,
-//             kMed=kMed,
-//             muMed=muMed,
-//             cpMed=cpMed,
-//             m_flow=borFieDat.conDat.mBor_flow_nominal,
-//             m_flow_nominal=borFieDat.conDat.mBor_flow_nominal)), RVol2(y=
-//             IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
-//             hSeg=hSeg,
-//             rTub=borFieDat.conDat.rTub,
-//             eTub=borFieDat.conDat.eTub,
-//             kMed=kMed,
-//             muMed=muMed,
-//             cpMed=cpMed,
-//             m_flow=borFieDat.conDat.mBor_flow_nominal,
-//             m_flow_nominal=borFieDat.conDat.mBor_flow_nominal))),
+
   IBPSA.Fluid.BaseClasses.MassFlowRateMultiplier masFloMul(
     redeclare final package Medium = Medium,
     final allowFlowReversal=allowFlowReversal,
@@ -126,6 +110,14 @@ model PartialBorefield
   parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template borFieDat "Borefield data"
     annotation (Placement(transformation(extent={{-80,-80},{-60,-60}})));
 
+
+      Real Re "Reynolds";
+  Real Nu "Nusselt";
+  parameter Real a = -2350/(2*3.66-NuTurb)^21;
+  parameter Real NuTurb = 0.023*(cpMed*muMed/kMed)^(0.35)*(2400)^(0.8) "Nusselt at Re=2400";
+  Modelica.SIunits.CoefficientOfHeatTransfer h
+    "Convective heat transfer coefficient of the fluid";
+  Modelica.SIunits.ThermalResistance RFluPip;
 protected
     parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
       Medium.specificHeatCapacityCp(Medium.setState_pTX(
@@ -144,7 +136,18 @@ protected
       Medium.X_default)) "Dynamic viscosity of the fluid";
 
   parameter Modelica.SIunits.Height hSeg = borFieDat.conDat.hBor/nSeg;
+  parameter Modelica.SIunits.Radius rTub_in = borFieDat.conDat.rTub - borFieDat.conDat.eTub
+    "Pipe inner radius";
+
 equation
+
+
+  Re = k*borHol.port_a.m_flow;
+  Re = a*(Nu - (NuTurb - 3.66))^21 + 2350;
+  //Nu :=a*(Re - (NuTurb - 3.66))^(1/3) + 2350;
+  h = Nu*kMed/(2*rTub_in);
+  RFluPip =1/(2*Modelica.Constants.pi*rTub_in*hSeg*h);
+
   connect(port_a, masFloDiv.port_b)
     annotation (Line(points={{-100,0},{-80,0}}, color={0,127,255}));
   connect(masFloDiv.port_a, borHol.port_a)

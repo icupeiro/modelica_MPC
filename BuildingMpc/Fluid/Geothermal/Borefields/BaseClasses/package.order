@@ -1,6 +1,6 @@
 CylindricalGroundLayer
 InternalHEXUTube
-convectionResistance
+convectionResistanceCircularPipe
 SingleBoreHoleUTube
 CylindricalGroundLayerNAL
 PartialBorefield

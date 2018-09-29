@@ -3,6 +3,23 @@ model ShortTerm
   extends Modelica.Icons.Example;
   package Medium = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=283.15, X_a=0.30);
   parameter Integer nSeg = borHol1.nSeg;
+
+
+    parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
+      Medium.specificHeatCapacityCp(Medium.setState_pTX(
+      Medium.p_default,
+      Medium.T_default,
+      Medium.X_default)) "Specific heat capacity of the fluid";
+  parameter Modelica.SIunits.ThermalConductivity kMed=
+      Medium.thermalConductivity(Medium.setState_pTX(
+      Medium.p_default,
+      Medium.T_default,
+      Medium.X_default)) "Thermal conductivity of the fluid";
+  parameter Modelica.SIunits.DynamicViscosity muMed=Medium.dynamicViscosity(
+      Medium.setState_pTX(
+      Medium.p_default,
+      Medium.T_default,
+      Medium.X_default)) "Dynamic viscosity of the fluid";
   OneUTube oneUTube(
     redeclare package Medium = Medium,
     TGro_start=(273.15 + 13.5)*ones(10),
@@ -100,6 +117,12 @@ public
     annotation (Placement(transformation(extent={{-48,-16},{-28,6}})));
   Modelica.Blocks.Math.Gain gain(k=borFieDat.conDat.nBor)
     annotation (Placement(transformation(extent={{28,58},{48,78}})));
+  Modelica.Blocks.Sources.Ramp
+                            ramp(height=borFieDat.conDat.mBor_flow_nominal*2,
+      duration=30000)
+    annotation (Placement(transformation(extent={{-60,60},{-40,80}})));
+  Modelica.Blocks.Math.Add  err(k2=-1)
+    annotation (Placement(transformation(extent={{72,60},{92,80}})));
 equation
   connect(sou.ports[1], TIn.port_a)
     annotation (Line(points={{-60,20},{-50,20}}, color={0,127,255}));
@@ -131,4 +154,8 @@ equation
     annotation (Line(points={{49,68},{50,68},{50,28}}, color={0,0,127}));
   connect(sine.y, gain.u)
     annotation (Line(points={{-27,-5},{26,-5},{26,68}}, color={0,0,127}));
+  connect(TOut.T, err.u1)
+    annotation (Line(points={{20,31},{20,76},{70,76}}, color={0,0,127}));
+  connect(TOut1.T, err.u2) annotation (Line(points={{20,-47},{46,-47},{46,64},{
+          70,64}}, color={0,0,127}));
 end ShortTerm;
