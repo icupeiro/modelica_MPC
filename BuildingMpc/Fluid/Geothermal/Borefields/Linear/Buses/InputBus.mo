@@ -2,9 +2,9 @@ within BuildingMpc.Fluid.Geothermal.Borefields.Linear.Buses;
 expandable connector InputBus
   extends Modelica.Icons.SignalBus;
 
-  input Modelica.SIunits.HeatFlowRate Qbor(start = 100);
+  //input Modelica.SIunits.HeatFlowRate Qbor(start = 100);
   //
-  //input Modelica.SIunits.Temperature Tin(start = 273.15+16.5);
+  input Modelica.SIunits.Temperature Tin(start = 273.15+13.5);
   //input Modelica.SIunits.MassFlowRate mFlow(start=0.1);
 
   annotation (

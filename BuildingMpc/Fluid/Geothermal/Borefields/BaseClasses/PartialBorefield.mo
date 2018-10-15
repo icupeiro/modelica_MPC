@@ -29,7 +29,7 @@ model PartialBorefield
     redeclare final package Medium = Medium,
     final allowFlowReversal=allowFlowReversal,
     final k=borFieDat.conDat.nBor) "Division of flow rate"
-    annotation (Placement(transformation(extent={{-60,-10},{-80,10}})));
+    annotation (Placement(transformation(extent={{-60,-50},{-80,-30}})));
     replaceable IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.TwoUTube borHol(
     redeclare final package Medium = Medium,
     final borFieDat=borFieDat,
@@ -51,13 +51,13 @@ model PartialBorefield
     final m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
     final dp_nominal=borFieDat.conDat.dp_nominal)
                      "Borehole"
-    annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
+    annotation (Placement(transformation(extent={{-10,-50},{10,-30}})));
 
   IBPSA.Fluid.BaseClasses.MassFlowRateMultiplier masFloMul(
     redeclare final package Medium = Medium,
     final allowFlowReversal=allowFlowReversal,
     final k=borFieDat.conDat.nBor) "Mass flow multiplier"
-    annotation (Placement(transformation(extent={{60,-10},{80,10}})));
+    annotation (Placement(transformation(extent={{60,-50},{80,-30}})));
   IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical
     lay[nSeg](
     each r_b=3,
@@ -113,7 +113,7 @@ model PartialBorefield
 
       Real Re "Reynolds";
   Real Nu "Nusselt";
-  parameter Real a = -2350/(2*3.66-NuTurb)^21;
+  parameter Real a = -2350/(2*3.66-NuTurb)^151;
   parameter Real NuTurb = 0.023*(cpMed*muMed/kMed)^(0.35)*(2400)^(0.8) "Nusselt at Re=2400";
   Modelica.SIunits.CoefficientOfHeatTransfer h
     "Convective heat transfer coefficient of the fluid";
@@ -143,23 +143,27 @@ equation
 
 
   Re = k*borHol.port_a.m_flow;
-  Re = a*(Nu - (NuTurb - 3.66))^21 + 2350;
+  Re = a*(Nu - (NuTurb - 3.66))^151 + 2350;
   //Nu :=a*(Re - (NuTurb - 3.66))^(1/3) + 2350;
   h = Nu*kMed/(2*rTub_in);
   RFluPip =1/(2*Modelica.Constants.pi*rTub_in*hSeg*h);
 
   connect(port_a, masFloDiv.port_b)
-    annotation (Line(points={{-100,0},{-80,0}}, color={0,127,255}));
+    annotation (Line(points={{-100,0},{-90,0},{-90,-40},{-80,-40}},
+                                                color={0,127,255}));
   connect(masFloDiv.port_a, borHol.port_a)
-    annotation (Line(points={{-60,0},{-10,0}}, color={0,127,255}));
+    annotation (Line(points={{-60,-40},{-10,-40}},
+                                               color={0,127,255}));
   connect(borHol.port_b, masFloMul.port_a)
-    annotation (Line(points={{10,0},{60,0}}, color={0,127,255}));
+    annotation (Line(points={{10,-40},{60,-40}},
+                                             color={0,127,255}));
   connect(masFloMul.port_b, port_b)
-    annotation (Line(points={{80,0},{100,0}}, color={0,127,255}));
+    annotation (Line(points={{80,-40},{90,-40},{90,0},{100,0}},
+                                              color={0,127,255}));
 connect(Cground.port,lay. port_b)
   annotation (Line(points={{0,72},{0,50}}, color={191,0,0}));
   connect(lay.port_a, borHol.port_wall)
-    annotation (Line(points={{0,30},{0,10}}, color={191,0,0}));
+    annotation (Line(points={{0,30},{0,-30}},color={191,0,0}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
           extent={{-100,60},{100,-66}},

@@ -5,12 +5,10 @@ model LinearisationInfrax
       parameter Modelica.SIunits.TemperatureDifference dT = 3 "design temperature difference in the borefield";
   TwoUTube twoUTube(
     borFieDat=iNFRAX_bF,
-    m_flow_nominal=iNFRAX_bF.conDat.mBorFie_flow_nominal,
     allowFlowReversal=false,
     redeclare package Medium = Medium,
     TGro_start=(273.15 + 13.5)*ones(10),
     show_T=true,
-    dp_nominal=iNFRAX_bF.conDat.dp_nominal,
     Tsoil=286.65)
     annotation (Placement(transformation(extent={{-30,-20},{10,20}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TIn(
