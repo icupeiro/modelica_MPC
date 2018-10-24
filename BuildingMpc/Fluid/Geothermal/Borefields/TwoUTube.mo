@@ -3,26 +3,9 @@ model TwoUTube
   "controller model for double-U configuration borefield model"
   extends BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses.PartialBorefield(
       redeclare
-      IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.TwoUTube borHol(
-        intHex(RVol4(y=
-              IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
-              hSeg=hSeg,
-              rTub=borFieDat.conDat.rTub,
-              eTub=borFieDat.conDat.eTub,
-              kMed=kMed,
-              muMed=muMed,
-              cpMed=cpMed,
-              m_flow=borFieDat.conDat.mBor_flow_nominal,
-              m_flow_nominal=borFieDat.conDat.mBor_flow_nominal)), RVol3(y=
-              IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.BaseClasses.Functions.convectionResistanceCircularPipe(
-              hSeg=hSeg,
-              rTub=borFieDat.conDat.rTub,
-              eTub=borFieDat.conDat.eTub,
-              kMed=kMed,
-              muMed=muMed,
-              cpMed=cpMed,
-              m_flow=borFieDat.conDat.mBor_flow_nominal,
-              m_flow_nominal=borFieDat.conDat.mBor_flow_nominal)))));
+      IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.TwoUTube borHol,
+      lay(r_b=r_b));
+  parameter Modelica.SIunits.Radius r_b=6 "External radius";
    annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
           extent={{-100,60},{100,-66}},

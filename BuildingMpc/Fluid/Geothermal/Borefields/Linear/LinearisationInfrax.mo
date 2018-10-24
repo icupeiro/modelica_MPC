@@ -9,6 +9,7 @@ model LinearisationInfrax
     redeclare package Medium = Medium,
     TGro_start=(273.15 + 13.5)*ones(10),
     show_T=true,
+    r_b=6,
     Tsoil=286.65)
     annotation (Placement(transformation(extent={{-30,-20},{10,20}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TIn(

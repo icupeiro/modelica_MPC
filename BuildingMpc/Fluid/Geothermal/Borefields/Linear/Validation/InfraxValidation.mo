@@ -4,7 +4,7 @@ model InfraxValidation
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
   package Medium = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=283.15, X_a=0.30);
-  parameter String fileName = Modelica.Utilities.Files.loadResource("modelica://BuildingMpc/Fluid/Geothermal/Borefields/Linear/ssm.mat");
+  parameter String fileName = Modelica.Utilities.Files.loadResource("modelica://BuildingMpc/Fluid/Geothermal/Borefields/Linear/SSM/Infrax/ssm.mat");
   parameter Modelica.SIunits.TemperatureDifference dT = 3;
   final parameter Integer nSta = Bsize[1] "Number of states";
   final parameter Integer nInp = Bsize[2] "Number of inputs";
@@ -85,7 +85,7 @@ protected
     control_dp=false) "Pressure source"
     annotation (Placement(transformation(extent={{50,-30},{70,-10}})));
 public
-  Modelica.Blocks.Sources.RealExpression realExpression2(y=TOut.T)
+  Modelica.Blocks.Sources.RealExpression realExpression2(y=twoUTube.borHol.sta_b.T)
     annotation (Placement(transformation(extent={{4,14},{24,34}})));
   IDEAS.Utilities.Time.ModelTime modTim
     annotation (Placement(transformation(extent={{-150,58},{-130,78}})));
@@ -103,7 +103,7 @@ public
 public
   Modelica.Blocks.Sources.RealExpression realExpression1(y=Medium.d_const)
     annotation (Placement(transformation(extent={{56,68},{76,88}})));
-  Modelica.Blocks.Sources.Constant cToK1(k=5)
+  Modelica.Blocks.Math.Gain        cToK1(k=10/3600*Medium.d_const/1000)
     annotation (Placement(transformation(extent={{-18,18},{-6,30}})));
 initial algorithm
    x_start := {
@@ -327,6 +327,8 @@ equation
           -96,38},{-96,-16},{-92,-16}}, color={0,0,127}));
   connect(cToK1.y, mFlow.m_flow_in) annotation (Line(points={{-5.4,24},{0,24},{0,
           4},{54,4},{54,-12},{54,-12}}, color={0,0,127}));
+  connect(combiTable2D.y[3], cToK1.u) annotation (Line(points={{-87,68},{-84,68},
+          {-84,18},{-19.2,18},{-19.2,24}}, color={0,0,127}));
   annotation (
     experiment(
       StartTime=480,

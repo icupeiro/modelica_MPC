@@ -3,7 +3,9 @@ model OneUTube
   "controller model for single-U configuration borefield model"
   extends BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses.PartialBorefield(
       redeclare
-      IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube borHol);
+      IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube borHol, lay(r_b=
+          r_b));
+  parameter Modelica.SIunits.Radius r_b=6 "External radius";
    annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
           extent={{-100,60},{100,-66}},

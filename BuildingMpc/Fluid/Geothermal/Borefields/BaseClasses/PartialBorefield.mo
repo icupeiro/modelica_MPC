@@ -46,8 +46,6 @@ model PartialBorefield
     final energyDynamics=energyDynamics,
     final p_start=p_start,
     final dynFil=dynFil,
-         intHex(RVol1(y= RFluPip),
-         RVol2(y= RFluPip)),
     final m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
     final dp_nominal=borFieDat.conDat.dp_nominal)
                      "Borehole"
