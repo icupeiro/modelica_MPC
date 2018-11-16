@@ -105,6 +105,44 @@ public
     annotation (Placement(transformation(extent={{56,68},{76,88}})));
   Modelica.Blocks.Math.Gain        cToK1(k=10/3600*Medium.d_const/1000)
     annotation (Placement(transformation(extent={{-18,18},{-6,30}})));
+  IDEAS.Fluid.Sources.Boundary_pT sou1(
+    redeclare package Medium = Medium,
+    use_T_in=true,
+    nPorts=1)
+    annotation (Placement(transformation(extent={{-90,-90},{-70,-70}})));
+  IDEAS.Fluid.Sensors.TemperatureTwoPort TIn1(
+    redeclare package Medium = Medium,
+    tau=0,
+    allowFlowReversal=false,
+    m_flow_nominal=iNFRAX_bF.conDat.mBorFie_flow_nominal)
+    annotation (Placement(transformation(extent={{-60,-90},{-40,-70}})));
+  IBPSA.Fluid.Geothermal.Borefields.TwoUTubes
+           borFie(
+    borFieDat=iNFRAX_bF,
+    allowFlowReversal=false,
+    redeclare package Medium = Medium,
+    TGro_start=(273.15 + 13.5)*ones(10),
+    show_T=true,
+    r=twoUTube.lay[1].rC)
+    annotation (Placement(transformation(extent={{-30,-100},{10,-60}})));
+  IDEAS.Fluid.Sensors.TemperatureTwoPort TOut1(
+    allowFlowReversal=false,
+    m_flow_nominal=iNFRAX_bF.conDat.mBorFie_flow_nominal,
+    redeclare package Medium = Medium,
+    tau=0)
+    annotation (Placement(transformation(extent={{20,-90},{40,-70}})));
+protected
+  IDEAS.Fluid.Movers.BaseClasses.IdealSource mFlow1(
+    final allowFlowReversal=false,
+    final control_m_flow=true,
+    final m_flow_small=1e-04,
+    redeclare final package Medium = Medium,
+    control_dp=false) "Pressure source"
+    annotation (Placement(transformation(extent={{50,-90},{70,-70}})));
+public
+  IDEAS.Fluid.Sources.Boundary_pT sink1(redeclare package Medium = Medium,
+      nPorts=1)
+    annotation (Placement(transformation(extent={{100,-90},{80,-70}})));
 initial algorithm
    x_start := {
 twoUTube.borHol.intHex[1].vol1.T,
@@ -329,6 +367,20 @@ equation
           4},{54,4},{54,-12},{54,-12}}, color={0,0,127}));
   connect(combiTable2D.y[3], cToK1.u) annotation (Line(points={{-87,68},{-84,68},
           {-84,18},{-19.2,18},{-19.2,24}}, color={0,0,127}));
+  connect(sou.T_in, sou1.T_in) annotation (Line(points={{-92,-16},{-96,-16},{
+          -96,-76},{-92,-76}}, color={0,0,127}));
+  connect(sou1.ports[1], TIn1.port_a)
+    annotation (Line(points={{-70,-80},{-60,-80}}, color={0,127,255}));
+  connect(TIn1.port_b, borFie.port_a)
+    annotation (Line(points={{-40,-80},{-30,-80}}, color={0,127,255}));
+  connect(borFie.port_b, TOut1.port_a)
+    annotation (Line(points={{10,-80},{20,-80}}, color={0,127,255}));
+  connect(TOut1.port_b, mFlow1.port_a)
+    annotation (Line(points={{40,-80},{50,-80}}, color={0,127,255}));
+  connect(mFlow1.port_b, sink1.ports[1])
+    annotation (Line(points={{70,-80},{80,-80}}, color={0,127,255}));
+  connect(mFlow.m_flow_in, mFlow1.m_flow_in) annotation (Line(points={{54,-12},
+          {54,-4},{44,-4},{44,-56},{54,-56},{54,-72}}, color={0,0,127}));
   annotation (
     experiment(
       StartTime=480,

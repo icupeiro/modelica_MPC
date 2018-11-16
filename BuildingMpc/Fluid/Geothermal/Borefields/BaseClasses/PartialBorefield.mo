@@ -2,15 +2,13 @@ within BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses;
 model PartialBorefield
   "partial controller borefield model"
 
-    replaceable package Medium =
+  replaceable package Medium =
       Modelica.Media.Interfaces.PartialMedium "Medium through the borehole"
       annotation (choicesAllMatching = true);
 
-    parameter Modelica.SIunits.Temperature Tsoil
-    "Undisturbed temperature of the ground";
-    parameter Integer nSeg = 10
+
+  parameter Integer nSeg = 10
      "Number of segments to use in vertical discretization of the boreholes";
-     parameter Real k = 2/(muMed*Modelica.Constants.pi*rTub_in);
   Modelica.Fluid.Interfaces.FluidPort_a port_a(
     p(start=Medium.p_default),
     redeclare final package Medium = Medium,
@@ -30,7 +28,8 @@ model PartialBorefield
     final allowFlowReversal=allowFlowReversal,
     final k=borFieDat.conDat.nBor) "Division of flow rate"
     annotation (Placement(transformation(extent={{-60,-50},{-80,-30}})));
-    replaceable IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.TwoUTube borHol(
+  replaceable IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.TwoUTube
+    borHol(
     redeclare final package Medium = Medium,
     final borFieDat=borFieDat,
     final nSeg=nSeg,
@@ -47,8 +46,7 @@ model PartialBorefield
     final p_start=p_start,
     final dynFil=dynFil,
     final m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
-    final dp_nominal=borFieDat.conDat.dp_nominal)
-                     "Borehole"
+    final dp_nominal=borFieDat.conDat.dp_nominal) "Borehole"
     annotation (Placement(transformation(extent={{-10,-50},{10,-30}})));
 
   IBPSA.Fluid.BaseClasses.MassFlowRateMultiplier masFloMul(
@@ -56,21 +54,20 @@ model PartialBorefield
     final allowFlowReversal=allowFlowReversal,
     final k=borFieDat.conDat.nBor) "Mass flow multiplier"
     annotation (Placement(transformation(extent={{60,-50},{80,-30}})));
-  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical
-    lay[nSeg](
-    each r_b=3,
+  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical lay[
+    nSeg](
     each soiDat=borFieDat.soiDat,
     each h=borFieDat.conDat.hBor/nSeg,
     each r_a=borFieDat.conDat.rBor,
-    TExt_start=Tsoil,
+    TExt_start=TExt0_start,
     each steadyStateInitial=false,
-    TInt_start=TGro_start)                              annotation (Placement(
-        transformation(
+    TInt_start=TGro_start,
+    each r_b=r_b) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=90,
         origin={0,40})));
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor[nSeg] Cground(
-    C=Modelica.Constants.inf, T(start=Tsoil, fixed=false))
+    C=Modelica.Constants.inf, T(start=TExt0_start, fixed=false))
     annotation (Placement(transformation(extent={{-12,72},{12,96}})));
   parameter Boolean allowFlowReversal=true
     "= false to simplify equations, assuming, but not enforcing, no flow reversal"
@@ -93,58 +90,70 @@ model PartialBorefield
   parameter Real deltaM=0.1
     "Fraction of nominal flow rate where flow transitions to laminar"
     annotation (Dialog(tab="Flow resistance"));
-  parameter Modelica.SIunits.Temperature TGro_start[nSeg]
-    "Start value of grout temperature" annotation (Dialog(tab="Initialization"));
-  parameter Modelica.SIunits.Temperature TFlu_start[nSeg]=borHol.TGro_start
-    "Start value of fluid temperature" annotation (Dialog(tab="Initialization"));
   parameter Modelica.Media.Interfaces.Types.AbsolutePressure p_start=Medium.p_default
     "Start value of pressure" annotation (Dialog(tab="Initialization"));
-  parameter Modelica.Fluid.Types.Dynamics energyDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial
+  parameter Modelica.Fluid.Types.Dynamics energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState
     "Type of energy balance: dynamic (3 initialization options) or steady state"
     annotation (Dialog(tab="Dynamics"));
-  parameter Boolean dynFil=true
+  parameter Boolean dynFil=false
     "Set to false to remove the dynamics of the filling material"
     annotation (Dialog(tab="Dynamics"));
-  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template borFieDat "Borefield data"
+  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template
+    borFieDat "Borefield data"
     annotation (Placement(transformation(extent={{-80,-80},{-60,-60}})));
 
+  // Temperature gradient in undisturbed soil
+  parameter Modelica.SIunits.Temperature TExt0_start=283.15
+    "Initial far field temperature"
+    annotation (Dialog(tab="Initialization", group="Soil"));
+  parameter Modelica.SIunits.Temperature TExt_start[nSeg]=
+    {if z[i] >= z0 then TExt0_start + (z[i] - z0)*dT_dz else TExt0_start for i in 1:nSeg}
+    "Temperature of the undisturbed ground"
+    annotation (Dialog(tab="Initialization", group="Soil"));
 
-      Real Re "Reynolds";
-  Real Nu "Nusselt";
-  parameter Real a = -2350/(2*3.66-NuTurb)^151;
-  parameter Real NuTurb = 0.023*(cpMed*muMed/kMed)^(0.35)*(2400)^(0.8) "Nusselt at Re=2400";
-  Modelica.SIunits.CoefficientOfHeatTransfer h
-    "Convective heat transfer coefficient of the fluid";
-  Modelica.SIunits.ThermalResistance RFluPip;
+  parameter Modelica.SIunits.Temperature TGro_start[nSeg]=TExt_start
+    "Start value of grout temperature"
+    annotation (Dialog(tab="Initialization", group="Filling material"));
+
+  parameter Modelica.SIunits.Temperature TFlu_start[nSeg]=TGro_start
+    "Start value of fluid temperature"
+    annotation (Dialog(tab="Initialization"));
+
+
+  parameter Modelica.SIunits.Height z0=10
+    "Depth below which the temperature gradient starts"
+    annotation (Dialog(tab="Initialization", group="Temperature profile"));
+  parameter Real dT_dz(final unit="K/m", min=0) = 0.01
+    "Vertical temperature gradient of the undisturbed soil for h below z0"
+    annotation (Dialog(tab="Initialization", group="Temperature profile"));
+
+
+//   PARAMETERS TO APPROXIMATE NUSSELS NUMBER - NOT LONGER NECESSARY
+
+//   Real Re "Reynolds";
+//   Real Nu "Nusselt";
+//   parameter Real a = -2350/(2*3.66-NuTurb)^151;
+//   parameter Real NuTurb = 0.023*(cpMed*muMed/kMed)^(0.35)*(2400)^(0.8) "Nusselt at Re=2400";
+//   Modelica.SIunits.CoefficientOfHeatTransfer h
+//     "Convective heat transfer coefficient of the fluid";
+//   Modelica.SIunits.ThermalResistance RFluPip;
+
+  parameter Modelica.SIunits.Radius r_b=2*sqrt(borFieDat.soiDat.aSoi*604800)
+    "External radius";
+
 protected
-    parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
-      Medium.specificHeatCapacityCp(Medium.setState_pTX(
-      Medium.p_default,
-      Medium.T_default,
-      Medium.X_default)) "Specific heat capacity of the fluid";
-  parameter Modelica.SIunits.ThermalConductivity kMed=
-      Medium.thermalConductivity(Medium.setState_pTX(
-      Medium.p_default,
-      Medium.T_default,
-      Medium.X_default)) "Thermal conductivity of the fluid";
-  parameter Modelica.SIunits.DynamicViscosity muMed=Medium.dynamicViscosity(
-      Medium.setState_pTX(
-      Medium.p_default,
-      Medium.T_default,
-      Medium.X_default)) "Dynamic viscosity of the fluid";
-
-  parameter Modelica.SIunits.Height hSeg = borFieDat.conDat.hBor/nSeg;
-  parameter Modelica.SIunits.Radius rTub_in = borFieDat.conDat.rTub - borFieDat.conDat.eTub
-    "Pipe inner radius";
+  parameter Modelica.SIunits.Height z[nSeg]={borFieDat.conDat.hBor/nSeg*(i - 0.5) for i in 1:nSeg}
+    "Distance from the surface to the considered segment";
 
 equation
 
+//   EQUATIONS TO APPROXIMATE NUSSELS NUMBER - NOT LONGER NECESSARY
 
-  Re = k*borHol.port_a.m_flow;
-  Re = a*(Nu - (NuTurb - 3.66))^151 + 2350;
-  //Nu :=a*(Re - (NuTurb - 3.66))^(1/3) + 2350;
-  h = Nu*kMed/(2*rTub_in);
-  RFluPip =1/(2*Modelica.Constants.pi*rTub_in*hSeg*h);
+//   Re = k*borHol.port_a.m_flow;
+//   Re = a*(Nu - (NuTurb - 3.66))^151 + 2350;
+//   Nu :=a*(Re - (NuTurb - 3.66))^(1/3) + 2350;
+//   h = Nu*kMed/(2*rTub_in);
+//   RFluPip =1/(2*Modelica.Constants.pi*rTub_in*hSeg*h);
 
   connect(port_a, masFloDiv.port_b)
     annotation (Line(points={{-100,0},{-90,0},{-90,-40},{-80,-40}},
