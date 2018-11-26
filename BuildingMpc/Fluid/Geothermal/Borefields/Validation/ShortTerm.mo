@@ -45,9 +45,9 @@ protected
     control_dp=false) "Pressure source"
     annotation (Placement(transformation(extent={{46,10},{66,30}})));
 public
-  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example  borFieDat(conDat=
-        IBPSA.Fluid.Geothermal.Borefields.Data.Configuration.Example(nBor=1,
-        cooBor={{0,0}}))                                                        "Borefield data"
+  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat(
+      conDat=IBPSA.Fluid.Geothermal.Borefields.Data.Configuration.Example(nBor=
+        1, cooBor={{0,0}})) "Borefield data"
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TIn(
     m_flow_nominal=borFieDat.conDat.mBorFie_flow_nominal,
@@ -91,29 +91,26 @@ public
   IDEAS.Fluid.Sources.Boundary_pT sin1(nPorts=1, redeclare package Medium =
         Medium)
     annotation (Placement(transformation(extent={{100,-68},{80,-48}})));
-              IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube borHol1(
+  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube borHol1(
     redeclare package Medium = Medium,
     m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
     dp_nominal=borFieDat.conDat.dp_nominal,
     borFieDat=borFieDat,
     TGro_start=(273.15 + 13.5)*ones(10),
-    show_T=true)
-    "Borehole connected to a discrete ground model" annotation (Placement(
-        transformation(
+    show_T=true) "Borehole connected to a discrete ground model" annotation (
+      Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-10,-58})));
-  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical
-    lay1
-       [nSeg](
+  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical lay1[
+    nSeg](
     each r_b=3,
     each soiDat=borFieDat.soiDat,
     each h=borFieDat.conDat.hBor/nSeg,
     each r_a=borFieDat.conDat.rBor,
     each steadyStateInitial=false,
     TInt_start=273.15 + 13.5,
-    TExt_start=273.15 + 13.5)                           annotation (Placement(
-        transformation(
+    TExt_start=273.15 + 13.5) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=90,
         origin={-90,48})));

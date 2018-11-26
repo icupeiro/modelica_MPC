@@ -80,7 +80,7 @@ package Case900GEOTABS
       redeclare package Medium = IDEAS.Media.Water,
       use_T_in=false,
       p=200000,
-      nPorts=1)      annotation (Placement(transformation(
+      nPorts=1) annotation (Placement(transformation(
           extent={{-10,-10},{10,10}},
           rotation=0,
           origin={-36,70})));
@@ -137,14 +137,14 @@ package Case900GEOTABS
           steadyState=true))
       annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
     IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BorefieldOneUTube
-                                                             borefieldOneUTube_r(
+      borefieldOneUTube_r(
       redeclare package Medium = IDEAS.Media.Water,
       borFieDat=borFieDat,
       dp_nominal=0,
-    m_flow_nominal=0.5,
-    allowFlowReversal=false,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+      m_flow_nominal=0.5,
+      allowFlowReversal=false,
+      energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+      massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
       TMedGro=273.15 + 10.8)
       annotation (Placement(transformation(extent={{52,0},{32,20}})));
   MPCs.MpcCase900GEOTABS_1bor
@@ -352,7 +352,7 @@ First implementation
       redeclare package Medium = IDEAS.Media.Water,
       use_T_in=false,
       p=200000,
-      nPorts=1)      annotation (Placement(transformation(
+      nPorts=1) annotation (Placement(transformation(
           extent={{-10,-10},{10,10}},
           rotation=0,
           origin={-36,70})));
@@ -409,14 +409,14 @@ First implementation
           steadyState=true))
       annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
     IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BorefieldOneUTube_r
-                                                             borefieldOneUTube_r(
+      borefieldOneUTube_r(
       redeclare package Medium = IDEAS.Media.Water,
       borFieDat=borFieDat,
       dp_nominal=0,
-    m_flow_nominal=0.5,
-    allowFlowReversal=false,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+      m_flow_nominal=0.5,
+      allowFlowReversal=false,
+      energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+      massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
       r=r,
       TMedGro=273.15 + 10.8)
       annotation (Placement(transformation(extent={{52,0},{32,20}})));

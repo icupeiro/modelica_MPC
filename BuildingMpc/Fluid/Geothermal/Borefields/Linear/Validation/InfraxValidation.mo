@@ -54,7 +54,9 @@ public
     redeclare package Medium = Medium,
     TGro_start=(273.15 + 13.5)*ones(10),
     show_T=true,
-    Tsoil=286.65)
+    energyDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial,
+    dynFil=true,
+    TExt0_start=13.5 + 273.15)
     annotation (Placement(transformation(extent={{-30,-40},{10,0}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TIn(
     redeclare package Medium = Medium,
@@ -123,7 +125,14 @@ public
     redeclare package Medium = Medium,
     TGro_start=(273.15 + 13.5)*ones(10),
     show_T=true,
-    r=twoUTube.lay[1].rC)
+    TExt0_start=13.5 + 273.15,
+    z0=0,
+    dT_dz=0,
+    r=cat(
+        1,
+        twoUTube.lay[1].rC,
+        {twoUTube.r_b}),
+    nbTem=11)
     annotation (Placement(transformation(extent={{-30,-100},{10,-60}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TOut1(
     allowFlowReversal=false,
@@ -367,8 +376,8 @@ equation
           4},{54,4},{54,-12},{54,-12}}, color={0,0,127}));
   connect(combiTable2D.y[3], cToK1.u) annotation (Line(points={{-87,68},{-84,68},
           {-84,18},{-19.2,18},{-19.2,24}}, color={0,0,127}));
-  connect(sou.T_in, sou1.T_in) annotation (Line(points={{-92,-16},{-96,-16},{
-          -96,-76},{-92,-76}}, color={0,0,127}));
+  connect(sou.T_in, sou1.T_in) annotation (Line(points={{-92,-16},{-96,-16},{-96,
+          -76},{-92,-76}}, color={0,0,127}));
   connect(sou1.ports[1], TIn1.port_a)
     annotation (Line(points={{-70,-80},{-60,-80}}, color={0,127,255}));
   connect(TIn1.port_b, borFie.port_a)

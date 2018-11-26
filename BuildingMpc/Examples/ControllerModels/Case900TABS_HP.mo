@@ -78,7 +78,7 @@ model Case900TABS_HP
     use_T_in=false,
     nPorts=2,
     p=200000,
-    T=287.15)      annotation (Placement(transformation(
+    T=287.15) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-36,70})));

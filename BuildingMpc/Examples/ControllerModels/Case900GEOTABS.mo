@@ -80,7 +80,7 @@ model Case900GEOTABS
     redeclare package Medium = IDEAS.Media.Water,
     use_T_in=false,
     p=200000,
-    nPorts=1)      annotation (Placement(transformation(
+    nPorts=1) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-36,70})));
@@ -119,10 +119,10 @@ public
     m1_flow_nominal=0.2,
     m2_flow_nominal=0.5)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
-  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example
-    borFieDat(filDat=IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(
-        steadyState=true), soiDat=
-        IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(steadyState=true))
+  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat(filDat=
+        IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(steadyState=
+        true), soiDat=IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(
+        steadyState=true))
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
   BuildingMpc.Fluid.Geothermal.Borefields.OneUTube multipleBorehole(
     redeclare package Medium = IDEAS.Media.Water,

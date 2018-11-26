@@ -79,7 +79,7 @@ model Case900GEOTABS_1bor
     redeclare package Medium = IDEAS.Media.Water,
     use_T_in=false,
     p=200000,
-    nPorts=1)      annotation (Placement(transformation(
+    nPorts=1) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-36,70})));

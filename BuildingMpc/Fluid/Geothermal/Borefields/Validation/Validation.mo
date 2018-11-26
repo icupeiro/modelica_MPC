@@ -57,8 +57,7 @@ public
     annotation (Placement(transformation(extent={{-26,48},{-14,60}})));
   Modelica.Blocks.Math.Add add
     annotation (Placement(transformation(extent={{-6,62},{14,82}})));
-  IBPSA.Fluid.Geothermal.Borefields.TwoUTubes
-           borFie(
+  IBPSA.Fluid.Geothermal.Borefields.TwoUTubes borFie(
     borFieDat=iNFRAX_bF,
     m_flow_nominal=iNFRAX_bF.conDat.mBorFie_flow_nominal,
     allowFlowReversal=false,

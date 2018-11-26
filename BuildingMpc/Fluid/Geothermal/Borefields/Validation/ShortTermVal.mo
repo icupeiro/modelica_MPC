@@ -4,9 +4,10 @@ model ShortTermVal "Validation of the short term model"
   package Medium = IBPSA.Media.Water;
   parameter Integer nSeg = borHol1.nSeg;
 
-  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example  borFieDat "Borefield data"
+  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat
+    "Borefield data"
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
-              IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube                    borHol1(
+  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube borHol1(
     redeclare package Medium = Medium,
     borFieDat=borFieDat,
     dp_nominal=borFieDat.conDat.dp_nominal,
@@ -17,23 +18,23 @@ model ShortTermVal "Validation of the short term model"
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     TGro_start=(273.15 + 13.5)*ones(nSeg),
     TFlu_start=(273.15 + 13.5)*ones(nSeg))
-    "Borehole connected to a discrete ground model" annotation (
-      Placement(transformation(
+    "Borehole connected to a discrete ground model" annotation (Placement(
+        transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={50,0})));
-  IBPSA.Fluid.Sources.Boundary_pT      sou(
+  IBPSA.Fluid.Sources.Boundary_pT sou(
     redeclare package Medium = Medium,
     nPorts=1,
     use_T_in=true,
     T=277.15) "Source" annotation (Placement(transformation(extent={{-98,42},{-78,
-            62}},     rotation=0)));
+            62}}, rotation=0)));
   IBPSA.Fluid.Sources.Boundary_pT sin(
     redeclare package Medium = Medium,
     use_p_in=false,
     use_T_in=false,
     nPorts=1) "Sink" annotation (Placement(transformation(extent={{40,-32},{20,
-            -12}},rotation=0)));
+            -12}}, rotation=0)));
   IBPSA.Fluid.Sensors.TemperatureTwoPort TBorIn(
     m_flow_nominal=borFieDat.conDat.mBor_flow_nominal,
     redeclare package Medium = Medium,
@@ -44,17 +45,15 @@ model ShortTermVal "Validation of the short term model"
     redeclare package Medium = Medium,
     tau=0) "Outlet borehole temperature"
     annotation (Placement(transformation(extent={{-32,-30},{-12,-10}})));
-  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical
-    lay1
-       [nSeg](
+  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical lay1[
+    nSeg](
     each r_b=3,
     each soiDat=borFieDat.soiDat,
     each h=borFieDat.conDat.hBor/nSeg,
     each r_a=borFieDat.conDat.rBor,
     each steadyStateInitial=false,
     TInt_start=273.15 + 13.5,
-    TExt_start=273.15 + 13.5)                           annotation (Placement(
-        transformation(
+    TExt_start=273.15 + 13.5) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=90,
         origin={50,38})));
@@ -86,14 +85,13 @@ model ShortTermVal "Validation of the short term model"
     use_p_in=false,
     use_T_in=false,
     nPorts=1) "Sink" annotation (Placement(transformation(extent={{146,-10},{
-            126,10}},
-                  rotation=0)));
-  IBPSA.Fluid.Sources.Boundary_pT      sou1(
+            126,10}}, rotation=0)));
+  IBPSA.Fluid.Sources.Boundary_pT sou1(
     redeclare package Medium = Medium,
     nPorts=1,
     use_T_in=true,
-    T=277.15) "Source" annotation (Placement(transformation(extent={{-32,60},{
-            -12,80}}, rotation=0)));
+    T=277.15) "Source" annotation (Placement(transformation(extent={{-32,60},{-12,
+            80}}, rotation=0)));
 protected
   IDEAS.Fluid.Movers.BaseClasses.IdealSource mFlow(
     final allowFlowReversal=false,

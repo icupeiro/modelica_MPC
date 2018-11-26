@@ -47,7 +47,9 @@ model SimpleBorehole "simple borehole model for MPC"
   replaceable package Medium =
     Modelica.Media.Interfaces.PartialMedium;
 
-parameter IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template borFieDat "Borefield parameters"
+  parameter
+    IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.Data.BorefieldData.Template
+    borFieDat "Borefield parameters"
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
 equation
   connect(port_a, vol[1].ports[1])

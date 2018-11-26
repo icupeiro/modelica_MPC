@@ -3,9 +3,7 @@ model TwoUTube
   "controller model for double-U configuration borefield model"
   extends BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses.PartialBorefield(
       redeclare
-      IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.TwoUTube borHol,
-      lay(r_b=r_b));
-  parameter Modelica.SIunits.Radius r_b=6 "External radius";
+      IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.TwoUTube borHol);
    annotation (Icon(coordinateSystem(preserveAspectRatio=false), graphics={
         Rectangle(
           extent={{-100,60},{100,-66}},

@@ -24,18 +24,16 @@ model MultipleBorehole "multiple borehole model for MPC"
     m_flow_nominal=m_flow_nominal)
     annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.MassFlowRateMultiplier
-                                     masFloDiv(
+    masFloDiv(
     redeclare package Medium = Medium,
-  allowFlowReversal=false,
-    k=borFieDat.conDat.nbBor)
-                             "Division of flow rate"
+    allowFlowReversal=false,
+    k=borFieDat.conDat.nbBor) "Division of flow rate"
     annotation (Placement(transformation(extent={{-60,-10},{-80,10}})));
   IBPSA.Fluid.HeatExchangers.GroundHeatExchangers.BaseClasses.MassFlowRateMultiplier
-                                     masFloMul(
+    masFloMul(
     redeclare package Medium = Medium,
-  allowFlowReversal=false,
-    k=borFieDat.conDat.nbBor)
-                             "Mass flow multiplier"
+    allowFlowReversal=false,
+    k=borFieDat.conDat.nbBor) "Mass flow multiplier"
     annotation (Placement(transformation(extent={{60,-10},{80,10}})));
   parameter Modelica.SIunits.Temperature soilTemp=273.15 + 10.8
     "Undisturbed temperature of the ground";

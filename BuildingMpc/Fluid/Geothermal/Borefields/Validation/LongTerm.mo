@@ -34,8 +34,8 @@ model LongTerm
     TGro_start=(273.15 + 13.5)*ones(10),
     borFieDat=borFieDat,
     show_T=true,
-    r_b=6,
-    Tsoil=286.65)
+    Tsoil=286.65,
+    r_b=9)
     annotation (Placement(transformation(extent={{-20,10},{0,30}})));
 protected
   IDEAS.Fluid.Movers.BaseClasses.IdealSource mFlow(
@@ -46,7 +46,9 @@ protected
     control_dp=false) "Pressure source"
     annotation (Placement(transformation(extent={{46,10},{66,30}})));
 public
-  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example  borFieDat "Borefield data"
+  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat(
+      conDat=IBPSA.Fluid.Geothermal.Borefields.Data.Configuration.Example(nBor=
+        1, cooBor={{0,0}})) "Borefield data"
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TIn(
     m_flow_nominal=borFieDat.conDat.mBorFie_flow_nominal,
@@ -90,17 +92,16 @@ public
   IDEAS.Fluid.Sources.Boundary_pT sin1(nPorts=1, redeclare package Medium =
         Medium)
     annotation (Placement(transformation(extent={{100,-68},{80,-48}})));
-              IBPSA.Fluid.Geothermal.Borefields.OneUTube                       borFie(
+  IBPSA.Fluid.Geothermal.Borefields.OneUTube borFie(
     redeclare package Medium = Medium,
     borFieDat=borFieDat,
     TGro_start=(273.15 + 13.5)*ones(10),
     show_T=true,
     dT_dz=0,
-    r={6},
-    nbTem=1,
-    TExt0_start=286.65)
-    "Borehole connected to a discrete ground model" annotation (Placement(
-        transformation(
+    r=oneUTube.lay[1].rC,
+    tLoaAgg=30,
+    TExt0_start=286.65) "Borehole connected to a discrete ground model"
+    annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-10,-58})));

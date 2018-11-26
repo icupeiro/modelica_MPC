@@ -42,13 +42,10 @@ model InternalHEXUTube
   parameter Modelica.SIunits.Length hSeg
     "Length of the internal heat exchanger";
   parameter Integer nSeg;
-  parameter
-    IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template
-    borFieDat(
+  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template borFieDat(
     filDat=borFieDat.filDat,
     soiDat=borFieDat.soiDat,
-    conDat=borFieDat.conDat)=
-                borFieDat "Borefield parameters"
+    conDat=borFieDat.conDat) = borFieDat "Borefield parameters"
     annotation (Placement(transformation(extent={{-100,-120},{-80,-100}})));
 
   Modelica.Blocks.Sources.RealExpression RVol1(y=
@@ -84,8 +81,7 @@ model InternalHEXUTube
     Rgg_val=Rgg_val,
     RCondGro_val=RCondGro_val,
     borFieDat=borFieDat,
-    hSeg=hSeg)
-    "Internal resistances for a single U-tube configuration"
+    hSeg=hSeg) "Internal resistances for a single U-tube configuration"
     annotation (Placement(transformation(extent={{-10,-10},{10,10}})));
   Modelica.Thermal.HeatTransfer.Components.ConvectiveResistor RConv2
     "Pipe convective resistance"
@@ -171,8 +167,8 @@ protected
   parameter Real Rar= (Ra-2*(RCondPipe + RConv))/hSeg;
 
 equation
-    assert(borFieDat.conDat.borCon == IBPSA.Fluid.Geothermal.Borefields.Types.BoreholeConfiguration.SingleUTube,
-  "This model should be used for single U-type borefield, not double U-type. 
+  assert(borFieDat.conDat.borCon == IBPSA.Fluid.Geothermal.Borefields.Types.BoreholeConfiguration.SingleUTube,
+    "This model should be used for single U-type borefield, not double U-type. 
   Check that the record General has been correctly parametrized");
   if dynFil then
   end if;

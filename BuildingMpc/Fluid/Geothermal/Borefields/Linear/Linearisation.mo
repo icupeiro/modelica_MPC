@@ -30,8 +30,7 @@ model Linearisation
     m_flow_nominal=borFieDat.conDat.mBorFie_flow_nominal,
     redeclare package Medium = Medium,
     tau=0) annotation (Placement(transformation(extent={{20,-10},{40,10}})));
-  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example
-                                                 borFieDat
+  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat
     annotation (Placement(transformation(extent={{-80,-60},{-60,-40}})));
   IDEAS.Fluid.Sources.Boundary_ph bou(redeclare package Medium = Medium, nPorts=
        1) annotation (Placement(transformation(

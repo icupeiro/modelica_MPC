@@ -48,8 +48,7 @@ public
     annotation (Placement(transformation(extent={{40,20},{60,40}})));
   Modelica.Blocks.Interfaces.RealOutput error
     annotation (Placement(transformation(extent={{100,20},{120,40}})));
-  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example
-                                                 borFieDat
+  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat
     annotation (Placement(transformation(extent={{-80,-60},{-60,-40}})));
   OneUTube oneUTube(
     borFieDat=borFieDat,

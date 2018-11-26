@@ -37,13 +37,10 @@ model SingleBoreHoleUTube "Single U-tube borehole heat exchanger"
       annotation (Dialog(tab="Dynamics"));
   parameter Modelica.SIunits.Height hSeg = borFieDat.conDat.hBor/nSeg;
 
-  parameter
-    IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template
-    borFieDat(
-  filDat=borFieDat.filDat,
-  soiDat=borFieDat.soiDat,
-  conDat=borFieDat.conDat)=
-                borFieDat "Borefield parameters"
+  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template borFieDat(
+    filDat=borFieDat.filDat,
+    soiDat=borFieDat.soiDat,
+    conDat=borFieDat.conDat) = borFieDat "Borefield parameters"
     annotation (Placement(transformation(extent={{-100,-100},{-80,-80}})));
   parameter Integer nSeg(fixed=true);
   Modelica.SIunits.Temperature TWallAve "Average borehole wall temperature";

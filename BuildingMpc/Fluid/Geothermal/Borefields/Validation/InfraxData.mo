@@ -90,7 +90,7 @@ public
   IDEAS.Fluid.Sources.Boundary_pT sin1(nPorts=1, redeclare package Medium =
         Medium)
     annotation (Placement(transformation(extent={{100,-68},{80,-48}})));
-              IBPSA.Fluid.Geothermal.Borefields.TwoUTubes                      borFie(
+  IBPSA.Fluid.Geothermal.Borefields.TwoUTubes borFie(
     redeclare package Medium = Medium,
     borFieDat=iNFRAX_bF,
     TGro_start=(273.15 + 13.5)*ones(10),
@@ -98,9 +98,8 @@ public
     dT_dz=0,
     r={6},
     nbTem=1,
-    TExt0_start=286.65)
-    "Borehole connected to a discrete ground model" annotation (Placement(
-        transformation(
+    TExt0_start=286.65) "Borehole connected to a discrete ground model"
+    annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-10,-58})));

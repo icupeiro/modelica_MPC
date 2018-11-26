@@ -58,13 +58,10 @@ model SingleBorehole "single borehole model for MPC"
   parameter Modelica.SIunits.PressureDifference dp_nominal
     "Pressure difference through the borehole"
     annotation (Dialog(group="Nominal condition"));
-  parameter
-    IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template
-    borFieDat(
+  parameter IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Template borFieDat(
     filDat=borFieDat.filDat,
     soiDat=borFieDat.soiDat,
-    conDat=borFieDat.conDat)=
-                borFieDat "Borefield parameters";
+    conDat=borFieDat.conDat) = borFieDat "Borefield parameters";
 protected
     parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
       Medium.specificHeatCapacityCp(Medium.setState_pTX(
