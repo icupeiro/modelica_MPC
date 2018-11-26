@@ -1,5 +1,5 @@
 within BuildingMpc.Fluid.Geothermal.Borefields.BaseClasses;
-model PartialBorefield
+partial model PartialBorefield
   "partial controller borefield model"
 
   replaceable package Medium =
@@ -28,7 +28,7 @@ model PartialBorefield
     final allowFlowReversal=allowFlowReversal,
     final k=borFieDat.conDat.nBor) "Division of flow rate"
     annotation (Placement(transformation(extent={{-60,-50},{-80,-30}})));
-  replaceable IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.TwoUTube
+  replaceable IBPSA.Fluid.Geothermal.Borefields.BaseClasses.Boreholes.OneUTube
     borHol(
     redeclare final package Medium = Medium,
     final borFieDat=borFieDat,
