@@ -4,3 +4,6 @@ MpcCase900TABS_2var
 MpcCase900TABS_HP
 MpcCase900GEOTABS_1bor
 MpcCase900GEOTABS
+MpcCase900GEOTABS_bufferTank
+MpcCase900GEOTABS_cooling
+MpcCase900GEOTABS_cooling_noBuffTank

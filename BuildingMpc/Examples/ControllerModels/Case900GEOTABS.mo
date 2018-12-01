@@ -54,11 +54,11 @@ model Case900GEOTABS
   Modelica.Blocks.Sources.RealExpression optVar1
     annotation (Placement(transformation(extent={{-86,-20},{-66,0}})));
   IDEAS.Buildings.Components.BoundaryWall boundaryWall(
-    redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyFloor
-      constructionType,
     inc=IDEAS.Types.Tilt.Floor,
     azi=rectangularZoneTemplate.aziA,
-    A=rectangularZoneTemplate.A) annotation (Placement(transformation(
+    A=rectangularZoneTemplate.A,
+    redeclare Data.HeavyFloorTABS constructionType)
+                                 annotation (Placement(transformation(
         extent={{-6,-10},{6,10}},
         rotation=90,
         origin={-8,-38})));
@@ -72,7 +72,7 @@ model Case900GEOTABS
     A_floor=rectangularZoneTemplate.A,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     dp_nominal=0,
-    m_flow_nominal=1)
+    m_flow_nominal=0.5)
     annotation (Placement(transformation(extent={{16,-70},{36,-50}})));
   IBPSA.Fluid.Sources.Boundary_pT source(
     redeclare package Medium = IDEAS.Media.Water,
@@ -114,13 +114,15 @@ public
     redeclare package Medium2 = IDEAS.Media.Water,
     dp2_nominal=0,
     dp1_nominal=0,
-    m1_flow_nominal=0.2,
-    m2_flow_nominal=0.5)
+    Q_nom=5000,
+    m1_flow_nominal=0.5,
+    m2_flow_nominal=1.2,
+    COP_expr=4.5)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
-  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat(filDat=
-        IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(steadyState=
-        true), soiDat=IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(
-        steadyState=true))
+  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat(
+    filDat=IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(),
+    soiDat=IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(),
+    conDat=IBPSA.Fluid.Geothermal.Borefields.Data.Configuration.Example())
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
   BuildingMpc.Fluid.Geothermal.Borefields.OneUTube multipleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
