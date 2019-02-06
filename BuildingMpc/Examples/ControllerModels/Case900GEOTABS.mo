@@ -122,7 +122,8 @@ public
   IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat(filDat=
         IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(steadyState=
         true), soiDat=IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(
-        steadyState=true))
+        steadyState=true),
+    conDat=IBPSA.Fluid.Geothermal.Borefields.Data.Configuration.Example())
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
   BuildingMpc.Fluid.Geothermal.Borefields.OneUTube multipleBorehole(
     redeclare package Medium = IDEAS.Media.Water,

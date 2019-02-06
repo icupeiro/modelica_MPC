@@ -7,13 +7,10 @@ model LinearisationInfrax
     borFieDat=iNFRAX_bF,
     allowFlowReversal=false,
     redeclare package Medium = Medium,
-    TGro_start=(273.15 + 13.5)*ones(10),
     show_T=true,
-    TExt0_start=273.15 + 13.5,
-    z0=0,
-    dT_dz=0,
     energyDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial,
-    dynFil=true)
+    dynFil=true,
+    TExt0_start=273.15 + 13.3)
     annotation (Placement(transformation(extent={{-30,-20},{10,20}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TIn(
     redeclare package Medium = Medium,
@@ -47,7 +44,7 @@ protected
 public
   Modelica.Blocks.Sources.RealExpression realExpression1(y=TOut.T)
     annotation (Placement(transformation(extent={{20,40},{0,60}})));
-  Modelica.Blocks.Sources.Constant const(k=5)
+  Modelica.Blocks.Sources.Constant const(k=4.98)
     annotation (Placement(transformation(extent={{0,70},{20,90}})));
   Buses.InputBus inputBus annotation (Placement(transformation(extent={{-120,58},
             {-80,98}}), iconTransformation(extent={{-208,28},{-188,48}})));

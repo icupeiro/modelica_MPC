@@ -1,5 +1,5 @@
 within BuildingMpc.Fluid.Geothermal.Borefields.Linear.Validation;
-model InfraxValidation
+model InfraxValidation_mFlowConstant
   extends Modelica.Icons.Example
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
@@ -35,8 +35,7 @@ model InfraxValidation
     x_start=x_start,
     initType=Modelica.Blocks.Types.Init.NoInit) "State space model"
     annotation (Placement(transformation(extent={{-20,60},{0,80}})));
-  Real emu_states[190];
-  Real NL_states[190];
+
 protected
   parameter Real x_start[nSta](each fixed=false) "Initial state values";
   final parameter Integer[2] Bsize = readMatrixSize(fileName=fileName, matrixName="B") "Size of B matrix of state space model";
@@ -56,9 +55,9 @@ public
     show_T=true,
     energyDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial,
     dynFil=true,
-    TExt0_start=13.3 + 273.15,
-    z0=10,
-    dT_dz=0.01)
+    TGro_start=(273.15 + 9.7)*ones(10),
+    TFlu_start=(273.15 + 9.7)*ones(10),
+    TExt0_start=13.3 + 273.15)
     annotation (Placement(transformation(extent={{-30,-40},{10,0}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TInNLC(
     redeclare package Medium = Medium,
@@ -105,9 +104,7 @@ public
     annotation (Placement(transformation(extent={{-56,60},{-36,80}})));
 public
   Modelica.Blocks.Sources.RealExpression realExpression1(y=Medium.d_const)
-    annotation (Placement(transformation(extent={{-80,86},{-60,106}})));
-  Modelica.Blocks.Math.Gain        cToK1(k=10/3600*Medium.d_const/1000)
-    annotation (Placement(transformation(extent={{-18,18},{-6,30}})));
+    annotation (Placement(transformation(extent={{56,68},{76,88}})));
   IDEAS.Fluid.Sources.Boundary_pT sou1(
     redeclare package Medium = Medium,
     use_T_in=true,
@@ -129,6 +126,8 @@ public
         borFieNLC.lay[1].rC,
         {borFieNLC.r_b}),
     nbTem=11,
+    TGro_start=(273.15 + 9.7)*ones(10),
+    TFlu_start=(273.15 + 9.7)*ones(10),
     TExt0_start=13.3 + 273.15)
     annotation (Placement(transformation(extent={{-30,-100},{10,-60}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TOutEmu(
@@ -196,18 +195,8 @@ public
         combiTable2D.y[6] > 0 then (combiTable2D.y[2] - (borFieEmu.sta_b.T -
         273.15))*mFlowEmu.m_flow*Medium.cp_const/1000 else 0)
     annotation (Placement(transformation(extent={{-40,-160},{-20,-140}})));
-public
-  Modelica.Blocks.Sources.RealExpression[190] realExpression3(y=emu_states -
-        NL_states)
-    annotation (Placement(transformation(extent={{50,74},{70,94}})));
-public
-  Modelica.Blocks.Sources.RealExpression[190] realExpression4(y=emu_states -
-        borFieSSM.x)
-    annotation (Placement(transformation(extent={{50,52},{70,72}})));
-  Modelica.Blocks.Interfaces.RealOutput[190] NL_xe
-    annotation (Placement(transformation(extent={{100,74},{120,94}})));
-  Modelica.Blocks.Interfaces.RealOutput[190] lin_xe
-    annotation (Placement(transformation(extent={{100,52},{120,72}})));
+  Modelica.Blocks.Sources.Constant mFlow(k=4.98)
+    annotation (Placement(transformation(extent={{-32,10},{-20,22}})));
 initial algorithm
    x_start :={borFieNLC.borHol.intHex[1].vol1.T,borFieNLC.borHol.intHex[1].vol2.T,
     borFieNLC.borHol.intHex[1].vol3.T,borFieNLC.borHol.intHex[1].vol4.T,
@@ -284,273 +273,6 @@ initial algorithm
     borFieNLC.borHol.intHex[10].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[
     10].intRes2UTub.capFil3.T,borFieNLC.borHol.intHex[10].intRes2UTub.capFil4.T};
 equation
-
-  emu_states = {borFieEmu.borHol.intHex[1].vol1.T,
-borFieEmu.borHol.intHex[1].vol2.T,
-borFieEmu.borHol.intHex[1].vol3.T,
-borFieEmu.borHol.intHex[1].vol4.T,
-borFieEmu.borHol.intHex[2].vol1.T,
-borFieEmu.borHol.intHex[2].vol2.T,
-borFieEmu.borHol.intHex[2].vol3.T,
-borFieEmu.borHol.intHex[2].vol4.T,
-borFieEmu.borHol.intHex[3].vol1.T,
-borFieEmu.borHol.intHex[3].vol2.T,
-borFieEmu.borHol.intHex[3].vol3.T,
-borFieEmu.borHol.intHex[3].vol4.T,
-borFieEmu.borHol.intHex[4].vol1.T,
-borFieEmu.borHol.intHex[4].vol2.T,
-borFieEmu.borHol.intHex[4].vol3.T,
-borFieEmu.borHol.intHex[4].vol4.T,
-borFieEmu.borHol.intHex[5].vol1.T,
-borFieEmu.borHol.intHex[5].vol2.T,
-borFieEmu.borHol.intHex[5].vol3.T,
-borFieEmu.borHol.intHex[5].vol4.T,
-borFieEmu.borHol.intHex[6].vol1.T,
-borFieEmu.borHol.intHex[6].vol2.T,
-borFieEmu.borHol.intHex[6].vol3.T,
-borFieEmu.borHol.intHex[6].vol4.T,
-borFieEmu.borHol.intHex[7].vol1.T,
-borFieEmu.borHol.intHex[7].vol2.T,
-borFieEmu.borHol.intHex[7].vol3.T,
-borFieEmu.borHol.intHex[7].vol4.T,
-borFieEmu.borHol.intHex[8].vol1.T,
-borFieEmu.borHol.intHex[8].vol2.T,
-borFieEmu.borHol.intHex[8].vol3.T,
-borFieEmu.borHol.intHex[8].vol4.T,
-borFieEmu.borHol.intHex[9].vol1.T,
-borFieEmu.borHol.intHex[9].vol2.T,
-borFieEmu.borHol.intHex[9].vol3.T,
-borFieEmu.borHol.intHex[9].vol4.T,
-borFieEmu.borHol.intHex[10].vol1.T,
-borFieEmu.borHol.intHex[10].vol2.T,
-borFieEmu.borHol.intHex[10].vol3.T,
-borFieEmu.borHol.intHex[10].vol4.T,
-borFieEmu.TSoi[2, 1],
-borFieEmu.TSoi[3, 1],
-borFieEmu.TSoi[4, 1],
-borFieEmu.TSoi[5, 1],
-borFieEmu.TSoi[6, 1],
-borFieEmu.TSoi[7, 1],
-borFieEmu.TSoi[8, 1],
-borFieEmu.TSoi[9, 1],
-borFieEmu.TSoi[10, 1],
-borFieEmu.TSoi[11, 1],
-borFieEmu.TSoi[2, 2],
-borFieEmu.TSoi[3, 2],
-borFieEmu.TSoi[4, 2],
-borFieEmu.TSoi[5, 2],
-borFieEmu.TSoi[6, 2],
-borFieEmu.TSoi[7, 2],
-borFieEmu.TSoi[8, 2],
-borFieEmu.TSoi[9, 2],
-borFieEmu.TSoi[10, 2],
-borFieEmu.TSoi[11, 2],
-borFieEmu.TSoi[2, 3],
-borFieEmu.TSoi[3, 3],
-borFieEmu.TSoi[4, 3],
-borFieEmu.TSoi[5, 3],
-borFieEmu.TSoi[6, 3],
-borFieEmu.TSoi[7, 3],
-borFieEmu.TSoi[8, 3],
-borFieEmu.TSoi[9, 3],
-borFieEmu.TSoi[10, 3],
-borFieEmu.TSoi[11, 3],
-borFieEmu.TSoi[2, 4],
-borFieEmu.TSoi[3, 4],
-borFieEmu.TSoi[4, 4],
-borFieEmu.TSoi[5, 4],
-borFieEmu.TSoi[6, 4],
-borFieEmu.TSoi[7, 4],
-borFieEmu.TSoi[8, 4],
-borFieEmu.TSoi[9, 4],
-borFieEmu.TSoi[10, 4],
-borFieEmu.TSoi[11, 4],
-borFieEmu.TSoi[2, 5],
-borFieEmu.TSoi[3, 5],
-borFieEmu.TSoi[4, 5],
-borFieEmu.TSoi[5, 5],
-borFieEmu.TSoi[6, 5],
-borFieEmu.TSoi[7, 5],
-borFieEmu.TSoi[8, 5],
-borFieEmu.TSoi[9, 5],
-borFieEmu.TSoi[10, 5],
-borFieEmu.TSoi[11, 5],
-borFieEmu.TSoi[2, 6],
-borFieEmu.TSoi[3, 6],
-borFieEmu.TSoi[4, 6],
-borFieEmu.TSoi[5, 6],
-borFieEmu.TSoi[6, 6],
-borFieEmu.TSoi[7, 6],
-borFieEmu.TSoi[8, 6],
-borFieEmu.TSoi[9, 6],
-borFieEmu.TSoi[10, 6],
-borFieEmu.TSoi[11, 6],
-borFieEmu.TSoi[2, 7],
-borFieEmu.TSoi[3, 7],
-borFieEmu.TSoi[4, 7],
-borFieEmu.TSoi[5, 7],
-borFieEmu.TSoi[6, 7],
-borFieEmu.TSoi[7, 7],
-borFieEmu.TSoi[8, 7],
-borFieEmu.TSoi[9, 7],
-borFieEmu.TSoi[10, 7],
-borFieEmu.TSoi[11, 7],
-borFieEmu.TSoi[2, 8],
-borFieEmu.TSoi[3, 8],
-borFieEmu.TSoi[4, 8],
-borFieEmu.TSoi[5, 8],
-borFieEmu.TSoi[6, 8],
-borFieEmu.TSoi[7, 8],
-borFieEmu.TSoi[8, 8],
-borFieEmu.TSoi[9, 8],
-borFieEmu.TSoi[10, 8],
-borFieEmu.TSoi[11, 8],
-borFieEmu.TSoi[2, 9],
-borFieEmu.TSoi[3, 9],
-borFieEmu.TSoi[4, 9],
-borFieEmu.TSoi[5, 9],
-borFieEmu.TSoi[6, 9],
-borFieEmu.TSoi[7, 9],
-borFieEmu.TSoi[8, 9],
-borFieEmu.TSoi[9, 9],
-borFieEmu.TSoi[10, 9],
-borFieEmu.TSoi[11, 9],
-borFieEmu.TSoi[2, 10],
-borFieEmu.TSoi[3, 10],
-borFieEmu.TSoi[4, 10],
-borFieEmu.TSoi[5, 10],
-borFieEmu.TSoi[6, 10],
-borFieEmu.TSoi[7, 10],
-borFieEmu.TSoi[8, 10],
-borFieEmu.TSoi[9, 10],
-borFieEmu.TSoi[10, 10],
-borFieEmu.TSoi[11, 10],
-borFieEmu.TSoi[12, 1],
-borFieEmu.TSoi[12, 2],
-borFieEmu.TSoi[12, 3],
-borFieEmu.TSoi[12, 4],
-borFieEmu.TSoi[12, 5],
-borFieEmu.TSoi[12, 6],
-borFieEmu.TSoi[12, 7],
-borFieEmu.TSoi[12, 8],
-borFieEmu.TSoi[12, 9],
-borFieEmu.TSoi[12, 10],
-borFieEmu.borHol.intHex[1].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[1].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[1].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[1].intRes2UTub.capFil4.T,
-borFieEmu.borHol.intHex[2].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[2].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[2].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[2].intRes2UTub.capFil4.T,
-borFieEmu.borHol.intHex[3].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[3].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[3].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[3].intRes2UTub.capFil4.T,
-borFieEmu.borHol.intHex[4].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[4].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[4].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[4].intRes2UTub.capFil4.T,
-borFieEmu.borHol.intHex[5].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[5].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[5].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[5].intRes2UTub.capFil4.T,
-borFieEmu.borHol.intHex[6].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[6].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[6].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[6].intRes2UTub.capFil4.T,
-borFieEmu.borHol.intHex[7].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[7].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[7].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[7].intRes2UTub.capFil4.T,
-borFieEmu.borHol.intHex[8].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[8].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[8].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[8].intRes2UTub.capFil4.T,
-borFieEmu.borHol.intHex[9].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[9].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[9].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[9].intRes2UTub.capFil4.T,
-borFieEmu.borHol.intHex[10].intRes2UTub.capFil1.T,
-borFieEmu.borHol.intHex[10].intRes2UTub.capFil2.T,
-borFieEmu.borHol.intHex[10].intRes2UTub.capFil3.T,
-borFieEmu.borHol.intHex[10].intRes2UTub.capFil4.T};
-
-    NL_states = {borFieNLC.borHol.intHex[1].vol1.T,borFieNLC.borHol.intHex[1].vol2.T,
-    borFieNLC.borHol.intHex[1].vol3.T,borFieNLC.borHol.intHex[1].vol4.T,
-    borFieNLC.borHol.intHex[2].vol1.T,borFieNLC.borHol.intHex[2].vol2.T,
-    borFieNLC.borHol.intHex[2].vol3.T,borFieNLC.borHol.intHex[2].vol4.T,
-    borFieNLC.borHol.intHex[3].vol1.T,borFieNLC.borHol.intHex[3].vol2.T,
-    borFieNLC.borHol.intHex[3].vol3.T,borFieNLC.borHol.intHex[3].vol4.T,
-    borFieNLC.borHol.intHex[4].vol1.T,borFieNLC.borHol.intHex[4].vol2.T,
-    borFieNLC.borHol.intHex[4].vol3.T,borFieNLC.borHol.intHex[4].vol4.T,
-    borFieNLC.borHol.intHex[5].vol1.T,borFieNLC.borHol.intHex[5].vol2.T,
-    borFieNLC.borHol.intHex[5].vol3.T,borFieNLC.borHol.intHex[5].vol4.T,
-    borFieNLC.borHol.intHex[6].vol1.T,borFieNLC.borHol.intHex[6].vol2.T,
-    borFieNLC.borHol.intHex[6].vol3.T,borFieNLC.borHol.intHex[6].vol4.T,
-    borFieNLC.borHol.intHex[7].vol1.T,borFieNLC.borHol.intHex[7].vol2.T,
-    borFieNLC.borHol.intHex[7].vol3.T,borFieNLC.borHol.intHex[7].vol4.T,
-    borFieNLC.borHol.intHex[8].vol1.T,borFieNLC.borHol.intHex[8].vol2.T,
-    borFieNLC.borHol.intHex[8].vol3.T,borFieNLC.borHol.intHex[8].vol4.T,
-    borFieNLC.borHol.intHex[9].vol1.T,borFieNLC.borHol.intHex[9].vol2.T,
-    borFieNLC.borHol.intHex[9].vol3.T,borFieNLC.borHol.intHex[9].vol4.T,
-    borFieNLC.borHol.intHex[10].vol1.T,borFieNLC.borHol.intHex[10].vol2.T,
-    borFieNLC.borHol.intHex[10].vol3.T,borFieNLC.borHol.intHex[10].vol4.T,
-    borFieNLC.lay[1].T[1],borFieNLC.lay[1].T[2],borFieNLC.lay[1].T[3],borFieNLC.lay[
-    1].T[4],borFieNLC.lay[1].T[5],borFieNLC.lay[1].T[6],borFieNLC.lay[1].T[7],
-    borFieNLC.lay[1].T[8],borFieNLC.lay[1].T[9],borFieNLC.lay[1].T[10],
-    borFieNLC.lay[2].T[1],borFieNLC.lay[2].T[2],borFieNLC.lay[2].T[3],borFieNLC.lay[
-    2].T[4],borFieNLC.lay[2].T[5],borFieNLC.lay[2].T[6],borFieNLC.lay[2].T[7],
-    borFieNLC.lay[2].T[8],borFieNLC.lay[2].T[9],borFieNLC.lay[2].T[10],
-    borFieNLC.lay[3].T[1],borFieNLC.lay[3].T[2],borFieNLC.lay[3].T[3],borFieNLC.lay[
-    3].T[4],borFieNLC.lay[3].T[5],borFieNLC.lay[3].T[6],borFieNLC.lay[3].T[7],
-    borFieNLC.lay[3].T[8],borFieNLC.lay[3].T[9],borFieNLC.lay[3].T[10],
-    borFieNLC.lay[4].T[1],borFieNLC.lay[4].T[2],borFieNLC.lay[4].T[3],borFieNLC.lay[
-    4].T[4],borFieNLC.lay[4].T[5],borFieNLC.lay[4].T[6],borFieNLC.lay[4].T[7],
-    borFieNLC.lay[4].T[8],borFieNLC.lay[4].T[9],borFieNLC.lay[4].T[10],
-    borFieNLC.lay[5].T[1],borFieNLC.lay[5].T[2],borFieNLC.lay[5].T[3],borFieNLC.lay[
-    5].T[4],borFieNLC.lay[5].T[5],borFieNLC.lay[5].T[6],borFieNLC.lay[5].T[7],
-    borFieNLC.lay[5].T[8],borFieNLC.lay[5].T[9],borFieNLC.lay[5].T[10],
-    borFieNLC.lay[6].T[1],borFieNLC.lay[6].T[2],borFieNLC.lay[6].T[3],borFieNLC.lay[
-    6].T[4],borFieNLC.lay[6].T[5],borFieNLC.lay[6].T[6],borFieNLC.lay[6].T[7],
-    borFieNLC.lay[6].T[8],borFieNLC.lay[6].T[9],borFieNLC.lay[6].T[10],
-    borFieNLC.lay[7].T[1],borFieNLC.lay[7].T[2],borFieNLC.lay[7].T[3],borFieNLC.lay[
-    7].T[4],borFieNLC.lay[7].T[5],borFieNLC.lay[7].T[6],borFieNLC.lay[7].T[7],
-    borFieNLC.lay[7].T[8],borFieNLC.lay[7].T[9],borFieNLC.lay[7].T[10],
-    borFieNLC.lay[8].T[1],borFieNLC.lay[8].T[2],borFieNLC.lay[8].T[3],borFieNLC.lay[
-    8].T[4],borFieNLC.lay[8].T[5],borFieNLC.lay[8].T[6],borFieNLC.lay[8].T[7],
-    borFieNLC.lay[8].T[8],borFieNLC.lay[8].T[9],borFieNLC.lay[8].T[10],
-    borFieNLC.lay[9].T[1],borFieNLC.lay[9].T[2],borFieNLC.lay[9].T[3],borFieNLC.lay[
-    9].T[4],borFieNLC.lay[9].T[5],borFieNLC.lay[9].T[6],borFieNLC.lay[9].T[7],
-    borFieNLC.lay[9].T[8],borFieNLC.lay[9].T[9],borFieNLC.lay[9].T[10],
-    borFieNLC.lay[10].T[1],borFieNLC.lay[10].T[2],borFieNLC.lay[10].T[3],
-    borFieNLC.lay[10].T[4],borFieNLC.lay[10].T[5],borFieNLC.lay[10].T[6],
-    borFieNLC.lay[10].T[7],borFieNLC.lay[10].T[8],borFieNLC.lay[10].T[9],
-    borFieNLC.lay[10].T[10],borFieNLC.Cground[1].T,borFieNLC.Cground[2].T,
-    borFieNLC.Cground[3].T,borFieNLC.Cground[4].T,borFieNLC.Cground[5].T,
-    borFieNLC.Cground[6].T,borFieNLC.Cground[7].T,borFieNLC.Cground[8].T,
-    borFieNLC.Cground[9].T,borFieNLC.Cground[10].T,borFieNLC.borHol.intHex[1].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[1].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[1].intRes2UTub.capFil3.T,
-    borFieNLC.borHol.intHex[1].intRes2UTub.capFil4.T,borFieNLC.borHol.intHex[2].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[2].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[2].intRes2UTub.capFil3.T,
-    borFieNLC.borHol.intHex[2].intRes2UTub.capFil4.T,borFieNLC.borHol.intHex[3].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[3].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[3].intRes2UTub.capFil3.T,
-    borFieNLC.borHol.intHex[3].intRes2UTub.capFil4.T,borFieNLC.borHol.intHex[4].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[4].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[4].intRes2UTub.capFil3.T,
-    borFieNLC.borHol.intHex[4].intRes2UTub.capFil4.T,borFieNLC.borHol.intHex[5].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[5].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[5].intRes2UTub.capFil3.T,
-    borFieNLC.borHol.intHex[5].intRes2UTub.capFil4.T,borFieNLC.borHol.intHex[6].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[6].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[6].intRes2UTub.capFil3.T,
-    borFieNLC.borHol.intHex[6].intRes2UTub.capFil4.T,borFieNLC.borHol.intHex[7].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[7].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[7].intRes2UTub.capFil3.T,
-    borFieNLC.borHol.intHex[7].intRes2UTub.capFil4.T,borFieNLC.borHol.intHex[8].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[8].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[8].intRes2UTub.capFil3.T,
-    borFieNLC.borHol.intHex[8].intRes2UTub.capFil4.T,borFieNLC.borHol.intHex[9].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[9].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[9].intRes2UTub.capFil3.T,
-    borFieNLC.borHol.intHex[9].intRes2UTub.capFil4.T,borFieNLC.borHol.intHex[10].intRes2UTub.capFil1.T,
-    borFieNLC.borHol.intHex[10].intRes2UTub.capFil2.T,borFieNLC.borHol.intHex[
-    10].intRes2UTub.capFil3.T,borFieNLC.borHol.intHex[10].intRes2UTub.capFil4.T};
-
   connect(borFieSSM.y[1], err.u1) annotation (Line(points={{1,70},{30,70},{30,
           36},{38,36}}, color={0,0,127}));
   connect(err.y, error)
@@ -578,10 +300,6 @@ borFieEmu.borHol.intHex[10].intRes2UTub.capFil4.T};
     annotation (Line(points={{-35,70},{-22,70}}, color={0,0,127}));
   connect(add.y, sou.T_in) annotation (Line(points={{-35,70},{-30,70},{-30,38},{
           -96,38},{-96,-16},{-92,-16}}, color={0,0,127}));
-  connect(cToK1.y, mFlowNLC.m_flow_in) annotation (Line(points={{-5.4,24},{0,24},
-          {0,4},{54,4},{54,-12},{54,-12}}, color={0,0,127}));
-  connect(combiTable2D.y[3], cToK1.u) annotation (Line(points={{-87,68},{-84,68},
-          {-84,18},{-19.2,18},{-19.2,24}}, color={0,0,127}));
   connect(sou.T_in, sou1.T_in) annotation (Line(points={{-92,-16},{-96,-16},{-96,
           -76},{-92,-76}}, color={0,0,127}));
   connect(sou1.ports[1], TInEmu.port_a)
@@ -594,8 +312,6 @@ borFieEmu.borHol.intHex[10].intRes2UTub.capFil4.T};
     annotation (Line(points={{40,-80},{50,-80}}, color={0,127,255}));
   connect(mFlowEmu.port_b, sink1.ports[1])
     annotation (Line(points={{70,-80},{80,-80}}, color={0,127,255}));
-  connect(mFlowNLC.m_flow_in, mFlowEmu.m_flow_in) annotation (Line(points={{54,
-          -12},{54,-4},{44,-4},{44,-56},{54,-56},{54,-72}}, color={0,0,127}));
   connect(combiTable2D.y[6], convFacCal.u) annotation (Line(points={{-87,68},{
           -86,68},{-86,90},{-168,90},{-168,-190},{-46,-190}}, color={0,0,127}));
   connect(convFacCal.y, integrator3.u)
@@ -618,10 +334,10 @@ borFieEmu.borHol.intHex[10].intRes2UTub.capFil4.T};
     annotation (Line(points={{-19,-130},{-2,-130}}, color={0,0,127}));
   connect(integrator4.y, QMeaAbs) annotation (Line(points={{21,-130},{64,-130},
           {64,-132},{110,-132}}, color={0,0,127}));
-  connect(realExpression4.y, lin_xe)
-    annotation (Line(points={{71,62},{110,62}}, color={0,0,127}));
-  connect(realExpression3.y, NL_xe)
-    annotation (Line(points={{71,84},{110,84}}, color={0,0,127}));
+  connect(mFlow.y, mFlowNLC.m_flow_in) annotation (Line(points={{-19.4,16},{12,
+          16},{12,6},{54,6},{54,-12}}, color={0,0,127}));
+  connect(mFlow.y, mFlowEmu.m_flow_in) annotation (Line(points={{-19.4,16},{12,
+          16},{12,6},{44,6},{44,-66},{54,-66},{54,-72}}, color={0,0,127}));
   annotation (
     experiment(
       StartTime=480,
@@ -644,4 +360,4 @@ borFieEmu.borHol.intHex[10].intRes2UTub.capFil4.T};
       OutputFlatModelica=false),
     Diagram(coordinateSystem(extent={{-100,-200},{100,100}})),
     Icon(coordinateSystem(extent={{-100,-200},{100,100}})));
-end InfraxValidation;
+end InfraxValidation_mFlowConstant;

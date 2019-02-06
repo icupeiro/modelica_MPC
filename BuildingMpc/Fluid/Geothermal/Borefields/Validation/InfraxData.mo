@@ -31,11 +31,10 @@ model InfraxData
       Medium.X_default)) "Dynamic viscosity of the fluid";
   TwoUTube twoUTube(
     redeclare package Medium = Medium,
-    TGro_start=(273.15 + 13.5)*ones(10),
     borFieDat=iNFRAX_bF,
     show_T=true,
     r_b=6,
-    Tsoil=286.65)
+    TExt0_start=(273.15 + 13.5))
     annotation (Placement(transformation(extent={{-20,10},{0,30}})));
 protected
   IDEAS.Fluid.Movers.BaseClasses.IdealSource mFlow(
@@ -172,15 +171,16 @@ equation
       Tolerance=1e-06,
       __Dymola_fixedstepsize=10,
       __Dymola_Algorithm="Euler"),
-    __Dymola_experimentSetupOutput,
+    __Dymola_experimentSetupOutput(events=false),
     __Dymola_experimentFlags(
       Advanced(
+        EvaluateAlsoTop=false,
         GenerateVariableDependencies=false,
         OutputModelicaCode=false,
         InlineMethod=0,
         InlineOrder=2,
         InlineFixedStep=0.001),
-      Evaluate=false,
+      Evaluate=true,
       OutputCPUtime=true,
       OutputFlatModelica=false));
 end InfraxData;

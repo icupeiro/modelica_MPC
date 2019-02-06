@@ -67,7 +67,7 @@ model PartialBorefield
         rotation=90,
         origin={0,40})));
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor[nSeg] Cground(
-    C=Modelica.Constants.inf, T(start=TExt0_start, fixed=false))
+    C=Modelica.Constants.inf, T(start=TExt_start, fixed=false))
     annotation (Placement(transformation(extent={{-12,72},{12,96}})));
   parameter Boolean allowFlowReversal=true
     "= false to simplify equations, assuming, but not enforcing, no flow reversal"

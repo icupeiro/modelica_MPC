@@ -1,3 +1,3 @@
 within BuildingMpc.Examples.SimulationModels;
-package Envelope
-end Envelope;
+package Case900Paper
+end Case900Paper;
