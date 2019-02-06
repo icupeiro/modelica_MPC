@@ -1,8 +1,6 @@
 within BuildingMpc.Examples.ControllerModels;
 model Case900GEOTABS
 "Controller model for the BESTEST Case900 with TABS and heat pump with a single borehole model; the optimization variables are the outlet temperature of the HP and the mass flows through HP cond/evap"
-  import BuildingMpc;
-  import BuildingMpc;
   extends Modelica.Icons.Example;
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,
@@ -56,11 +54,11 @@ model Case900GEOTABS
   Modelica.Blocks.Sources.RealExpression optVar1
     annotation (Placement(transformation(extent={{-86,-20},{-66,0}})));
   IDEAS.Buildings.Components.BoundaryWall boundaryWall(
-    redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyFloor
-      constructionType,
     inc=IDEAS.Types.Tilt.Floor,
     azi=rectangularZoneTemplate.aziA,
-    A=rectangularZoneTemplate.A) annotation (Placement(transformation(
+    A=rectangularZoneTemplate.A,
+    redeclare Data.HeavyFloorTABS constructionType)
+                                 annotation (Placement(transformation(
         extent={{-6,-10},{6,10}},
         rotation=90,
         origin={-8,-38})));
@@ -73,8 +71,8 @@ model Case900GEOTABS
     allowFlowReversal=false,
     A_floor=rectangularZoneTemplate.A,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    m_flow_nominal=0.2,
-    dp_nominal=0)
+    dp_nominal=0,
+    m_flow_nominal=0.5)
     annotation (Placement(transformation(extent={{16,-70},{36,-50}})));
   IBPSA.Fluid.Sources.Boundary_pT source(
     redeclare package Medium = IDEAS.Media.Water,
@@ -116,8 +114,10 @@ public
     redeclare package Medium2 = IDEAS.Media.Water,
     dp2_nominal=0,
     dp1_nominal=0,
-    m1_flow_nominal=0.2,
-    m2_flow_nominal=0.5)
+    Q_nom=5000,
+    m1_flow_nominal=0.5,
+    m2_flow_nominal=1.2,
+    COP_expr=4.5)
     annotation (Placement(transformation(extent={{60,-44},{80,-64}})));
   IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat(filDat=
         IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(steadyState=
@@ -128,10 +128,9 @@ public
   BuildingMpc.Fluid.Geothermal.Borefields.OneUTube multipleBorehole(
     redeclare package Medium = IDEAS.Media.Water,
     borFieDat=borFieDat,
-    dp_nominal=0,
-    m_flow_nominal=0.5,
-    TGro_start=(273.15 + 13.5)*ones(10),
-    Tsoil=286.65)
+    TExt0_start=(273.15 + 13.5),
+    energyDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial,
+    dynFil=true)
     annotation (Placement(transformation(extent={{52,0},{32,20}})));
 equation
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
