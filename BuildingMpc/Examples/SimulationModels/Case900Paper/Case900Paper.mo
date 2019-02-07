@@ -22,9 +22,11 @@ model Case900Paper
     dp2_nominal=10000,
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
     enable_temperature_protection=true,
-    datHeaPum=INFRAX.Data.Parameters.DYNACIAT_200_LG_LGP_cissimmo_wetter(),
     scaling_factor=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
-        *0.3/70000)                               annotation (Placement(
+        *0.3/70000,
+    datHeaPum=
+        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.DYNACIAT_200_LG_LGP_cissimmo_wetter())
+                                                  annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
@@ -34,15 +36,14 @@ public
     annotation (Placement(transformation(extent={{14,-6},{-6,14}})));
   IDEAS.Fluid.HeatExchangers.RadiantSlab.EmbeddedPipe embeddedPipe(
     redeclare package Medium = IDEAS.Media.Water,
-    massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     redeclare
       IDEAS.Fluid.HeatExchangers.RadiantSlab.BaseClasses.RadiantSlabChar
       RadSlaCha,
     allowFlowReversal=false,
     A_floor=rectangularZoneTemplate.A,
-    energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     dp_nominal=0,
-    m_flow_nominal=0.05)
+    m_flow_nominal=0.05,
+    T_start(displayUnit="K") = 300)
     annotation (Placement(transformation(extent={{-28,-46},{-8,-26}})));
   IBPSA.Fluid.Sources.Boundary_pT sink(
     redeclare package Medium = IDEAS.Media.Water,
@@ -107,10 +108,10 @@ public
     m_flow_nominal=0.05)
             annotation (Placement(transformation(extent={{-58,-26},{-38,-46}})));
   IDEAS.Controls.Continuous.LimPID conPID(
-    controllerType=Modelica.Blocks.Types.SimpleController.PID,
-    k=1,
-    Ti=60,
-    Td=0.5) annotation (Placement(transformation(extent={{24,-40},{38,-26}})));
+    Td=0.5,
+    controllerType=Modelica.Blocks.Types.SimpleController.PI,
+    k=0.5,
+    Ti=300) annotation (Placement(transformation(extent={{24,-40},{38,-26}})));
 public
   Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow auxHeaSystem
     annotation (Placement(transformation(extent={{12,22},{-8,42}})));
@@ -118,8 +119,8 @@ public
     yMin=0,
     yMax=rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design,
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
-    Ti=10,
-    k=5)
+    k=5,
+    Ti=30)
     annotation (Placement(transformation(extent={{118,42},{98,22}})));
 
   Modelica.Blocks.Sources.Constant TSetHea(k=21 + 273.15)
@@ -138,7 +139,6 @@ public
     bouTypCei=IDEAS.Buildings.Components.Interfaces.BoundaryType.OuterWall,
     hasWinCei=false,
     redeclare IDEAS.Buildings.Validation.Data.Constructions.LightRoof conTypCei,
-
     bouTypFlo=IDEAS.Buildings.Components.Interfaces.BoundaryType.BoundaryWall,
     redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyWall conTypA,
     redeclare IDEAS.Buildings.Validation.Data.Constructions.HeavyWall conTypB,
@@ -177,6 +177,7 @@ public
     fracC=0,
     fracD=0)
     annotation (Placement(transformation(extent={{-50,-14},{-30,6}})));
+
 equation
   connect(airSystem.Q_flow, optVar2.y)
     annotation (Line(points={{14,4},{19,4}}, color={0,0,127}));
@@ -222,9 +223,10 @@ equation
         points={{-8,32},{-20,32},{-20,-7},{-30,-7}}, color={191,0,0}));
   connect(airSystem.port, rectangularZoneTemplate.gainCon) annotation (Line(
         points={{-6,4},{-18,4},{-18,-7},{-30,-7}}, color={191,0,0}));
-  connect(embeddedPipe.heatPortEmb, rectangularZoneTemplate.gainEmb)
-    annotation (Line(points={{-18,-26},{-18,-13},{-30,-13}}, color={191,0,0}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
+  for i in 1:embeddedPipe.nDiscr loop
+  connect(embeddedPipe.heatPortEmb[i], rectangularZoneTemplate.gainEmb[1])    annotation (Line(points={{-18,-26},{-18,-13},{-30,-13}}, color={191,0,0}));
+  end for;
+ annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {160,100}})),                                        Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{160,100}})));
 end Case900Paper;
