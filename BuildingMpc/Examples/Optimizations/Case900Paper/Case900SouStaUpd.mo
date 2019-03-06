@@ -8,7 +8,7 @@ model Case900SouStaUpd
   Real states[39];
   MpcCase900SouStaUpd mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect);
 
-    model MpcCase900SouStaUpd
+  model MpcCase900SouStaUpd
     extends UnitTests.MPC.BaseClasses.Mpc(
       final nOut=10,
       final nOpt=3,
@@ -43,7 +43,7 @@ model Case900SouStaUpd
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,8, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    end MpcCase900SouStaUpd;
+  end MpcCase900SouStaUpd;
 
 equation
    states = {

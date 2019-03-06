@@ -13,7 +13,7 @@ model Case900COP
   Real watStates[20];
   MpcCase900COP mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect);
 
-    model MpcCase900COP
+ model MpcCase900COP
     extends UnitTests.MPC.BaseClasses.Mpc(
       final nOut=10,
       final nOpt=3,
@@ -48,7 +48,7 @@ model Case900COP
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,8, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    end MpcCase900COP;
+ end MpcCase900COP;
 
   IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical lay(
     each soiDat=borFieDat.soiDat,

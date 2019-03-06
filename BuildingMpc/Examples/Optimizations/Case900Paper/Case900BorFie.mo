@@ -13,7 +13,8 @@ model Case900BorFie
   Real watStates[20];
   MpcCase900BorFie mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect);
 
-  model MpcCase900BorFie
+
+ model MpcCase900BorFie
     extends UnitTests.MPC.BaseClasses.Mpc(
       final nOut=10,
       final nOpt=3,
@@ -48,7 +49,7 @@ model Case900BorFie
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,8, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-  end MpcCase900BorFie;
+ end MpcCase900BorFie;
 
   IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical lay(
     each soiDat=borFieDat.soiDat,
