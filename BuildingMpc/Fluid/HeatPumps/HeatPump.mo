@@ -34,14 +34,12 @@ model HeatPump "A heat pump model for optimization"
     annotation (Placement(transformation(extent={{10,-70},{-10,-50}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort T_eva_in(
     allowFlowReversal=false,
-    initType=Modelica.Blocks.Types.Init.SteadyState,
     redeclare package Medium = Medium2,
     m_flow_nominal=m2_flow_nominal,
     tau=0)
     annotation (Placement(transformation(extent={{70,-70},{50,-50}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort T_con_in(
     allowFlowReversal=false,
-    initType=Modelica.Blocks.Types.Init.SteadyState,
     redeclare package Medium = Medium1,
     m_flow_nominal=m1_flow_nominal,
     tau=0)
@@ -55,7 +53,6 @@ model HeatPump "A heat pump model for optimization"
     annotation (Placement(transformation(extent={{50,50},{70,70}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort T_eva_out(
     allowFlowReversal=false,
-    initType=Modelica.Blocks.Types.Init.SteadyState,
     redeclare package Medium = Medium2,
     m_flow_nominal=m2_flow_nominal,
     tau=0)
@@ -76,25 +73,38 @@ model HeatPump "A heat pump model for optimization"
     "Pressure difference through the evaporator"
     annotation (Dialog(group="Nominal conditions"));
 
-  Modelica.Blocks.Interfaces.RealOutput COP_expr=9.45 - 0.25*(T_con_in.T - 298.15)
-       + 0.19*(T_eva_in.T - 288.15) "Theoretical COP expression of the heat pump"
-    annotation (Dialog(tab="Advanced"));
 
-  parameter Modelica.SIunits.Power PLoss = 0
+  parameter Modelica.SIunits.Power PLos = 0
   "Constant term of compressor losses"
-    annotation (Dialog(tab="Advanced"));
-
-  parameter Real etaCom = 1
-  "Compressor mechanical efficiency"
   annotation (Dialog(tab="Advanced"));
 
-  Real COP = HP_con.Q_flow/Wcomp.y;
+    parameter Real etaCom = 1
+    "Compressor electromechanical efficiency"
+    annotation (Dialog(tab="Advanced"));
+
+  Modelica.Blocks.Interfaces.RealOutput COP_expr=
+    9.45 - 0.25*(T_con_in.T - 298.15) + 0.19*(T_eva_in.T - 288.15)
+   "Theoretical COP expression of the heat pump"
+    annotation (Dialog(tab="Advanced"));
+   // (5.44-0.113*(T_con_in.T - 298.15) + 0.114*(T_eva_in.T - 288.15))*loadFactor
+
+
+  Real COP = HP_con.Q_flow/Wcomp.y
+  "Real COP";
+
+  Modelica.SIunits.HeatFlowRate Q_con_max = 1347 + 28.88*(T_eva_in.T-288.15) - 5.786*(T_con_in.T - 298.15)
+  "Maximum heat capacity of the HP"
+  annotation (Dialog(tab="Advanced"));
+
+  //Real loadFactor = 0.2127*log(Q_con/Q_con_max) + 1.0832;
+
 
   Modelica.Blocks.Interfaces.RealInput Tcon_out
     "Outlet condenser temperature signal"
     annotation (Placement(transformation(extent={{-120,70},{-80,110}})));
-  Modelica.Blocks.Sources.RealExpression Wcomp(y=HP_con.Q_flow/COPthe.y/etaCom + PLoss)
-    "Compressor power"
+
+  Modelica.Blocks.Sources.RealExpression Wcomp(y=HP_con.Q_flow/COPthe.y/etaCom + PLos)
+    "compressor power"
     annotation (Placement(transformation(extent={{40,-10},{60,10}})));
   Modelica.Blocks.Interfaces.RealOutput W_comp
     annotation (Placement(transformation(extent={{100,-10},{120,10}})));

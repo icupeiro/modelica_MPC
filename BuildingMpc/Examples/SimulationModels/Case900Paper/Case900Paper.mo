@@ -3,7 +3,7 @@ model Case900Paper
   extends Modelica.Icons.Example;
   package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=268.15, X_a=0.25);
 
-  parameter Real COP = 5;
+  parameter Real COP = 4.5;
 
   IBPSA.Fluid.Sources.Boundary_pT bou(          redeclare package Medium =
         IDEAS.Media.Air, nPorts=1)
@@ -22,11 +22,11 @@ model Case900Paper
     dp2_nominal=10000,
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
     enable_temperature_protection=true,
-    scaling_factor=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
-        *0.3/70000,
     datHeaPum=
-        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.DYNACIAT_200_LG_LGP_cissimmo_wetter())
-                                                  annotation (Placement(
+        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Daikin_WRA036_13kW_4_50COP_R410A(),
+    scaling_factor=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
+        *0.3/6984.06,
+    TEvaMin=271.65)                               annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
@@ -61,7 +61,7 @@ public
         dSoi=1358.4),
     conDat=IBPSA.Fluid.Geothermal.Borefields.Data.Configuration.Example(
         mBor_flow_nominal=0.05,
-        hBor=30.9,
+        hBor=53.9,
         dBor=0,
         nBor=1,
         cooBor={{0,0}},
@@ -96,22 +96,24 @@ public
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-36,70})));
-  IDEAS.Fluid.Geothermal.Borefields.OneUTube borFie(
+  IBPSA.Fluid.Geothermal.Borefields.OneUTube borFie(
                            borFieDat=borFieDat, redeclare package Medium =
-        Glycol)
+        Glycol,
+    r={6},
+    nbTem=1,
+    TExt0_start=283.15)
     annotation (Placement(transformation(extent={{0,70},{20,90}})));
   Modelica.Blocks.Sources.RealExpression optVar1(y=0)
     annotation (Placement(transformation(extent={{-8,-30},{12,-10}})));
-  IDEAS.Fluid.Sensors.TemperatureTwoPort senTem(
+  IDEAS.Fluid.Sensors.TemperatureTwoPort TSup(
     redeclare package Medium = IDEAS.Media.Water,
     tau=60,
     m_flow_nominal=0.05)
-            annotation (Placement(transformation(extent={{-58,-26},{-38,-46}})));
+    annotation (Placement(transformation(extent={{-58,-26},{-38,-46}})));
   IDEAS.Controls.Continuous.LimPID conPID(
-    Td=0.5,
+    k=0.1,
     controllerType=Modelica.Blocks.Types.SimpleController.PI,
-    k=0.5,
-    Ti=300) annotation (Placement(transformation(extent={{24,-40},{38,-26}})));
+    Ti=60)  annotation (Placement(transformation(extent={{24,-40},{38,-26}})));
 public
   Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow auxHeaSystem
     annotation (Placement(transformation(extent={{12,22},{-8,42}})));
@@ -123,8 +125,6 @@ public
     Ti=30)
     annotation (Placement(transformation(extent={{118,42},{98,22}})));
 
-  Modelica.Blocks.Sources.Constant TSetHea(k=21 + 273.15)
-    annotation (Placement(transformation(extent={{150,22},{130,42}})));
   Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor temperatureSensor
     annotation (Placement(transformation(extent={{58,40},{76,58}})));
   Modelica.Blocks.Sources.Constant mFlow(k=0.05)
@@ -178,6 +178,35 @@ public
     fracD=0)
     annotation (Placement(transformation(extent={{-50,-14},{-30,6}})));
 
+  IDEAS.Fluid.Sensors.TemperatureTwoPort TRet(
+    tau=60,
+    m_flow_nominal=0.05,
+    redeclare package Medium = Glycol)
+    annotation (Placement(transformation(extent={{26,70},{46,90}})));
+  Modelica.Blocks.Sources.RealExpression nightSetBack(y=if (clock.hour >= 7
+         and clock.hour <= 23) then 273.15 + 21 else 273.15 + 16)
+    "constraint with night set-back"
+    annotation (Placement(transformation(extent={{148,30},{128,50}})));
+  UnitTests.Components.Clock clock
+    annotation (Placement(transformation(extent={{-100,-4},{-80,16}})));
+  Modelica.Blocks.Interfaces.RealOutput energyUse
+    annotation (Placement(transformation(extent={{160,-72},{180,-52}})));
+  Modelica.Blocks.Continuous.Integrator totalElecTokWh(k=1/3600/1000)
+    annotation (Placement(transformation(extent={{102,-94},{122,-74}})));
+  Modelica.Blocks.Continuous.Integrator totalGasTokWh(k=1/3600/1000)
+    annotation (Placement(transformation(extent={{102,-50},{122,-30}})));
+  Modelica.Blocks.Math.Add totalGas
+    annotation (Placement(transformation(extent={{58,-8},{78,12}})));
+  Modelica.Blocks.Math.Add totalEnergy
+    annotation (Placement(transformation(extent={{134,-72},{154,-52}})));
+  Modelica.Blocks.Interfaces.RealOutput operationalCosts
+    annotation (Placement(transformation(extent={{160,-14},{180,6}})));
+  Modelica.Blocks.Math.Add totalCost
+    annotation (Placement(transformation(extent={{136,-14},{156,6}})));
+  Modelica.Blocks.Math.Gain gasCost(k=0.048) "in EUR/kWh"
+    annotation (Placement(transformation(extent={{114,-4},{126,8}})));
+  Modelica.Blocks.Math.Gain elecCost(k=0.3) "in EUR/kWh"
+    annotation (Placement(transformation(extent={{114,-16},{126,-4}})));
 equation
   connect(airSystem.Q_flow, optVar2.y)
     annotation (Line(points={{14,4},{19,4}}, color={0,0,127}));
@@ -187,15 +216,13 @@ equation
           -78},{86,-36},{72,-36}}, color={0,127,255}));
   connect(borFie_pump.port_b, heaPum.port_a2) annotation (Line(points={{72,80},{
           86,80},{86,-24},{72,-24}}, color={0,127,255}));
-  connect(borFie.port_b, borFie_pump.port_a)
-    annotation (Line(points={{20,80},{52,80}}, color={0,127,255}));
   connect(heaPum.port_b2, borFie.port_a) annotation (Line(points={{52,-24},{46,-24},
           {46,52},{-14,52},{-14,80},{0,80}}, color={0,127,255}));
   connect(source.ports[1], borFie.port_a) annotation (Line(points={{-26,70},{-14,
           70},{-14,80},{0,80}}, color={0,127,255}));
-  connect(senTem.port_b, embeddedPipe.port_a)
+  connect(TSup.port_b, embeddedPipe.port_a)
     annotation (Line(points={{-38,-36},{-28,-36}}, color={0,127,255}));
-  connect(senTem.port_a, tabs_pump.port_b) annotation (Line(points={{-58,-36},{-68,
+  connect(TSup.port_a, tabs_pump.port_b) annotation (Line(points={{-58,-36},{-68,
           -36},{-68,-78},{10,-78}}, color={0,127,255}));
   connect(sink.ports[1], tabs_pump.port_b) annotation (Line(points={{-84,-30},{-84,
           -36},{-68,-36},{-68,-78},{10,-78}}, color={0,127,255}));
@@ -203,10 +230,8 @@ equation
     annotation (Line(points={{38.7,-33},{50,-33}}, color={0,0,127}));
   connect(conPID.u_s, optVar1.y) annotation (Line(points={{22.6,-33},{18,-33},{18,
           -20},{13,-20}}, color={0,0,127}));
-  connect(senTem.T, conPID.u_m) annotation (Line(points={{-48,-47},{-48,-54},{31,
+  connect(TSup.T, conPID.u_m) annotation (Line(points={{-48,-47},{-48,-54},{31,
           -54},{31,-41.4}}, color={0,0,127}));
-  connect(TSetHea.y, conPID1.u_s)
-    annotation (Line(points={{129,32},{120,32}}, color={0,0,127}));
   connect(conPID1.y, auxHeaSystem.Q_flow)
     annotation (Line(points={{97,32},{12,32}}, color={0,0,127}));
   connect(temperatureSensor.T, conPID1.u_m)
@@ -226,7 +251,49 @@ equation
   for i in 1:embeddedPipe.nDiscr loop
   connect(embeddedPipe.heatPortEmb[i], rectangularZoneTemplate.gainEmb[1])    annotation (Line(points={{-18,-26},{-18,-13},{-30,-13}}, color={191,0,0}));
   end for;
+  connect(borFie.port_b, TRet.port_a)
+    annotation (Line(points={{20,80},{26,80}}, color={0,127,255}));
+  connect(TRet.port_b, borFie_pump.port_a)
+    annotation (Line(points={{46,80},{52,80}}, color={0,127,255}));
+  connect(nightSetBack.y, conPID1.u_s) annotation (Line(points={{127,40},{124,
+          40},{124,32},{120,32}}, color={0,0,127}));
+  connect(heaPum.P, totalElecTokWh.u) annotation (Line(points={{73,-30},{88,-30},
+          {88,-84},{100,-84}}, color={0,0,127}));
+  connect(optVar2.y, totalGas.u2)
+    annotation (Line(points={{19,4},{20,4},{20,-4},{56,-4}}, color={0,0,127}));
+  connect(conPID1.y, totalGas.u1)
+    annotation (Line(points={{97,32},{52,32},{52,8},{56,8}}, color={0,0,127}));
+  connect(totalGas.y, totalGasTokWh.u) annotation (Line(points={{79,2},{90,2},{
+          90,-40},{100,-40}}, color={0,0,127}));
+  connect(totalGasTokWh.y, totalEnergy.u1) annotation (Line(points={{123,-40},{
+          130,-40},{130,-56},{132,-56}}, color={0,0,127}));
+  connect(totalElecTokWh.y, totalEnergy.u2)
+    annotation (Line(points={{123,-84},{132,-84},{132,-68}}, color={0,0,127}));
+  connect(totalEnergy.y, energyUse)
+    annotation (Line(points={{155,-62},{170,-62}}, color={0,0,127}));
+  connect(totalCost.y, operationalCosts)
+    annotation (Line(points={{157,-4},{170,-4}}, color={0,0,127}));
+  connect(gasCost.y, totalCost.u1)
+    annotation (Line(points={{126.6,2},{134,2}}, color={0,0,127}));
+  connect(elecCost.y, totalCost.u2)
+    annotation (Line(points={{126.6,-10},{134,-10}}, color={0,0,127}));
+  connect(totalGasTokWh.y, gasCost.u) annotation (Line(points={{123,-40},{128,
+          -40},{128,-22},{102,-22},{102,2},{112.8,2}}, color={0,0,127}));
+  connect(totalElecTokWh.y, elecCost.u) annotation (Line(points={{123,-84},{126,
+          -84},{126,-20},{108,-20},{108,-10},{112.8,-10}}, color={0,0,127}));
  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {160,100}})),                                        Diagram(
-        coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{160,100}})));
+        coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{160,100}})),
+    experiment(
+      StopTime=5259487,
+      Interval=300,
+      Tolerance=1e-06,
+      __Dymola_fixedstepsize=30,
+      __Dymola_Algorithm="Euler"),
+    __Dymola_experimentSetupOutput,
+    __Dymola_experimentFlags(
+      Advanced(GenerateVariableDependencies=false, OutputModelicaCode=false),
+      Evaluate=false,
+      OutputCPUtime=true,
+      OutputFlatModelica=false));
 end Case900Paper;

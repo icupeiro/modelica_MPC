@@ -1,5 +1,5 @@
 within BuildingMpc.Examples.ControllerModels.Case900Paper;
-model Case900Sou
+model Case900COP
   extends Modelica.Icons.Example;
   package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=268.15, X_a=0.25);
   parameter Real eff = 0.9;
@@ -20,6 +20,7 @@ model Case900Sou
     Q_nom=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
         *0.3,
     Q_con(start=0),
+    COP_expr=4.5,
     PLos=57.62,
     etaCom=0.75)      annotation (Placement(transformation(
         extent={{-10,10},{10,-10}},
@@ -36,11 +37,9 @@ protected
     annotation (Placement(transformation(extent={{40,-90},{20,-70}})));
 public
   IBPSA.Fluid.Sources.Boundary_pT source(
-    use_T_in=false,
-    nPorts=2,
     redeclare package Medium = Glycol,
     p=200000,
-    T=283.15) annotation (Placement(transformation(
+    nPorts=1) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-36,70})));
@@ -149,22 +148,38 @@ public
     min=298.15,
     start=303.15)
     annotation (Placement(transformation(extent={{-120,-74},{-80,-34}})));
-  UnitTests.Components.Clock clock
-    annotation (Placement(transformation(extent={{-100,52},{-80,72}})));
+  IBPSA.Fluid.Geothermal.Borefields.Data.Borefield.Example borFieDat(
+    filDat=IBPSA.Fluid.Geothermal.Borefields.Data.Filling.Bentonite(),
+    soiDat=IBPSA.Fluid.Geothermal.Borefields.Data.Soil.SandStone(
+        kSoi=1.4,
+        cSoi=980,
+        dSoi=1358.4),
+    conDat=IBPSA.Fluid.Geothermal.Borefields.Data.Configuration.Example(
+        mBor_flow_nominal=0.05,
+        hBor=53.9,
+        dBor=0,
+        nBor=1,
+        cooBor={{0,0}},
+        xC=0.04))
+    annotation (Placement(transformation(extent={{-102,-100},{-82,-80}})));
+  Fluid.Geothermal.Borefields.OneUTube oneUTube(
+    borFieDat=borFieDat,
+    redeclare package Medium = Glycol,
+    energyDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial,
+    dynFil=true)
+    annotation (Placement(transformation(extent={{10,50},{30,70}})));
   Modelica.Blocks.Sources.RealExpression nightSetBack(y=if (clock.hour >= 7
          and clock.hour <= 23) then 273.15 + 21 else 273.15 + 16)
     "constraint with night set-back"
-    annotation (Placement(transformation(extent={{-4,24},{16,44}})));
+    annotation (Placement(transformation(extent={{-4,32},{16,52}})));
+  UnitTests.Components.Clock clock
+    annotation (Placement(transformation(extent={{-100,26},{-80,46}})));
   Modelica.Blocks.Interfaces.RealInput slack(min=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
 equation
 
-  connect(source.ports[1], m_flow_source.port_a)
-    annotation (Line(points={{-26,72},{58,72}}, color={0,127,255}));
   connect(heatPump.port_a2, m_flow_source.port_b) annotation (Line(points={{80,-24},
           {90,-24},{90,72},{78,72}},      color={0,127,255}));
-  connect(heatPump.port_b2, source.ports[2]) annotation (Line(points={{60,-24},{
-          52,-24},{52,68},{-26,68}},  color={0,127,255}));
   connect(m_flow_sink.port_b, embeddedPipe.port_a) annotation (Line(points={{20,
           -80},{-54,-80},{-54,-36},{-28,-36}}, color={0,127,255}));
   connect(embeddedPipe.port_b, heatPump.port_a1)
@@ -190,6 +205,12 @@ equation
     annotation (Line(points={{10,0},{10,14},{-100,14}}, color={0,0,127}));
   connect(u1, heatPump.Tcon_out) annotation (Line(points={{-100,-54},{-20,-54},{
           -20,-39},{60,-39}}, color={0,0,127}));
+  connect(oneUTube.port_b, m_flow_source.port_a) annotation (Line(points={{30,
+          60},{44,60},{44,72},{58,72}}, color={0,127,255}));
+  connect(heatPump.port_b2, oneUTube.port_a) annotation (Line(points={{60,-24},
+          {38,-24},{38,38},{0,38},{0,60},{10,60}}, color={0,127,255}));
+  connect(source.ports[1], oneUTube.port_a) annotation (Line(points={{-26,70},{
+          -12,70},{-12,60},{10,60}}, color={0,127,255}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
-end Case900Sou;
+end Case900COP;
