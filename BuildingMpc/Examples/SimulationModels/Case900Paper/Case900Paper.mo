@@ -3,8 +3,6 @@ model Case900Paper
   extends Modelica.Icons.Example;
   package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=268.15, X_a=0.25);
 
-  parameter Real COP = 4.5;
-
   IBPSA.Fluid.Sources.Boundary_pT bou(          redeclare package Medium =
         IDEAS.Media.Air, nPorts=1)
     annotation (Placement(transformation(extent={{-70,30},{-50,50}})));
@@ -203,10 +201,16 @@ public
     annotation (Placement(transformation(extent={{160,-14},{180,6}})));
   Modelica.Blocks.Math.Add totalCost
     annotation (Placement(transformation(extent={{136,-14},{156,6}})));
-  Modelica.Blocks.Math.Gain gasCost(k=0.048) "in EUR/kWh"
+  Modelica.Blocks.Math.Gain gasCost(k=gasPrice.k)
+                                             "in EUR/kWh"
     annotation (Placement(transformation(extent={{114,-4},{126,8}})));
-  Modelica.Blocks.Math.Gain elecCost(k=0.3) "in EUR/kWh"
+  Modelica.Blocks.Math.Gain elecCost(k=electricityPrice.k)
+                                            "in EUR/kWh"
     annotation (Placement(transformation(extent={{114,-16},{126,-4}})));
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.054)
+    annotation (Placement(transformation(extent={{-100,-96},{-90,-86}})));
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.284)
+    annotation (Placement(transformation(extent={{-84,-96},{-74,-86}})));
 equation
   connect(airSystem.Q_flow, optVar2.y)
     annotation (Line(points={{14,4},{19,4}}, color={0,0,127}));

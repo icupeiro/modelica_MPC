@@ -2,7 +2,7 @@ within BuildingMpc.Examples.ControllerModels.Case900Paper;
 model Case900Sou
   extends Modelica.Icons.Example;
   package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=268.15, X_a=0.25);
-  parameter Real eff = 0.9;
+  parameter Real eff = 1.0;
 
   IBPSA.Fluid.Sources.Boundary_pT bou(nPorts=1, redeclare package Medium =
         BuildingMpc.Media.DryAir)
@@ -21,7 +21,7 @@ model Case900Sou
         *0.3,
     Q_con(start=0),
     PLos=57.62,
-    etaCom=0.75)      annotation (Placement(transformation(
+    etaCom=0.743)     annotation (Placement(transformation(
         extent={{-10,10},{10,-10}},
         rotation=0,
         origin={70,-30})));
@@ -157,6 +157,10 @@ public
     annotation (Placement(transformation(extent={{-4,24},{16,44}})));
   Modelica.Blocks.Interfaces.RealInput slack(min=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.054)
+    annotation (Placement(transformation(extent={{-46,90},{-36,100}})));
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.284)
+    annotation (Placement(transformation(extent={{-30,90},{-20,100}})));
 equation
 
   connect(source.ports[1], m_flow_source.port_a)

@@ -8,14 +8,15 @@ model COPderivation
     dp1_nominal=10000,
     dp2_nominal=10000,
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
-    datHeaPum=
-        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Daikin_WRA036_13kW_4_50COP_R410A(),
     enable_temperature_protection=false,
     redeclare package Medium2 = Glycol,
-    scaling_factor=0.12684,
     m1_flow_nominal=0.05,
     m2_flow_nominal=0.05,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    datHeaPum=
+        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Viessmann_BW301A45_58kW_5_50COP_R410A(),
+
+    scaling_factor=0.02108,
     T1_start=298.15,
     T2_start=283.15)                              annotation (Placement(
         transformation(
@@ -33,8 +34,8 @@ model COPderivation
   IDEAS.Fluid.Sources.Boundary_pT sin(
     redeclare package Medium = Water,
     nPorts=1,
-    p=200000,
-    use_T_in=true)
+    use_T_in=true,
+    p=200000)
     annotation (Placement(transformation(extent={{-80,-44},{-60,-24}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow pump_sin(
     redeclare package Medium = Water,
@@ -82,14 +83,14 @@ model COPderivation
   Modelica.Blocks.Sources.CombiTimeTable combiTimeTable1(
     extrapolation=Modelica.Blocks.Types.Extrapolation.HoldLastPoint,
     smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
-    table=[0,298.15; 10000,298.15; 20000,308.15])
+    table=[0,298.15; 10000,298.15; 20000,303.15])
     annotation (Placement(transformation(extent={{-120,-40},{-100,-20}})));
   Modelica.Blocks.Sources.CombiTimeTable combiTimeTable2(
     extrapolation=Modelica.Blocks.Types.Extrapolation.HoldLastPoint,
     smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
-    table=[0,265.15; 10000,288.15])
+    table=[0,273.15; 10000,283.15; 20000,283.15; 30000,273.15])
     annotation (Placement(transformation(extent={{100,40},{80,60}})));
-  Modelica.Blocks.Sources.Constant mFlow(k=0.4)
+  Modelica.Blocks.Sources.Constant mFlow(k=1)
     annotation (Placement(transformation(extent={{-100,40},{-80,60}})));
   Modelica.Blocks.Sources.RealExpression COPThe(y=heaPum.QCon_flow/heaPum.com.PThe)
     annotation (Placement(transformation(extent={{-32,-84},{-12,-64}})));

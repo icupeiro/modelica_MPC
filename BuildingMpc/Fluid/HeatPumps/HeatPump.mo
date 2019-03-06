@@ -83,16 +83,15 @@ model HeatPump "A heat pump model for optimization"
     annotation (Dialog(tab="Advanced"));
 
   Modelica.Blocks.Interfaces.RealOutput COP_expr=
-    9.45 - 0.25*(T_con_in.T - 298.15) + 0.19*(T_eva_in.T - 288.15)
+    7.89 - 0.198*(T_con_in.T - 298.15) + 0.158*(T_eva_in.T - 278.15)
    "Theoretical COP expression of the heat pump"
     annotation (Dialog(tab="Advanced"));
    // (5.44-0.113*(T_con_in.T - 298.15) + 0.114*(T_eva_in.T - 288.15))*loadFactor
 
-
   Real COP = HP_con.Q_flow/Wcomp.y
   "Real COP";
 
-  Modelica.SIunits.HeatFlowRate Q_con_max = 1347 + 28.88*(T_eva_in.T-288.15) - 5.786*(T_con_in.T - 298.15)
+  Modelica.SIunits.HeatFlowRate Q_con_max = 885.86 + 27.698*(T_eva_in.T-273.15) - 2.532*(T_con_in.T - 303.15)
   "Maximum heat capacity of the HP"
   annotation (Dialog(tab="Advanced"));
 
