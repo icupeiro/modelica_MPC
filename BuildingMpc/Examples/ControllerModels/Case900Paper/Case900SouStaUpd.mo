@@ -20,7 +20,6 @@ model Case900SouStaUpd
     Q_nom=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
         *0.3,
     Q_con(start=0),
-    PLos=0,
     etaCom=0.743)     annotation (Placement(transformation(
         extent={{-10,10},{10,-10}},
         rotation=0,
