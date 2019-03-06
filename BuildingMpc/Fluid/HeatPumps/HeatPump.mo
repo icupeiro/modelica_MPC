@@ -9,8 +9,8 @@ model HeatPump "A heat pump model for optimization"
     "Medium through the source side (evaporator)" annotation (
       choicesAllMatching=true);
 
-  Modelica.Blocks.Sources.RealExpression COP(y=COP_expr)
-    "COP expression of the heat pump"
+  Modelica.Blocks.Sources.RealExpression COPthe(y=COP_expr)
+    "Theoretical COP expression of the heat pump"
     annotation (Placement(transformation(extent={{-60,-10},{-40,10}})));
   IDEAS.Fluid.HeatExchangers.PrescribedOutlet HP_con(
     allowFlowReversal=false,
@@ -76,14 +76,25 @@ model HeatPump "A heat pump model for optimization"
     "Pressure difference through the evaporator"
     annotation (Dialog(group="Nominal conditions"));
 
-  Modelica.Blocks.Interfaces.RealOutput COP_expr=6.4 - 0.16*(T_con_in.T - 298.15)
-       + 0.1*(T_eva_in.T - 288.15) "COP expression of the heat pump"
+  Modelica.Blocks.Interfaces.RealOutput COP_expr=9.45 - 0.25*(T_con_in.T - 298.15)
+       + 0.19*(T_eva_in.T - 288.15) "Theoretical COP expression of the heat pump"
     annotation (Dialog(tab="Advanced"));
+
+  parameter Modelica.SIunits.Power PLoss = 0
+  "Constant term of compressor losses"
+    annotation (Dialog(tab="Advanced"));
+
+  parameter Real etaCom = 1
+  "Compressor mechanical efficiency"
+  annotation (Dialog(tab="Advanced"));
+
+  Real COP = HP_con.Q_flow/Wcomp.y;
+
   Modelica.Blocks.Interfaces.RealInput Tcon_out
-    "outlet condenser temperature signal"
+    "Outlet condenser temperature signal"
     annotation (Placement(transformation(extent={{-120,70},{-80,110}})));
-  Modelica.Blocks.Sources.RealExpression Wcomp(y=HP_con.Q_flow/COP.y)
-    "compressor power"
+  Modelica.Blocks.Sources.RealExpression Wcomp(y=HP_con.Q_flow/COPthe.y/etaCom + PLoss)
+    "Compressor power"
     annotation (Placement(transformation(extent={{40,-10},{60,10}})));
   Modelica.Blocks.Interfaces.RealOutput W_comp
     annotation (Placement(transformation(extent={{100,-10},{120,10}})));

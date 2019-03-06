@@ -2,7 +2,7 @@ within BuildingMpc.Examples.SimulationModels.Case900Paper;
 model LoadCalculation
   extends Modelica.Icons.Example;
 
-  parameter Real COP = 5;
+  parameter Real COP = 4.5;
 
   Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor temperatureSensor
     annotation (Placement(transformation(extent={{22,-22},{40,-4}})));
@@ -125,5 +125,19 @@ equation
   connect(groundLoad.y, groundBalance.u)
     annotation (Line(points={{61,19},{69.8,19}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
-        coordinateSystem(preserveAspectRatio=false)));
+        coordinateSystem(preserveAspectRatio=false)),
+    experiment(
+      StopTime=31536000,
+      Tolerance=1e-06,
+      __Dymola_fixedstepsize=30,
+      __Dymola_Algorithm="Euler"),
+    __Dymola_experimentSetupOutput,
+    __Dymola_experimentFlags(
+      Advanced(
+        EvaluateAlsoTop=false,
+        GenerateVariableDependencies=false,
+        OutputModelicaCode=false),
+      Evaluate=true,
+      OutputCPUtime=true,
+      OutputFlatModelica=false));
 end LoadCalculation;
