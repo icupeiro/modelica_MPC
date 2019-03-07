@@ -22,7 +22,7 @@ model Case900COP
     Q_con(start=0),
     PLos=0,
     etaCom=0.743,
-    COP_expr=5.12)    annotation (Placement(transformation(
+    COP_expr=5.5)    annotation (Placement(transformation(
         extent={{-10,10},{10,-10}},
         rotation=0,
         origin={70,-30})));
