@@ -13,10 +13,11 @@ model Case900COP
   Real watStates[20];
   MpcCase900COP mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect);
 
- model MpcCase900COP
+
+  model MpcCase900COP
     extends UnitTests.MPC.BaseClasses.Mpc(
-      final nOut=10,
-      final nOpt=3,
+      final nOut=16,
+      final nOpt=5,
       final nSta=188,
       final nMeas=0,
       final nIneq=7,
@@ -38,17 +39,28 @@ model Case900COP
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput TRet = getOutput(tableID,5, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput T_con_in = getOutput(tableID,8, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput T_con_out = getOutput(tableID,9, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput T_eva_in = getOutput(tableID,10, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput T_eva_out = getOutput(tableID,11, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,1, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput W_comp = getOutput(tableID,2, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput slack = getOutput(tableID,10, time)
+    Modelica.Blocks.Interfaces.RealOutput slack[3] = {
+      getOutput(tableID,14, time),
+      getOutput(tableID,15, time),
+      getOutput(tableID,16, time)}
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput u1 = getOutput(tableID,9, time)
+    Modelica.Blocks.Interfaces.RealOutput u1 = getOutput(tableID,13, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,8, time)
+    Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,12, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
- end MpcCase900COP;
+  end MpcCase900COP;
 
   IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical lay(
     each soiDat=borFieDat.soiDat,

@@ -22,10 +22,9 @@ model Tuning
     dp2_nominal=10000,
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
     enable_temperature_protection=true,
-    scaling_factor=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
-        *0.3/70000,
+    scaling_factor=0.021,
     datHeaPum=
-        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.DYNACIAT_200_LG_LGP_cissimmo_wetter())
+        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Viessmann_BW301A45_58kW_5_50COP_R410A())
                                                   annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},

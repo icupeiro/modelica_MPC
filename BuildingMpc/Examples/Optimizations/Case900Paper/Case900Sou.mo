@@ -9,8 +9,8 @@ model Case900Sou
 
   model MpcCase900Sou
     extends UnitTests.MPC.BaseClasses.Mpc(
-      final nOut=9,
-      final nOpt=3,
+      final nOut=15,
+      final nOpt=5,
       final nSta=38,
       final nMeas=0,
       final nIneq=7,
@@ -30,15 +30,26 @@ model Case900Sou
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput TRad = getOutput(tableID,4, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput T_con_in = getOutput(tableID,7, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput T_con_out = getOutput(tableID,8, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput T_eva_in = getOutput(tableID,9, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput T_eva_out = getOutput(tableID,10, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,1, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput W_comp = getOutput(tableID,2, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput slack = getOutput(tableID,9, time)
+    Modelica.Blocks.Interfaces.RealOutput slack[3] = {
+      getOutput(tableID,13, time),
+      getOutput(tableID,14, time),
+      getOutput(tableID,15, time)}
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput u1 = getOutput(tableID,8, time)
+    Modelica.Blocks.Interfaces.RealOutput u1 = getOutput(tableID,12, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,7, time)
+    Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,11, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
   end MpcCase900Sou;
 
@@ -87,5 +98,11 @@ rectangularZoneTemplate.airModel.vol.T}
 
         mpc.uSta = states;
 
-                          annotation (Placement(transformation(extent={{-100,0},{-80,20}})));
+                          annotation (Placement(transformation(extent={{-100,0},{-80,20}})),
+      experiment(
+      StopTime=5259487,
+      Interval=300,
+      Tolerance=1e-06,
+      __Dymola_fixedstepsize=30,
+      __Dymola_Algorithm="Euler"));
 end Case900Sou;
