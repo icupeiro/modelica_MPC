@@ -20,12 +20,10 @@ model Case900Paper
     dp2_nominal=10000,
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
     enable_temperature_protection=true,
-    scaling_factor=0.02108,
     datHeaPum=
-        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Viessmann_BW301A45_58kW_5_50COP_R410A(),
-
-    T1_start=298.15,
-    T2_start=283.15,
+        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Daikin_WRA036_13kW_4_50COP_R410A(),
+    scaling_factor=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
+        *0.3/6984.06,
     TEvaMin=271.65)                               annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},

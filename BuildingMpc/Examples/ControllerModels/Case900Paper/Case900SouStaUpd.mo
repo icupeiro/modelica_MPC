@@ -20,6 +20,7 @@ model Case900SouStaUpd
     Q_nom=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
         *0.3,
     Q_con(start=0),
+    PLos=0,
     etaCom=0.743)     annotation (Placement(transformation(
         extent={{-10,10},{10,-10}},
         rotation=0,
@@ -159,7 +160,7 @@ public
     annotation (Placement(transformation(extent={{-4,32},{16,52}})));
   UnitTests.Components.Clock clock
     annotation (Placement(transformation(extent={{-100,26},{-80,46}})));
-  Modelica.Blocks.Interfaces.RealInput slack(min=0)
+  Modelica.Blocks.Interfaces.RealInput[3] slack(each min=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
   Modelica.Blocks.Sources.Constant gasPrice(k=0.054)
     annotation (Placement(transformation(extent={{-46,90},{-36,100}})));

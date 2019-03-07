@@ -20,6 +20,7 @@ model Case900Sou
     Q_nom=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
         *0.3,
     Q_con(start=0),
+    PLos=57.62,
     etaCom=0.743)     annotation (Placement(transformation(
         extent={{-10,10},{10,-10}},
         rotation=0,
@@ -154,7 +155,7 @@ public
          and clock.hour <= 23) then 273.15 + 21 else 273.15 + 16)
     "constraint with night set-back"
     annotation (Placement(transformation(extent={{-4,24},{16,44}})));
-  Modelica.Blocks.Interfaces.RealInput slack(min=0)
+  Modelica.Blocks.Interfaces.RealInput[3] slack(each min=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
   Modelica.Blocks.Sources.Constant gasPrice(k=0.054)
     annotation (Placement(transformation(extent={{-46,90},{-36,100}})));

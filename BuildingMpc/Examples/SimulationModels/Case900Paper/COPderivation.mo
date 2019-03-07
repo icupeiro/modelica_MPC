@@ -90,10 +90,10 @@ model COPderivation
     smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
     table=[0,273.15; 10000,283.15; 20000,283.15; 30000,273.15])
     annotation (Placement(transformation(extent={{100,40},{80,60}})));
-  Modelica.Blocks.Sources.Constant mFlow(k=1)
-    annotation (Placement(transformation(extent={{-100,40},{-80,60}})));
   Modelica.Blocks.Sources.RealExpression COPThe(y=heaPum.QCon_flow/heaPum.com.PThe)
     annotation (Placement(transformation(extent={{-32,-84},{-12,-64}})));
+  Fluid.HeatPumps.HeatPump heatPump
+    annotation (Placement(transformation(extent={{-106,-76},{-86,-56}})));
 equation
   connect(sin.ports[1], heaPum.port_a1) annotation (Line(points={{-60,-34},{-36,
           -34},{-36,-4},{-10,-4}}, color={0,127,255}));
@@ -116,8 +116,6 @@ equation
           -90,-30},{-90,-30},{-82,-30}}, color={0,0,127}));
   connect(combiTimeTable2.y[1], sou.T_in) annotation (Line(points={{79,50},{72,
           50},{72,54},{62,54}}, color={0,0,127}));
-  connect(mFlow.y, heaPum.y) annotation (Line(points={{-79,50},{-76,50},{-76,-1},
-          {-12,-1}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
 end COPderivation;
