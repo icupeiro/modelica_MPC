@@ -28,14 +28,14 @@ model CylindricalGroundLayer
 
   parameter Modelica.SIunits.Radius r[nSta + 1](each fixed=false)
     "Radius to the boundary of the i-th domain";
-  Modelica.Thermal.HeatTransfer.Components.ThermalConductor
-                                                          [nSta+1] Gsoil(G=G)
+  Modelica.Thermal.HeatTransfer.Components.ThermalConductor[nSta + 1]
+                                                                   Gsoil(G=G)
     "Borehole resistance" annotation (Placement(transformation(
         extent={{12,-12},{-12,12}},
         rotation=180,
         origin={0,0})));
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor[nSta] Csoil(C=C)
-    annotation (Placement(transformation(extent={{-12,42},{12,66}})));
+    annotation (Placement(transformation(extent={{-12,20},{12,44}})));
 
 protected
   parameter Modelica.SIunits.Radius rC[nSta] = {(r[i] + r[i + 1])/2 for i in 1:nSta}
