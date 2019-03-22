@@ -24,7 +24,7 @@ model Case900Paper
         IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Daikin_WRA036_13kW_4_50COP_R410A(),
     scaling_factor=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
         *0.3/6984.06,
-    TEvaMin=271.65)                               annotation (Placement(
+    TEvaMin=273.15)                               annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
