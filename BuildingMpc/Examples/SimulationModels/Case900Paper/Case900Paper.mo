@@ -20,11 +20,10 @@ model Case900Paper
     dp2_nominal=10000,
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
     enable_temperature_protection=true,
+    scaling_factor=0.02108,
     datHeaPum=
-        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Daikin_WRA036_13kW_4_50COP_R410A(),
-    scaling_factor=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
-        *0.3/6984.06,
-    TEvaMin=271.65)                               annotation (Placement(
+        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Viessmann_BW301A45_58kW_5_50COP_R410A(),
+    TEvaMin=273.15)                               annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
@@ -83,7 +82,8 @@ public
     tau=60,
     use_inputFilter=false,
     redeclare package Medium = Glycol,
-    m_flow_nominal=0.05)
+    m_flow_nominal=0.05,
+    T_start=283.15)
     annotation (Placement(transformation(extent={{52,70},{72,90}})));
 public
   IBPSA.Fluid.Sources.Boundary_pT source(
@@ -179,7 +179,8 @@ public
   IDEAS.Fluid.Sensors.TemperatureTwoPort TRet(
     tau=60,
     m_flow_nominal=0.05,
-    redeclare package Medium = Glycol)
+    redeclare package Medium = Glycol,
+    T_start=283.15)
     annotation (Placement(transformation(extent={{26,70},{46,90}})));
   Modelica.Blocks.Sources.RealExpression nightSetBack(y=if (clock.hour >= 7
          and clock.hour <= 23) then 273.15 + 21 else 273.15 + 16)

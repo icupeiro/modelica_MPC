@@ -20,9 +20,8 @@ model Case900COP
     Q_nom=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
         *0.3,
     Q_con(start=0),
-    PLos=0,
     etaCom=0.743,
-    COP_expr=5.5)    annotation (Placement(transformation(
+    COP_expr=7.4)    annotation (Placement(transformation(
         extent={{-10,10},{10,-10}},
         rotation=0,
         origin={70,-30})));
@@ -166,7 +165,11 @@ public
     borFieDat=borFieDat,
     redeclare package Medium = Glycol,
     energyDynamics=Modelica.Fluid.Types.Dynamics.DynamicFreeInitial,
-    dynFil=true)
+    dynFil=true,
+    borHol(intHex(
+        vol1(T(start=283.15)),
+        vol2(T(start=283.15)),
+        intResUTub(capFil1(T(start=283.15)), capFil2(T(start=283.15))))))
     annotation (Placement(transformation(extent={{10,50},{30,70}})));
   Modelica.Blocks.Sources.RealExpression nightSetBack(y=if (clock.hour >= 7
          and clock.hour <= 23) then 273.15 + 21 else 273.15 + 16)
@@ -174,7 +177,7 @@ public
     annotation (Placement(transformation(extent={{-4,32},{16,52}})));
   UnitTests.Components.Clock clock
     annotation (Placement(transformation(extent={{-100,26},{-80,46}})));
-  Modelica.Blocks.Interfaces.RealInput[3] slack(each min=0)
+  Modelica.Blocks.Interfaces.RealInput[4] slack(each min=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
   Modelica.Blocks.Sources.Constant gasPrice(k=0.054)
     annotation (Placement(transformation(extent={{-46,90},{-36,100}})));
