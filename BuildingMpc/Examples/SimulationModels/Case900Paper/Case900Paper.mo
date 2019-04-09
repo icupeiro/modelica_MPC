@@ -20,11 +20,11 @@ model Case900Paper
     dp2_nominal=10000,
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
     enable_temperature_protection=true,
+    scaling_factor=0.02108,
+    TEvaMin=273.15,
     datHeaPum=
-        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Daikin_WRA036_13kW_4_50COP_R410A(),
-    scaling_factor=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
-        *0.3/6984.06,
-    TEvaMin=273.15)                               annotation (Placement(
+        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Viessmann_BW301A45_58kW_5_50COP_R410A())
+                                                  annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
@@ -108,10 +108,6 @@ public
     tau=60,
     m_flow_nominal=0.05)
     annotation (Placement(transformation(extent={{-58,-26},{-38,-46}})));
-  IDEAS.Controls.Continuous.LimPID conPID(
-    k=0.1,
-    controllerType=Modelica.Blocks.Types.SimpleController.PI,
-    Ti=60)  annotation (Placement(transformation(extent={{24,-40},{38,-26}})));
 public
   Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow auxHeaSystem
     annotation (Placement(transformation(extent={{12,22},{-8,42}})));
@@ -123,8 +119,6 @@ public
     Ti=30)
     annotation (Placement(transformation(extent={{118,42},{98,22}})));
 
-  Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor temperatureSensor
-    annotation (Placement(transformation(extent={{58,40},{76,58}})));
   Modelica.Blocks.Sources.Constant mFlow(k=0.05)
     annotation (Placement(transformation(extent={{-100,40},{-80,60}})));
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
@@ -207,9 +201,9 @@ public
   Modelica.Blocks.Math.Gain elecCost(k=electricityPrice.k)
                                             "in EUR/kWh"
     annotation (Placement(transformation(extent={{114,-16},{126,-4}})));
-  Modelica.Blocks.Sources.Constant gasPrice(k=0.054)
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.117)
     annotation (Placement(transformation(extent={{-100,-96},{-90,-86}})));
-  Modelica.Blocks.Sources.Constant electricityPrice(k=0.284)
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.196)
     annotation (Placement(transformation(extent={{-84,-96},{-74,-86}})));
 equation
   connect(airSystem.Q_flow, optVar2.y)
@@ -230,24 +224,14 @@ equation
           -36},{-68,-78},{10,-78}}, color={0,127,255}));
   connect(sink.ports[1], tabs_pump.port_b) annotation (Line(points={{-84,-30},{-84,
           -36},{-68,-36},{-68,-78},{10,-78}}, color={0,127,255}));
-  connect(conPID.y, heaPum.y)
-    annotation (Line(points={{38.7,-33},{50,-33}}, color={0,0,127}));
-  connect(conPID.u_s, optVar1.y) annotation (Line(points={{22.6,-33},{18,-33},{18,
-          -20},{13,-20}}, color={0,0,127}));
-  connect(TSup.T, conPID.u_m) annotation (Line(points={{-48,-47},{-48,-54},{31,
-          -54},{31,-41.4}}, color={0,0,127}));
   connect(conPID1.y, auxHeaSystem.Q_flow)
     annotation (Line(points={{97,32},{12,32}}, color={0,0,127}));
-  connect(temperatureSensor.T, conPID1.u_m)
-    annotation (Line(points={{76,49},{108,49},{108,44}}, color={0,0,127}));
   connect(mFlow.y, borFie_pump.m_flow_in) annotation (Line(points={{-79,50},{
           -70,50},{-70,96},{62,96},{62,92}}, color={0,0,127}));
   connect(mFlow.y, tabs_pump.m_flow_in) annotation (Line(points={{-79,50},{-70,
           50},{-70,-14},{-60,-14},{-60,-60},{20,-60},{20,-66}}, color={0,0,127}));
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
     annotation (Line(points={{-50,40},{-38,40},{-38,6}}, color={0,127,255}));
-  connect(rectangularZoneTemplate.gainCon, temperatureSensor.port) annotation (
-      Line(points={{-30,-7},{-20,-7},{-20,49},{58,49}}, color={191,0,0}));
   connect(auxHeaSystem.port, rectangularZoneTemplate.gainCon) annotation (Line(
         points={{-8,32},{-20,32},{-20,-7},{-30,-7}}, color={191,0,0}));
   connect(airSystem.port, rectangularZoneTemplate.gainCon) annotation (Line(
@@ -285,6 +269,10 @@ equation
           -40},{128,-22},{102,-22},{102,2},{112.8,2}}, color={0,0,127}));
   connect(totalElecTokWh.y, elecCost.u) annotation (Line(points={{123,-84},{126,
           -84},{126,-20},{108,-20},{108,-10},{112.8,-10}}, color={0,0,127}));
+  connect(optVar1.y, heaPum.y) annotation (Line(points={{13,-20},{32,-20},{32,
+          -33},{50,-33}}, color={0,0,127}));
+  connect(rectangularZoneTemplate.TSensor, conPID1.u_m) annotation (Line(points
+        ={{-29,-2},{-24,-2},{-24,44},{108,44}}, color={0,0,127}));
  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {160,100}})),                                        Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{160,100}})),

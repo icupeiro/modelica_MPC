@@ -1,0 +1,7 @@
+Log-file of program ./dymosim
+(generated: Mon Nov 26 15:37:48 2018)
+
+dymosim started
+... "dsin.txt" loading (dymosim input file)
+... loading "tab1" from "/home/iago/TACO/Libraries/IDEAS/Resources/weatherdata/Uccle.TMY"
+Initialising MPC at time = 0.000000
