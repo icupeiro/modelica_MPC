@@ -15,10 +15,9 @@ model COPderivation
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     datHeaPum=
         IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Viessmann_BW301A45_58kW_5_50COP_R410A(),
-
     scaling_factor=0.02108,
-    T1_start=298.15,
-    T2_start=283.15)                              annotation (Placement(
+  T1_start=298.15,
+  T2_start=283.15)                                annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
@@ -35,7 +34,7 @@ model COPderivation
     redeclare package Medium = Water,
     nPorts=1,
     use_T_in=true,
-    p=200000)
+  p=200000)
     annotation (Placement(transformation(extent={{-80,-44},{-60,-24}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow pump_sin(
     redeclare package Medium = Water,
@@ -83,17 +82,18 @@ model COPderivation
   Modelica.Blocks.Sources.CombiTimeTable combiTimeTable1(
     extrapolation=Modelica.Blocks.Types.Extrapolation.HoldLastPoint,
     smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
-    table=[0,298.15; 10000,298.15; 20000,303.15])
+  table=[0,298.15; 10000,298.15; 20000,303.15])
     annotation (Placement(transformation(extent={{-120,-40},{-100,-20}})));
   Modelica.Blocks.Sources.CombiTimeTable combiTimeTable2(
     extrapolation=Modelica.Blocks.Types.Extrapolation.HoldLastPoint,
     smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
-    table=[0,273.15; 10000,283.15; 20000,283.15; 30000,273.15])
+  table=[0,273.15; 2500,278.15; 7500,278.15; 10000,283.15; 20000,283.15;
+      30000,273.15])
     annotation (Placement(transformation(extent={{100,40},{80,60}})));
   Modelica.Blocks.Sources.RealExpression COPThe(y=heaPum.QCon_flow/heaPum.com.PThe)
     annotation (Placement(transformation(extent={{-32,-84},{-12,-64}})));
-  Fluid.HeatPumps.HeatPump heatPump
-    annotation (Placement(transformation(extent={{-106,-76},{-86,-56}})));
+  Modelica.Blocks.Sources.Constant const(k=1)
+    annotation (Placement(transformation(extent={{-100,4},{-80,24}})));
 equation
   connect(sin.ports[1], heaPum.port_a1) annotation (Line(points={{-60,-34},{-36,
           -34},{-36,-4},{-10,-4}}, color={0,127,255}));
@@ -116,6 +116,8 @@ equation
           -90,-30},{-90,-30},{-82,-30}}, color={0,0,127}));
   connect(combiTimeTable2.y[1], sou.T_in) annotation (Line(points={{79,50},{72,
           50},{72,54},{62,54}}, color={0,0,127}));
+connect(const.y, heaPum.y) annotation (Line(points={{-79,14},{-46,14},{
+        -46,-1},{-12,-1}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
 end COPderivation;

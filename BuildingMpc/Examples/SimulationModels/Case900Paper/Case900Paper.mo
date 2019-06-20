@@ -20,10 +20,10 @@ model Case900Paper
     dp2_nominal=10000,
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
     enable_temperature_protection=true,
-    scaling_factor=0.02108,
+    scaling_factor=0.1048,
     TEvaMin=273.15,
     datHeaPum=
-        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.Viessmann_BW301A45_58kW_5_50COP_R410A())
+        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.ClimateMaster_TMW036_12kW_4_90COP_R410A())
                                                   annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
@@ -271,8 +271,8 @@ equation
           -84},{126,-20},{108,-20},{108,-10},{112.8,-10}}, color={0,0,127}));
   connect(optVar1.y, heaPum.y) annotation (Line(points={{13,-20},{32,-20},{32,
           -33},{50,-33}}, color={0,0,127}));
-  connect(rectangularZoneTemplate.TSensor, conPID1.u_m) annotation (Line(points
-        ={{-29,-2},{-24,-2},{-24,44},{108,44}}, color={0,0,127}));
+  connect(rectangularZoneTemplate.TSensor, conPID1.u_m) annotation (Line(points=
+         {{-29,-2},{-24,-2},{-24,44},{108,44}}, color={0,0,127}));
  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {160,100}})),                                        Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{160,100}})),

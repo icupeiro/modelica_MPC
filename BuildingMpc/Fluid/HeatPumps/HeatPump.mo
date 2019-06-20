@@ -73,7 +73,6 @@ model HeatPump "A heat pump model for optimization"
     "Pressure difference through the evaporator"
     annotation (Dialog(group="Nominal conditions"));
 
-
   parameter Modelica.SIunits.Power PLos = 0
   "Constant term of compressor losses"
   annotation (Dialog(tab="Advanced"));
@@ -83,7 +82,7 @@ model HeatPump "A heat pump model for optimization"
     annotation (Dialog(tab="Advanced"));
 
   Modelica.Blocks.Interfaces.RealOutput COP_expr=
-  (7.89 - 0.198*(T_con_in.T - 298.15) + 0.158*(T_eva_in.T - 278.15))*loadFactor
+  (5.24 - 0.123*(T_con_in.T - 298.15) + 0.108*(T_eva_in.T - 278.15))*loadFactor
    "Theoretical COP expression of the heat pump"
     annotation (Dialog(tab="Advanced"));
   //(5.44-0.113*(T_con_in.T - 298.15) + 0.114*(T_eva_in.T - 288.15))*loadFactor
@@ -97,8 +96,7 @@ model HeatPump "A heat pump model for optimization"
   "Maximum heat capacity of the HP"
   annotation (Dialog(tab="Advanced"));
 
-  Real loadFactor = 1.2684 - 0.2841*(Q_con/Q_con_max);
-
+  Real loadFactor = 8.4331*(Q_con/Q_con_max)^3 - 19.886*(Q_con/Q_con_max)^2 + 14.033*(Q_con/Q_con_max)+3.2519;
 
   Modelica.Blocks.Interfaces.RealInput Tcon_out
     "Outlet condenser temperature signal"
