@@ -24,7 +24,7 @@ model Case900Paper
     m2_flow_nominal=0.1,
     scaling_factor=0.126,
     T1_start=298.15,
-    T2_start=283.15,
+    T2_start=borFie.TExt0_start,
     TEvaMin=273.15)                               annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
@@ -86,8 +86,9 @@ public
     tau=60,
     use_inputFilter=false,
     redeclare package Medium = Glycol,
-    m_flow_nominal=0.1)
-    annotation (Placement(transformation(extent={{52,70},{72,90}})));
+    m_flow_nominal=0.1,
+    T_start=borFie.TExt0_start)
+    annotation (Placement(transformation(extent={{52,72},{72,92}})));
 public
   IBPSA.Fluid.Sources.Boundary_pT source(
     p=200000,
@@ -101,8 +102,8 @@ public
                            borFieDat=borFieDat, redeclare package Medium =
         Glycol,
     r={6},
-    nbTem=1,
-    TExt0_start=283.15)
+    TExt0_start=283.15,
+    nbTem=1)
     annotation (Placement(transformation(extent={{0,70},{20,90}})));
   Modelica.Blocks.Sources.RealExpression optVar1(y=0)
     annotation (Placement(transformation(extent={{-8,-30},{12,-10}})));
@@ -233,8 +234,8 @@ equation
     annotation (Line(points={{14,4},{19,4}}, color={0,0,127}));
   connect(tabs_pump.port_a, heaPum.port_b1) annotation (Line(points={{30,-78},{86,
           -78},{86,-36},{72,-36}}, color={0,127,255}));
-  connect(borFie_pump.port_b, heaPum.port_a2) annotation (Line(points={{72,80},{
-          86,80},{86,-24},{72,-24}}, color={0,127,255}));
+  connect(borFie_pump.port_b, heaPum.port_a2) annotation (Line(points={{72,82},
+          {86,82},{86,-24},{72,-24}},color={0,127,255}));
   connect(source.ports[1], borFie.port_a) annotation (Line(points={{-26,70},{-14,
           70},{-14,80},{0,80}}, color={0,127,255}));
   connect(TSup.port_b, embeddedPipe.port_a)
@@ -259,7 +260,8 @@ equation
   connect(borFie.port_b, TRet.port_a)
     annotation (Line(points={{20,80},{26,80}}, color={0,127,255}));
   connect(TRet.port_b, borFie_pump.port_a)
-    annotation (Line(points={{46,80},{52,80}}, color={0,127,255}));
+    annotation (Line(points={{46,80},{50,80},{50,82},{52,82}},
+                                               color={0,127,255}));
   connect(nightSetBack.y, conPID1.u_s) annotation (Line(points={{127,40},{124,
           40},{124,32},{120,32}}, color={0,0,127}));
   connect(heaPum.P, totalElecTokWh.u) annotation (Line(points={{73,-30},{88,-30},
@@ -299,7 +301,7 @@ equation
   connect(TIn.port_b, borFie.port_a) annotation (Line(points={{-10,52},{-14,52},
           {-14,80},{0,80}}, color={0,127,255}));
   connect(optVar3.y, borFie_pump.m_flow_in) annotation (Line(points={{-11,94},{
-          26,94},{26,92},{62,92}}, color={0,0,127}));
+          62,94}},                 color={0,0,127}));
   connect(heaPum.QEva_flow, geoTokWh.u) annotation (Line(points={{73,-21},{84,
           -21},{84,76},{96,76}}, color={0,0,127}));
   connect(heaPum.QCon_flow, FhTokWh.u) annotation (Line(points={{73,-39},{82,

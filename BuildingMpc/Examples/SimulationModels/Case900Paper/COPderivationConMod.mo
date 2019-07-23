@@ -129,18 +129,7 @@ model COPderivationConMod
     T_start=283.15,
     m_flow_nominal=0.1)
     annotation (Placement(transformation(extent={{-40,-20},{-60,0}})));
-  Modelica.Blocks.Sources.CombiTimeTable combiTimeTable1(
-    extrapolation=Modelica.Blocks.Types.Extrapolation.HoldLastPoint,
-    smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
-    table=[0,298.15; 10000,298.15; 12500,303.15; 17500,303.15; 20000,308.15;
-        30000,308.15])
-    annotation (Placement(transformation(extent={{-120,-40},{-100,-20}})));
-  Modelica.Blocks.Sources.CombiTimeTable combiTimeTable2(
-    extrapolation=Modelica.Blocks.Types.Extrapolation.HoldLastPoint,
-    smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
-    table=[0,273.15; 2500,278.15; 7500,278.15; 10000,283.15; 10001,278.15;
-        30000,278.15])
-    annotation (Placement(transformation(extent={{100,40},{80,60}})));
+
   Modelica.Blocks.Interfaces.RealInput y(start=1)
     annotation (Placement(transformation(extent={{-120,10},{-80,50}})));
   Modelica.Blocks.Interfaces.RealOutput err
@@ -210,6 +199,7 @@ connect(sou.ports[2], heatPump_y.port_a2) annotation (Line(points={{40,
           {110,-80}}, color={0,0,127}));
   connect(relativeCap.y, errRelCap) annotation (Line(points={{97,-96},{98,-96},{
           98,-64},{110,-64}}, color={0,0,127}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
+    annotation (Placement(transformation(extent={{100,40},{80,60}})),
+              Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
 end COPderivationConMod;
