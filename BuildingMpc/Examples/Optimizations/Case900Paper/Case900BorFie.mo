@@ -6,7 +6,8 @@ model Case900BorFie
           1,
           lay.rC,
           {lay.r_b}), nbTem=11),
-    optVar3(y=mpc.u3));
+    optVar3(y=mpc.u3),
+    source(T=borFie.TExt0_start));
 
   Real buiStates[37];
   Real capStates[20];

@@ -23,9 +23,9 @@ model Case900Paper
     m1_flow_nominal=0.1,
     m2_flow_nominal=0.1,
     scaling_factor=0.126,
-    T1_start=298.15,
     T2_start=borFie.TExt0_start,
-    TEvaMin=273.15)                               annotation (Placement(
+    T1_start=298.15,
+    TEvaMin=273.151)                              annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
