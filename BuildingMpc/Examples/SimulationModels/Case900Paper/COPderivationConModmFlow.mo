@@ -1,9 +1,7 @@
 within BuildingMpc.Examples.SimulationModels.Case900Paper;
-model COPderivationConMod
+model COPderivationConModmFlow
   package Water = IDEAS.Media.Water;
-  package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=268.15, X_a=0.3);
-
-  parameter Modelica.SIunits.HeatCapacity cpGly = Glycol.cp_const;
+  package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=281.15, X_a=0.3);
 
   IDEAS.Fluid.HeatPumps.ScrollWaterToWater heaPum(
     redeclare package Medium1 = IDEAS.Media.Water,
@@ -15,9 +13,9 @@ model COPderivationConMod
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
   datHeaPum=
       IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.ClimateMaster_TMW036_12kW_4_90COP_R410A(),
-    scaling_factor=0.126,
     m1_flow_nominal=0.1,
     m2_flow_nominal=0.1,
+    scaling_factor=0.126,
     T1_start=298.15,
     T2_start=283.15)                              annotation (Placement(
         transformation(
@@ -28,36 +26,34 @@ model COPderivationConMod
   IDEAS.Fluid.Sources.Boundary_pT sou(
     nPorts=2,
     redeclare package Medium = Water,
-    T=283.15,
+    use_T_in=false,
     p=200000,
-    use_T_in=true)
+    T=278.15)
     annotation (Placement(transformation(extent={{60,40},{40,60}})));
   IDEAS.Fluid.Sources.Boundary_pT sin(
     redeclare package Medium = Water,
     nPorts=2,
-    T=298.15,
+    use_T_in=false,
     p=200000,
-    use_T_in=true)
+    T=298.15)
     annotation (Placement(transformation(extent={{-80,-44},{-60,-24}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow pump_sin(
     redeclare package Medium = Water,
     addPowerToMedium=false,
-    inputType=IDEAS.Fluid.Types.InputType.Constant,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     use_inputFilter=false,
-    T_start=298.15,
-    m_flow_nominal=0.1)
+    m_flow_nominal=0.1,
+    T_start=298.15)
     annotation (Placement(transformation(extent={{54,-14},{74,6}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow pump_sou(
     addPowerToMedium=false,
-    inputType=IDEAS.Fluid.Types.InputType.Constant,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     use_inputFilter=false,
     redeclare package Medium = Water,
-    T_start=283.15,
-    m_flow_nominal=0.1)
+    m_flow_nominal=0.1,
+    T_start=283.15)
     annotation (Placement(transformation(extent={{-34,36},{-54,56}})));
   IDEAS.Fluid.Sources.Boundary_pT sin1(redeclare package Medium = Water, nPorts=2)
     annotation (Placement(transformation(extent={{26,-78},{46,-58}})));
@@ -98,7 +94,6 @@ model COPderivationConMod
   IDEAS.Fluid.Movers.FlowControlled_m_flow pump_sin1(
     redeclare package Medium = Water,
     addPowerToMedium=false,
-    inputType=IDEAS.Fluid.Types.InputType.Constant,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     use_inputFilter=false,
@@ -107,28 +102,15 @@ model COPderivationConMod
     annotation (Placement(transformation(extent={{30,-46},{50,-26}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow pump_sou1(
     addPowerToMedium=false,
-    inputType=IDEAS.Fluid.Types.InputType.Constant,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     use_inputFilter=false,
     redeclare package Medium = Water,
-    T_start=283.15,
-    m_flow_nominal=0.1)
+    m_flow_nominal=0.1,
+    T_start=283.15)
     annotation (Placement(transformation(extent={{-40,-20},{-60,0}})));
-  Modelica.Blocks.Sources.CombiTimeTable combiTimeTable1(
-    extrapolation=Modelica.Blocks.Types.Extrapolation.HoldLastPoint,
-    smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
-    table=[0,298.15; 10000,298.15; 12500,303.15; 17500,303.15; 20000,308.15;
-        30000,308.15])
-    annotation (Placement(transformation(extent={{-120,-40},{-100,-20}})));
-  Modelica.Blocks.Sources.CombiTimeTable combiTimeTable2(
-    extrapolation=Modelica.Blocks.Types.Extrapolation.HoldLastPoint,
-    smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
-    table=[0,273.15; 2500,278.15; 7500,278.15; 10000,283.15; 10001,278.15;
-        30000,278.15])
-    annotation (Placement(transformation(extent={{100,40},{80,60}})));
   Modelica.Blocks.Interfaces.RealInput y(start=1)
-    annotation (Placement(transformation(extent={{-120,10},{-80,50}})));
+    annotation (Placement(transformation(extent={{-108,20},{-90,38}})));
   Modelica.Blocks.Interfaces.RealOutput err
     annotation (Placement(transformation(extent={{100,-10},{120,10}})));
   Modelica.Blocks.Interfaces.RealOutput errRel
@@ -138,19 +120,29 @@ model COPderivationConMod
   Modelica.Blocks.Sources.RealExpression relative(y=(heatPump_y.COP - heaPum.com.COP)
         /heaPum.com.COP)
     annotation (Placement(transformation(extent={{76,-66},{96,-46}})));
+  Modelica.Blocks.Sources.Ramp source(
+    duration=3600,
+    startTime=7200,
+    offset=pump_sou.m_flow_nominal,
+    height=-pump_sou.m_flow_nominal + 0.2*pump_sou.m_flow_nominal)
+    annotation (Placement(transformation(extent={{-100,60},{-80,80}})));
+  Modelica.Blocks.Sources.Ramp sink(
+    duration=3600,
+    startTime=3600,
+    height=pump_sou.m_flow_nominal - pump_sou.m_flow_nominal*0.2,
+    offset=pump_sou.m_flow_nominal*0.2)
+    annotation (Placement(transformation(extent={{-100,-18},{-80,2}})));
   Modelica.Blocks.Sources.RealExpression errorCap(y=heatPump_y.Q_con_max -
         heaPum.QCon_flow)
     annotation (Placement(transformation(extent={{60,-92},{80,-72}})));
-  Modelica.Blocks.Interfaces.RealOutput errCap
-    annotation (Placement(transformation(extent={{100,-90},{120,-70}})));
   Modelica.Blocks.Sources.RealExpression relativeCap(y=(heatPump_y.Q_con_max -
         heaPum.QCon_flow)/heaPum.QCon_flow)
     annotation (Placement(transformation(extent={{76,-106},{96,-86}})));
+  Modelica.Blocks.Interfaces.RealOutput errCap
+    annotation (Placement(transformation(extent={{100,-90},{120,-70}})));
   Modelica.Blocks.Interfaces.RealOutput errRelCap
     annotation (Placement(transformation(extent={{100,-74},{120,-54}})));
 equation
-
-
   connect(sin.ports[1], heaPum.port_a1) annotation (Line(points={{-60,-32},{-36,
           -32},{-36,-4},{-10,-4}}, color={0,127,255}));
   connect(sou.ports[1], heaPum.port_a2) annotation (Line(points={{40,52},{26,52},
@@ -180,22 +172,26 @@ connect(heatPump_y.port_b2, pump_sou1.port_a) annotation (Line(points={
           -62,-10},{-62,76},{40,76}}, color={0,127,255}));
 connect(sou.ports[2], heatPump_y.port_a2) annotation (Line(points={{40,
         48},{28,48},{28,-46},{14,-46}}, color={0,127,255}));
-  connect(combiTimeTable1.y[1], sin.T_in)
-    annotation (Line(points={{-99,-30},{-82,-30}}, color={0,0,127}));
-  connect(combiTimeTable2.y[1], sou.T_in) annotation (Line(points={{79,50},{72,
-          50},{72,54},{62,54}}, color={0,0,127}));
-  connect(heaPum.y, y) annotation (Line(points={{-12,-1},{-50,-1},{-50,30},{
-          -100,30}}, color={0,0,127}));
   connect(error.y, err) annotation (Line(points={{81,24},{94,24},{94,0},{110,0}},
         color={0,0,127}));
   connect(relative.y, errRel) annotation (Line(points={{97,-56},{100,-56},{100,
           -24},{110,-24}}, color={0,0,127}));
-  connect(heatPump_y.y, y) annotation (Line(points={{-6,-61},{-50,-61},{-50,30},
-          {-100,30}}, color={0,0,127}));
-  connect(errorCap.y, errCap) annotation (Line(points={{81,-82},{92,-82},{92,-80},
-          {110,-80}}, color={0,0,127}));
-  connect(relativeCap.y, errRelCap) annotation (Line(points={{97,-96},{98,-96},{
-          98,-64},{110,-64}}, color={0,0,127}));
+  connect(source.y, pump_sou.m_flow_in)
+    annotation (Line(points={{-79,70},{-44,70},{-44,58}}, color={0,0,127}));
+  connect(source.y, pump_sou1.m_flow_in) annotation (Line(points={{-79,70},{-64,
+          70},{-64,2},{-50,2}}, color={0,0,127}));
+  connect(sink.y, pump_sin1.m_flow_in) annotation (Line(points={{-79,-8},{-20,
+          -8},{-20,-24},{40,-24}}, color={0,0,127}));
+  connect(sink.y, pump_sin.m_flow_in) annotation (Line(points={{-79,-8},{-8,-8},
+          {-8,8},{64,8}}, color={0,0,127}));
+  connect(errorCap.y, errCap) annotation (Line(points={{81,-82},{92,-82},{92,
+          -80},{110,-80}}, color={0,0,127}));
+  connect(relativeCap.y, errRelCap) annotation (Line(points={{97,-96},{98,-96},
+          {98,-64},{110,-64}}, color={0,0,127}));
+  connect(heaPum.y, y) annotation (Line(points={{-12,-1},{-55,-1},{-55,29},{-99,
+          29}}, color={0,0,127}));
+  connect(heatPump_y.y, y) annotation (Line(points={{-6,-61},{-54,-61},{-54,29},
+          {-99,29}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
-end COPderivationConMod;
+end COPderivationConModmFlow;
