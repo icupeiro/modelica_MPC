@@ -148,9 +148,9 @@ public
              annotation (Placement(transformation(extent={{-120,-6},{-80,34}})));
   Modelica.Blocks.Interfaces.RealInput u1(
     max=1,
-    start=0,
     nominal=1,
-    min=0.2)
+    min=0.2,
+    start=0.2)
     annotation (Placement(transformation(extent={{-120,-74},{-80,-34}})));
   Modelica.Thermal.HeatTransfer.Components.HeatCapacitor heatCapacitor(C=
         Modelica.Constants.inf, T(fixed=true, start=283.15))
