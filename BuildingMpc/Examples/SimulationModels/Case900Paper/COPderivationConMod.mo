@@ -3,6 +3,8 @@ model COPderivationConMod
   package Water = IDEAS.Media.Water;
   package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=281.15, X_a=0.3);
 
+  parameter Modelica.SIunits.HeatCapacity cpMed = Glycol.cp_const;
+
   IDEAS.Fluid.HeatPumps.ScrollWaterToWater heaPum(
     redeclare package Medium1 = IDEAS.Media.Water,
     dp1_nominal=10000,
@@ -10,14 +12,14 @@ model COPderivationConMod
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
     enable_temperature_protection=false,
     redeclare package Medium2 = Glycol,
-    m1_flow_nominal=0.05,
-    m2_flow_nominal=0.05,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
   datHeaPum=
       IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.ClimateMaster_TMW036_12kW_4_90COP_R410A(),
-  scaling_factor=0.1048,
-  T1_start=298.15,
-  T2_start=283.15)                                annotation (Placement(
+    m1_flow_nominal=0.1,
+    m2_flow_nominal=0.1,
+    scaling_factor=0.15,
+    T1_start=298.15,
+    T2_start=283.15)                              annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
@@ -43,8 +45,8 @@ model COPderivationConMod
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     use_inputFilter=false,
-    m_flow_nominal=0.05,
-    T_start=298.15)
+    T_start=298.15,
+    m_flow_nominal=0.1)
     annotation (Placement(transformation(extent={{54,-14},{74,6}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow pump_sou(
     addPowerToMedium=false,
@@ -53,8 +55,8 @@ model COPderivationConMod
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     use_inputFilter=false,
     redeclare package Medium = Water,
-    m_flow_nominal=0.05,
-    T_start=283.15)
+    T_start=283.15,
+    m_flow_nominal=0.1)
     annotation (Placement(transformation(extent={{-34,36},{-54,56}})));
   IDEAS.Fluid.Sources.Boundary_pT sin1(redeclare package Medium = Water, nPorts=2)
     annotation (Placement(transformation(extent={{26,-78},{46,-58}})));
@@ -87,7 +89,7 @@ model COPderivationConMod
   Modelica.Blocks.Sources.CombiTimeTable combiTimeTable2(
     extrapolation=Modelica.Blocks.Types.Extrapolation.HoldLastPoint,
     smoothness=Modelica.Blocks.Types.Smoothness.LinearSegments,
-    table=[0,273.15; 10000,283.15; 20000,283.15; 30000,273.15])
+    table=[0,273.15; 10000,283.15; 10001,278.15; 20000,278.15; 30000,273.15])
     annotation (Placement(transformation(extent={{100,40},{80,60}})));
   Modelica.Blocks.Sources.RealExpression COPThe(y=heaPum.QCon_flow/heaPum.com.PThe)
     annotation (Placement(transformation(extent={{-32,-84},{-12,-64}})));
@@ -101,7 +103,7 @@ model COPderivationConMod
     dp2_nominal=0,
     etaCom=heaPum.com.etaEle)
     annotation (Placement(transformation(extent={{-6,-42},{14,-62}})));
-  Modelica.Blocks.Sources.Constant const(k=0.2)
+  Modelica.Blocks.Sources.Constant const(k=1)
     annotation (Placement(transformation(extent={{-94,4},{-74,24}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow pump_sin1(
     redeclare package Medium = Water,
@@ -110,8 +112,8 @@ model COPderivationConMod
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     use_inputFilter=false,
-    m_flow_nominal=0.05,
-    T_start=298.15)
+    T_start=298.15,
+    m_flow_nominal=0.1)
     annotation (Placement(transformation(extent={{30,-46},{50,-26}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow pump_sou1(
     addPowerToMedium=false,
@@ -120,8 +122,8 @@ model COPderivationConMod
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     use_inputFilter=false,
     redeclare package Medium = Water,
-    m_flow_nominal=0.05,
-    T_start=283.15)
+    T_start=283.15,
+    m_flow_nominal=0.1)
     annotation (Placement(transformation(extent={{-40,-20},{-60,0}})));
 equation
   connect(sin.ports[1], heaPum.port_a1) annotation (Line(points={{-60,-32},{-36,

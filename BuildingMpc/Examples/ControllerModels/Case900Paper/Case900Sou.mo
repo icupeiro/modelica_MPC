@@ -1,26 +1,30 @@
 within BuildingMpc.Examples.ControllerModels.Case900Paper;
 model Case900Sou
   extends Modelica.Icons.Example;
-  package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=268.15, X_a=0.25);
+  package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=278.15, X_a=0.25);
   parameter Real eff = 1.0;
 
   IBPSA.Fluid.Sources.Boundary_pT bou(nPorts=1, redeclare package Medium =
         BuildingMpc.Media.DryAir)
     annotation (Placement(transformation(extent={{-78,32},{-58,52}})));
   inner IDEAS.Buildings.Validation.BaseClasses.SimInfoManagerBestest
-                                          sim(lineariseJModelica=true)
+                                          sim(lineariseJModelica=true, Tdes=
+        273.15 - 21)
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
   Fluid.HeatPumps.HeatPump_y heatPump(
     redeclare package Medium1 = IDEAS.Media.Water,
     dp1_nominal=0,
     dp2_nominal=0,
     redeclare package Medium2 = Glycol,
-    m1_flow_nominal=0.05,
-    m2_flow_nominal=0.05,
     Q_nom=(rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design)
         *0.3,
     Q_con(start=0),
-    etaCom=0.743) annotation (Placement(transformation(
+    PLos=0,
+    etaCom=1,
+    Q_con_max=heatPump.Q_nom*heatPump.y,
+    m1_flow_nominal=0.1,
+    m2_flow_nominal=0.1,
+    COP_expr=5.5) annotation (Placement(transformation(
         extent={{-10,10},{10,-10}},
         rotation=0,
         origin={70,-30})));
@@ -39,7 +43,7 @@ public
     nPorts=2,
     redeclare package Medium = Glycol,
     p=200000,
-    T=283.15) annotation (Placement(transformation(
+    T=278.15) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-36,70})));
@@ -60,7 +64,6 @@ public
     A_floor=rectangularZoneTemplate.A,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     dp_nominal=0,
-    m_flow_nominal=0.05,
     nParCir=2,
     redeclare IDEAS.Fluid.HeatExchangers.RadiantSlab.BaseClasses.FH_Standard1
       RadSlaCha(
@@ -73,8 +76,10 @@ public
       lambda_b=1.13,
       c_b=1000,
       rho_b=1400),
-    m_flowMin=0.05,
-    T_start(displayUnit="K"))
+    T_start(displayUnit="K"),
+    computeFlowResistance=false,
+    m_flow_nominal=0.1,
+    m_flowMin=0.1)
     annotation (Placement(transformation(extent={{-28,-46},{-8,-26}})));
   IBPSA.Fluid.Sources.Boundary_pT sink(
     redeclare package Medium = IDEAS.Media.Water,
@@ -84,9 +89,7 @@ public
         extent={{-10,-10},{10,10}},
         rotation=-90,
         origin={-84,-24})));
-  Modelica.Blocks.Sources.Constant       mFlowSou(k=0.05)
-    annotation (Placement(transformation(extent={{20,78},{40,98}})));
-  Modelica.Blocks.Sources.Constant       mFlowSin(k=0.05)
+  Modelica.Blocks.Sources.Constant       mFlowSin(k=0.1)
     annotation (Placement(transformation(extent={{-20,-76},{0,-56}})));
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,
@@ -138,10 +141,11 @@ public
     annotation (Placement(transformation(extent={{-56,-20},{-36,0}})));
 
   Modelica.Blocks.Interfaces.RealInput u2(
-    nominal=2952.87,
-    max=2952.87,
     min=0,
-    start=0) annotation (Placement(transformation(extent={{-120,-6},{-80,34}})));
+    start=0,
+    max=4274.03,
+    nominal=4274.03)
+             annotation (Placement(transformation(extent={{-120,-6},{-80,34}})));
   Modelica.Blocks.Interfaces.RealInput u1(
     max=1,
     start=0,
@@ -156,10 +160,16 @@ public
     annotation (Placement(transformation(extent={{-4,24},{16,44}})));
   Modelica.Blocks.Interfaces.RealInput[4] slack(each min=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
-  Modelica.Blocks.Sources.Constant gasPrice(k=0.117)
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.061)
     annotation (Placement(transformation(extent={{-46,90},{-36,100}})));
-  Modelica.Blocks.Sources.Constant electricityPrice(k=0.196)
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.204)
     annotation (Placement(transformation(extent={{-30,90},{-20,100}})));
+  Modelica.Blocks.Interfaces.RealInput u3(
+    min=0,
+    max=0.1,
+    start=0.1,
+    nominal=0.1)
+             annotation (Placement(transformation(extent={{-120,22},{-80,62}})));
 equation
 
   connect(source.ports[1], m_flow_source.port_a)
@@ -176,8 +186,6 @@ equation
           {90,-80},{90,-36},{80,-36}}, color={0,127,255}));
   connect(sink.ports[1], embeddedPipe.port_a) annotation (Line(points={{-84,-34},
           {-84,-36},{-28,-36}}, color={0,127,255}));
-  connect(mFlowSou.y, m_flow_source.m_flow_in)
-    annotation (Line(points={{41,88},{62,88},{62,80}}, color={0,0,127}));
   connect(mFlowSin.y, m_flow_sink.m_flow_in)
     annotation (Line(points={{1,-66},{36,-66},{36,-72}}, color={0,0,127}));
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
@@ -193,6 +201,8 @@ equation
     annotation (Line(points={{10,0},{10,14},{-100,14}}, color={0,0,127}));
   connect(u1, heatPump.y) annotation (Line(points={{-100,-54},{-20,-54},{-20,
           -39},{60,-39}}, color={0,0,127}));
+  connect(u3, m_flow_source.m_flow_in) annotation (Line(points={{-100,42},{-20,
+          42},{-20,80},{62,80}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
 end Case900Sou;

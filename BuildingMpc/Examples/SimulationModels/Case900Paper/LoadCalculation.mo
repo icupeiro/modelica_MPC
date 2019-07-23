@@ -2,7 +2,7 @@ within BuildingMpc.Examples.SimulationModels.Case900Paper;
 model LoadCalculation
   extends Modelica.Icons.Example;
 
-  parameter Real COP = 4.5;
+  parameter Real COP = 4.9;
 
   Modelica.Thermal.HeatTransfer.Sensors.TemperatureSensor temperatureSensor
     annotation (Placement(transformation(extent={{22,-22},{40,-4}})));
@@ -78,7 +78,7 @@ model LoadCalculation
         HP_load.y*(COP - 1)/COP else -HP_load.y)
     annotation (Placement(transformation(extent={{40,8},{60,30}})));
   inner IDEAS.Buildings.Validation.BaseClasses.SimInfoManagerBestest
-                                          sim
+                                          sim(Tdes=273.15 - 21)
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
   IDEAS.Controls.Continuous.LimPID conPID1(
     yMax=0,
