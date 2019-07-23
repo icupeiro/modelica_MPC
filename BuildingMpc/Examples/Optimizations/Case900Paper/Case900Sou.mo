@@ -2,24 +2,24 @@ within BuildingMpc.Examples.Optimizations.Case900Paper;
 model Case900Sou
   extends BuildingMpc.Examples.SimulationModels.Case900Paper.Case900Paper(optVar2(y=
          mpc.u2), optVar1(y=mpc.u1),
-    sim(lineariseJModelica=false));
+    optVar3(y=mpc.u3));
 
   Real states[38];
   MpcCase900Sou mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect);
 
   model MpcCase900Sou
     extends UnitTests.MPC.BaseClasses.Mpc(
-      final nOut=15,
-      final nOpt=5,
+      final nOut=17,
+      final nOpt=7,
       final nSta=38,
       final nMeas=0,
       final nIneq=7,
       final nLLIn=0,
       final nLLOut=0,
       final nLLSta=0,
-      final horizonLength=360,
-      final numControlIntervals=14,
-      final controlTimeStep=1200,
+      final horizonLength=168,
+      final numControlIntervals=13,
+      final controlTimeStep=3600,
       final nModCorCoeff=33,
       final name= "Case900Sou");
     Modelica.Blocks.Interfaces.RealOutput COP = getOutput(tableID,5, time)
@@ -27,6 +27,8 @@ model Case900Sou
     Modelica.Blocks.Interfaces.RealOutput Q_con_max = getOutput(tableID,6, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput Q_cond = getOutput(tableID,3, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput TAir = getOutput(tableID,1, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput TRad = getOutput(tableID,4, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
@@ -38,18 +40,19 @@ model Case900Sou
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput T_eva_out = getOutput(tableID,10, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput Tsta = getOutput(tableID,1, time)
-      annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput W_comp = getOutput(tableID,2, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput slack[3] = {
+    Modelica.Blocks.Interfaces.RealOutput slack[4] = {
       getOutput(tableID,13, time),
       getOutput(tableID,14, time),
-      getOutput(tableID,15, time)}
+      getOutput(tableID,15, time),
+      getOutput(tableID,16, time)}
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u1 = getOutput(tableID,12, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,11, time)
+      annotation (Placement(transformation(extent={{96,50},{116,70}})));
+    Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,17, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
   end MpcCase900Sou;
 

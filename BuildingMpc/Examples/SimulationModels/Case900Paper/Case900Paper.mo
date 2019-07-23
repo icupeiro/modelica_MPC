@@ -1,30 +1,31 @@
 within BuildingMpc.Examples.SimulationModels.Case900Paper;
 model Case900Paper
   extends Modelica.Icons.Example;
-  package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=268.15, X_a=0.25);
+  package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=278.15, X_a=0.25);
 
   IBPSA.Fluid.Sources.Boundary_pT bou(          redeclare package Medium =
         IDEAS.Media.Air, nPorts=1)
     annotation (Placement(transformation(extent={{-70,30},{-50,50}})));
   inner IDEAS.Buildings.Validation.BaseClasses.SimInfoManagerBestest
-                                          sim
+                                          sim(Tdes=273.15 - 21)
     annotation (Placement(transformation(extent={{-100,80},{-80,100}})));
   Modelica.Blocks.Sources.RealExpression optVar2(y=0)
     annotation (Placement(transformation(extent={{40,-6},{20,14}})));
   IDEAS.Fluid.HeatPumps.ScrollWaterToWater heaPum(
     redeclare package Medium1 = IDEAS.Media.Water,
     redeclare package Medium2 = Glycol,
-    m1_flow_nominal=0.05,
-    m2_flow_nominal=0.05,
     dp1_nominal=10000,
     dp2_nominal=10000,
     redeclare package ref = IDEAS.Media.Refrigerants.R410A,
     enable_temperature_protection=true,
-    scaling_factor=0.1048,
-    TEvaMin=273.15,
     datHeaPum=
-        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.ClimateMaster_TMW036_12kW_4_90COP_R410A())
-                                                  annotation (Placement(
+        IDEAS.Fluid.HeatPumps.Data.ScrollWaterToWater.Heating.ClimateMaster_TMW036_12kW_4_90COP_R410A(),
+    m1_flow_nominal=0.1,
+    m2_flow_nominal=0.1,
+    scaling_factor=0.126,
+    T1_start=298.15,
+    T2_start=283.15,
+    TEvaMin=273.15)                               annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
@@ -40,14 +41,16 @@ public
     allowFlowReversal=false,
     A_floor=rectangularZoneTemplate.A,
     dp_nominal=0,
-    m_flow_nominal=0.05,
-    T_start(displayUnit="K") = 300)
+    computeFlowResistance=false,
+    T_start(displayUnit="K") = 298.15,
+    m_flow_nominal=0.1)
     annotation (Placement(transformation(extent={{-28,-46},{-8,-26}})));
   IBPSA.Fluid.Sources.Boundary_pT sink(
     redeclare package Medium = IDEAS.Media.Water,
     use_T_in=false,
+    nPorts=1,
     p=200000,
-    nPorts=1) annotation (Placement(transformation(
+    T=273.25) annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=-90,
         origin={-84,-20})));
@@ -58,8 +61,8 @@ public
         cSoi=980,
         dSoi=1358.4),
     conDat=IBPSA.Fluid.Geothermal.Borefields.Data.Configuration.Example(
-        mBor_flow_nominal=0.05,
-        hBor=53.9,
+        mBor_flow_nominal=0.1,
+        hBor=64.5,
         dBor=0,
         nBor=1,
         cooBor={{0,0}},
@@ -73,7 +76,7 @@ public
     addPowerToMedium=false,
     tau=60,
     use_inputFilter=false,
-    m_flow_nominal=0.05)
+    m_flow_nominal=0.1)
     annotation (Placement(transformation(extent={{30,-88},{10,-68}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow borFie_pump(
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
@@ -83,7 +86,7 @@ public
     tau=60,
     use_inputFilter=false,
     redeclare package Medium = Glycol,
-    m_flow_nominal=0.05)
+    m_flow_nominal=0.1)
     annotation (Placement(transformation(extent={{52,70},{72,90}})));
 public
   IBPSA.Fluid.Sources.Boundary_pT source(
@@ -106,20 +109,21 @@ public
   IDEAS.Fluid.Sensors.TemperatureTwoPort TSup(
     redeclare package Medium = IDEAS.Media.Water,
     tau=60,
-    m_flow_nominal=0.05)
+    m_flow_nominal=0.05,
+    T_start=298.15)
     annotation (Placement(transformation(extent={{-58,-26},{-38,-46}})));
 public
   Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow auxHeaSystem
     annotation (Placement(transformation(extent={{12,22},{-8,42}})));
   IDEAS.Controls.Continuous.LimPID conPID1(
     yMin=0,
-    yMax=rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design,
-    controllerType=Modelica.Blocks.Types.SimpleController.PI,
-    k=5,
-    Ti=30)
+    Ti=30,
+    controllerType=Modelica.Blocks.Types.SimpleController.P,
+    yMax=1225,
+    k=1225)
     annotation (Placement(transformation(extent={{118,42},{98,22}})));
 
-  Modelica.Blocks.Sources.Constant mFlow(k=0.05)
+  Modelica.Blocks.Sources.Constant mFlow(k=0.1)
     annotation (Placement(transformation(extent={{-100,40},{-80,60}})));
   IDEAS.Buildings.Components.RectangularZoneTemplate rectangularZoneTemplate(
     h=2.7,
@@ -142,12 +146,10 @@ public
       shaTypA,
     bouTypD=IDEAS.Buildings.Components.Interfaces.BoundaryType.OuterWall,
     aziA=IDEAS.Types.Azimuth.S,
-    mSenFac=0.822,
     l=8,
     w=6,
     n50=0.822*0.5*20,
     redeclare IDEAS.Buildings.Validation.Data.Glazing.GlaBesTest glazingA,
-    redeclare package Medium = IDEAS.Media.Air,
     hasWinB=true,
     hasWinC=true,
     hasWinD=true,
@@ -164,16 +166,19 @@ public
     lInt=10,
     redeclare IDEAS.Examples.PPD12.Data.InteriorWall10 conTypInt,
     hasEmb=true,
-    T_start=296.15,
     fracB=0,
     fracC=0,
-    fracD=0)
+    fracD=0,
+    redeclare package Medium = IDEAS.Media.Air,
+    mSenFac=0.822,
+    T_start=296.15)
     annotation (Placement(transformation(extent={{-50,-14},{-30,6}})));
 
   IDEAS.Fluid.Sensors.TemperatureTwoPort TRet(
-    tau=60,
-    m_flow_nominal=0.05,
-    redeclare package Medium = Glycol)
+    tau=0,
+    redeclare package Medium = Glycol,
+    m_flow_nominal=0.1,
+    T_start=borFie.TExt0_start)
     annotation (Placement(transformation(extent={{26,70},{46,90}})));
   Modelica.Blocks.Sources.RealExpression nightSetBack(y=if (clock.hour >= 7
          and clock.hour <= 23) then 273.15 + 21 else 273.15 + 16)
@@ -201,21 +206,35 @@ public
   Modelica.Blocks.Math.Gain elecCost(k=electricityPrice.k)
                                             "in EUR/kWh"
     annotation (Placement(transformation(extent={{114,-16},{126,-4}})));
-  Modelica.Blocks.Sources.Constant gasPrice(k=0.117)
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.061)
     annotation (Placement(transformation(extent={{-100,-96},{-90,-86}})));
-  Modelica.Blocks.Sources.Constant electricityPrice(k=0.196)
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.204)
     annotation (Placement(transformation(extent={{-84,-96},{-74,-86}})));
+  IDEAS.Fluid.Sensors.TemperatureTwoPort TCon(
+    redeclare package Medium = IDEAS.Media.Water,
+    tau=60,
+    m_flow_nominal=0.05,
+    T_start=298.15)
+    annotation (Placement(transformation(extent={{14,-26},{34,-46}})));
+  IDEAS.Fluid.Sensors.TemperatureTwoPort TIn(
+    tau=0,
+    redeclare package Medium = Glycol,
+    m_flow_nominal=0.1,
+    T_start=borFie.TExt0_start)
+    annotation (Placement(transformation(extent={{10,42},{-10,62}})));
+  Modelica.Blocks.Sources.RealExpression optVar3(y=0)
+    annotation (Placement(transformation(extent={{-32,84},{-12,104}})));
+  Modelica.Blocks.Continuous.Integrator geoTokWh(k=1/3600/1000)
+    annotation (Placement(transformation(extent={{98,66},{118,86}})));
+  Modelica.Blocks.Continuous.Integrator FhTokWh(k=1/3600/1000)
+    annotation (Placement(transformation(extent={{56,-72},{76,-52}})));
 equation
   connect(airSystem.Q_flow, optVar2.y)
     annotation (Line(points={{14,4},{19,4}}, color={0,0,127}));
-  connect(embeddedPipe.port_b, heaPum.port_a1)
-    annotation (Line(points={{-8,-36},{52,-36}}, color={0,127,255}));
   connect(tabs_pump.port_a, heaPum.port_b1) annotation (Line(points={{30,-78},{86,
           -78},{86,-36},{72,-36}}, color={0,127,255}));
   connect(borFie_pump.port_b, heaPum.port_a2) annotation (Line(points={{72,80},{
           86,80},{86,-24},{72,-24}}, color={0,127,255}));
-  connect(heaPum.port_b2, borFie.port_a) annotation (Line(points={{52,-24},{46,-24},
-          {46,52},{-14,52},{-14,80},{0,80}}, color={0,127,255}));
   connect(source.ports[1], borFie.port_a) annotation (Line(points={{-26,70},{-14,
           70},{-14,80},{0,80}}, color={0,127,255}));
   connect(TSup.port_b, embeddedPipe.port_a)
@@ -226,8 +245,6 @@ equation
           -36},{-68,-36},{-68,-78},{10,-78}}, color={0,127,255}));
   connect(conPID1.y, auxHeaSystem.Q_flow)
     annotation (Line(points={{97,32},{12,32}}, color={0,0,127}));
-  connect(mFlow.y, borFie_pump.m_flow_in) annotation (Line(points={{-79,50},{
-          -70,50},{-70,96},{62,96},{62,92}}, color={0,0,127}));
   connect(mFlow.y, tabs_pump.m_flow_in) annotation (Line(points={{-79,50},{-70,
           50},{-70,-14},{-60,-14},{-60,-60},{20,-60},{20,-66}}, color={0,0,127}));
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
@@ -273,6 +290,20 @@ equation
           -33},{50,-33}}, color={0,0,127}));
   connect(rectangularZoneTemplate.TSensor, conPID1.u_m) annotation (Line(points=
          {{-29,-2},{-24,-2},{-24,44},{108,44}}, color={0,0,127}));
+  connect(embeddedPipe.port_b, TCon.port_a)
+    annotation (Line(points={{-8,-36},{14,-36}}, color={0,127,255}));
+  connect(TCon.port_b, heaPum.port_a1)
+    annotation (Line(points={{34,-36},{52,-36}}, color={0,127,255}));
+  connect(heaPum.port_b2, TIn.port_a) annotation (Line(points={{52,-24},{46,-24},
+          {46,52},{10,52}}, color={0,127,255}));
+  connect(TIn.port_b, borFie.port_a) annotation (Line(points={{-10,52},{-14,52},
+          {-14,80},{0,80}}, color={0,127,255}));
+  connect(optVar3.y, borFie_pump.m_flow_in) annotation (Line(points={{-11,94},{
+          26,94},{26,92},{62,92}}, color={0,0,127}));
+  connect(heaPum.QEva_flow, geoTokWh.u) annotation (Line(points={{73,-21},{84,
+          -21},{84,76},{96,76}}, color={0,0,127}));
+  connect(heaPum.QCon_flow, FhTokWh.u) annotation (Line(points={{73,-39},{82,
+          -39},{82,-46},{48,-46},{48,-62},{54,-62}}, color={0,0,127}));
  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {160,100}})),                                        Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{160,100}})),

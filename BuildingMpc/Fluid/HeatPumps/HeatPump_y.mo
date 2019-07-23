@@ -66,26 +66,30 @@ model HeatPump_y "A heat pump model for optimization"
   parameter Modelica.SIunits.PressureDifference dp2_nominal
     "Pressure difference through the evaporator"
     annotation (Dialog(group="Nominal conditions"));
-  parameter Modelica.SIunits.Power PLos = 35.04
+  parameter Modelica.SIunits.Power PLos = 42.1282
   "Constant term of compressor losses"
   annotation (Dialog(tab="Advanced"));
     parameter Real etaCom = 1
     "Compressor electromechanical efficiency"
     annotation (Dialog(tab="Advanced"));
   Modelica.Blocks.Interfaces.RealOutput COP_expr=
-    (6.42379 - 0.178*(T_con_in.T - 298.15) + 0.123*(T_eva_in.T - 278.15))*COPFactor
+   (6.80739 - 0.209236*(T_con_in.T - 298.15) + 0.0033812*(T_con_in.T - 298.15)^2 + 0.150496*(T_eva_in.T - 278.15)+ 0.0006892*(T_eva_in.T - 278.15)^2
+    - 0.715375*(port_a1.m_flow-m1_flow_nominal) - 265.49375*(port_a1.m_flow-m1_flow_nominal)^2
+    -3.3215 *(port_a2.m_flow-m2_flow_nominal) - 163.725 *(port_a2.m_flow-m2_flow_nominal)^2) *COPFactor
    "Theoretical COP expression of the heat pump"
     annotation (Dialog(tab="Advanced"));
     //(5.24 - 0.123*(T_con_in.T - 298.15) + 0.108*(T_eva_in.T - 278.15))*loadFactor
    // (5.44-0.113*(T_con_in.T - 298.15) + 0.114*(T_eva_in.T - 288.15))*loadFactor
-  Real COP = HP_con.Q_flow/Wcomp.y
+  Real COP
   "Real COP";
-  Modelica.SIunits.HeatFlowRate Q_con_max = (885.86 + 21.372*(T_eva_in.T-273.15))*loadFactor
+  Modelica.SIunits.HeatFlowRate Q_con_max = (1225.7 - 3.042*(T_con_in.T - 298.15) + 0.0524*(T_con_in.T - 298.15)^2 +27.415*(T_eva_in.T - 278.15)+ 0.1706*(T_eva_in.T - 278.15)^2
+    + 17.8333333 *(port_a1.m_flow-m1_flow_nominal) - 3083.33333333 *(port_a1.m_flow-m1_flow_nominal)^2
+    - 545.75 *(port_a2.m_flow-m2_flow_nominal) - 28887.5 *(port_a2.m_flow-m2_flow_nominal)^2)*loadFactor
   "Maximum heat capacity of the HP"
   annotation (Dialog(tab="Advanced"));                       //+ 27.698*(T_eva_in.T-273.15) - 2.532*(T_con_in.T - 303.15)
-  Real COPFactor = -0.482*log(y) + 1.0008;
+  Real COPFactor = -0.395*log(y) + 1.0026;
   //1.452*y^3 - 3.4239*y^2 + 2.4161*y+0.5599
-  Real loadFactor = 1.0096*y^0.7806;
+  Real loadFactor = 1.0089*y^0.795;
   Modelica.Blocks.Interfaces.RealInput y "Outlet condenser temperature signal"
     annotation (Placement(transformation(extent={{-120,70},{-80,110}})));
   Modelica.Blocks.Sources.RealExpression Wcomp(y=HP_con.Q_flow/COPthe.y/etaCom + PLos)
@@ -105,7 +109,7 @@ model HeatPump_y "A heat pump model for optimization"
   Modelica.Fluid.Interfaces.FluidPort_b port_b2(redeclare package Medium =
         Medium2)
     annotation (Placement(transformation(extent={{-110,-70},{-90,-50}})));
-  parameter Modelica.SIunits.HeatFlowRate Q_nom=885.86
+  parameter Modelica.SIunits.HeatFlowRate Q_nom
     "Heat pump nominal power (heating)"
     annotation (Dialog(group="Nominal conditions"));
   Modelica.Blocks.Interfaces.RealOutput Q_con
@@ -113,6 +117,9 @@ model HeatPump_y "A heat pump model for optimization"
   Modelica.Blocks.Sources.RealExpression scaling(y=Q_con_max/Q_nom)
     annotation (Placement(transformation(extent={{-60,74},{-40,94}})));
 equation
+
+  COP*Wcomp.y = HP_con.Q_flow;
+
   connect(HP_eva.port_b, T_eva_out.port_a)
     annotation (Line(points={{-10,-60},{-50,-60}}, color={0,127,255}));
   connect(HP_eva.port_a, T_eva_in.port_b)
