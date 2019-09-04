@@ -34,8 +34,8 @@ protected
     final allowFlowReversal=false,
     final control_m_flow=true,
     m_flow_small=1e-04,
-    m_flow_start=0.05,
-    show_T=true)                "Pressure source"
+    show_T=true,
+    m_flow_start=0.1)           "Pressure source"
     annotation (Placement(transformation(extent={{40,-90},{20,-70}})));
 public
   IBPSA.Fluid.Sources.Boundary_pT source(
@@ -177,17 +177,17 @@ public
     annotation (Placement(transformation(extent={{-4,32},{16,52}})));
   UnitTests.Components.Clock clock
     annotation (Placement(transformation(extent={{-100,26},{-80,46}})));
-  Modelica.Blocks.Interfaces.RealInput[4] slack(each min=0)
+  Modelica.Blocks.Interfaces.RealInput[3] slack(each min=0, start=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
-  Modelica.Blocks.Sources.Constant gasPrice(k=0.061)
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.117)
     annotation (Placement(transformation(extent={{-46,90},{-36,100}})));
-  Modelica.Blocks.Sources.Constant electricityPrice(k=0.204)
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.196)
     annotation (Placement(transformation(extent={{-30,90},{-20,100}})));
   Modelica.Blocks.Interfaces.RealInput u3(
-    min=0,
     max=0.1,
     start=0.1,
-    nominal=0.1)
+    nominal=0.1,
+    min=0.02)
              annotation (Placement(transformation(extent={{-120,22},{-80,62}})));
 equation
 

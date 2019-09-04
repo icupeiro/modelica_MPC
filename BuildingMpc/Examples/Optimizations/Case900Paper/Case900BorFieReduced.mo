@@ -1,18 +1,25 @@
 within BuildingMpc.Examples.Optimizations.Case900Paper;
-model Case900COP
+model Case900BorFieReduced
   extends BuildingMpc.Examples.SimulationModels.Case900Paper.Case900Paper(optVar2(y=
          mpc.u2), optVar1(y=mpc.u1),
-    optVar3(y=mpc.u3));
+    borFie(r=cat(
+          1,
+          lay.rC,
+          {lay.r_b}), nbTem=8),
+    optVar3(y=mpc.u3),
+    source(T=borFie.TExt0_start));
 
-  Real states[39];
-  MpcCase900COP mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect,
-              conTol=1e-10);
+  Real buiStates[37];
+  Real capStates[6];
+  Real watStates[6];
+  MpcCase900BorFieReduced mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect,
+  conTol=1e-10);
 
-  model MpcCase900COP
+  model MpcCase900BorFieReduced
     extends UnitTests.MPC.BaseClasses.Mpc(
       final nOut=17,
       final nOpt=6,
-      final nSta=39,
+      final nSta=74,
       final nMeas=0,
       final nIneq=6,
       final nLLIn=0,
@@ -22,7 +29,7 @@ model Case900COP
       final numControlIntervals=13,
       final controlTimeStep=3600,
       final nModCorCoeff=33,
-      final name= "Case900COP");
+      final name= "Case900BorFieReduced");
     Modelica.Blocks.Interfaces.RealOutput COP = getOutput(tableID,6, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput Q_con_max = getOutput(tableID,7, time)
@@ -56,11 +63,31 @@ model Case900COP
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,17, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-  end MpcCase900COP;
+  end MpcCase900BorFieReduced;
 
+
+  IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical lay(
+    each soiDat=borFieDat.soiDat,
+    each r_a=borFieDat.conDat.rBor,
+    each steadyStateInitial=false,
+    each h=borFieDat.conDat.hBor/borFie.nSeg,
+    each r_b=2*sqrt(borFieDat.soiDat.aSoi*604800),
+    TInt_start=fixedTemperature.T,
+    TExt_start=fixedTemperature.T,
+    nSta=7)       annotation (Placement(transformation(
+        extent={{-10,-10},{10,10}},
+        rotation=0,
+        origin={124,76})));
+  Modelica.Thermal.HeatTransfer.Sources.FixedTemperature fixedTemperature
+    annotation (Placement(transformation(extent={{160,66},{140,86}})));
+
+initial equation
+
+capStates = borFie.TExt0_start*ones(6);
+watStates = borFie.TExt0_start*ones(6);
 
 equation
-   states = {
+   buiStates = {
 rectangularZoneTemplate.winA.heaCapGla.T,
 rectangularZoneTemplate.winB.heaCapGla.T,
 rectangularZoneTemplate.winC.heaCapGla.T,
@@ -97,24 +124,45 @@ rectangularZoneTemplate.int.port_emb[1].T,
 rectangularZoneTemplate.propsBusInt[8].surfRad.T,
 rectangularZoneTemplate.int.layMul.port_gain[2].T,
 rectangularZoneTemplate.propsBusInt[7].surfRad.T,
-rectangularZoneTemplate.radDistr.TRad,
-TRet.T,
-rectangularZoneTemplate.airModel.vol.T}
+rectangularZoneTemplate.radDistr.TRad}
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
 
-        mpc.uSta = states;
+capStates = {
+borFie.borHol.intHex[1].intResUTub.capFil1.T,
+borFie.borHol.intHex[1].intResUTub.capFil2.T,
+borFie.borHol.intHex[2].intResUTub.capFil1.T,
+borFie.borHol.intHex[2].intResUTub.capFil2.T,
+borFie.borHol.intHex[3].intResUTub.capFil1.T,
+borFie.borHol.intHex[3].intResUTub.capFil2.T};
 
-                          annotation (Placement(transformation(extent={{-100,0},{-80,20}})),
-      experiment(
-      StopTime=5259487,
-      Interval=300,
-      Tolerance=1e-06,
-      __Dymola_fixedstepsize=30,
-      __Dymola_Algorithm="Euler"),
-    __Dymola_experimentSetupOutput,
-    __Dymola_experimentFlags(Advanced(
-        InlineMethod=0,
-        InlineOrder=2,
-        InlineFixedStep=0.001)));
-end Case900COP;
+watStates = {
+borFie.borHol.intHex[1].vol1.T,
+borFie.borHol.intHex[1].vol2.T,
+borFie.borHol.intHex[2].vol1.T,
+borFie.borHol.intHex[2].vol2.T,
+borFie.borHol.intHex[3].vol1.T,
+borFie.borHol.intHex[3].vol2.T};
+
+for i in 1:37 loop
+        mpc.uSta[i] = buiStates[i];
+end for;
+for i in 1:6 loop
+        mpc.uSta[i+37] = capStates[i];
+        mpc.uSta[i+68] = watStates[i];
+end for;
+        mpc.uSta[68] = rectangularZoneTemplate.airModel.vol.T;
+        for i in 1:3 loop
+          for j in 1:7 loop
+                  mpc.uSta[43+j+7*(i-1)] = borFie.TSoi[1+j,i];
+          end for;
+          mpc.uSta[64+i] = borFie.TSoi[8,i];
+        end for;
+
+
+  connect(lay.port_b, fixedTemperature.port)
+    annotation (Line(points={{134,76},{140,76}}, color={191,0,0}));
+  connect(lay.port_a, fixedTemperature.port) annotation (Line(points={{114,76},{
+          106,76},{106,60},{140,60},{140,76}}, color={191,0,0}));
+                          annotation (Placement(transformation(extent={{-100,0},{-80,20}})));
+end Case900BorFieReduced;

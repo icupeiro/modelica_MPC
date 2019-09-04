@@ -25,7 +25,7 @@ model Case900Paper
     scaling_factor=0.126,
     T2_start=borFie.TExt0_start,
     T1_start=298.15,
-    TEvaMin=273.151)                              annotation (Placement(
+    TEvaMin=273.16)                              annotation (Placement(
         transformation(
         extent={{10,-10},{-10,10}},
         rotation=180,
@@ -110,7 +110,7 @@ public
   IDEAS.Fluid.Sensors.TemperatureTwoPort TSup(
     redeclare package Medium = IDEAS.Media.Water,
     tau=60,
-    m_flow_nominal=0.05,
+    m_flow_nominal=0.1,
     T_start=298.15)
     annotation (Placement(transformation(extent={{-58,-26},{-38,-46}})));
 public
@@ -176,10 +176,10 @@ public
     annotation (Placement(transformation(extent={{-50,-14},{-30,6}})));
 
   IDEAS.Fluid.Sensors.TemperatureTwoPort TRet(
-    tau=0,
     redeclare package Medium = Glycol,
     m_flow_nominal=0.1,
-    T_start=borFie.TExt0_start)
+    T_start=borFie.TExt0_start,
+    tau=0)
     annotation (Placement(transformation(extent={{26,70},{46,90}})));
   Modelica.Blocks.Sources.RealExpression nightSetBack(y=if (clock.hour >= 7
          and clock.hour <= 23) then 273.15 + 21 else 273.15 + 16)
@@ -207,21 +207,21 @@ public
   Modelica.Blocks.Math.Gain elecCost(k=electricityPrice.k)
                                             "in EUR/kWh"
     annotation (Placement(transformation(extent={{114,-16},{126,-4}})));
-  Modelica.Blocks.Sources.Constant gasPrice(k=0.061)
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.117)
     annotation (Placement(transformation(extent={{-100,-96},{-90,-86}})));
-  Modelica.Blocks.Sources.Constant electricityPrice(k=0.204)
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.197)
     annotation (Placement(transformation(extent={{-84,-96},{-74,-86}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TCon(
     redeclare package Medium = IDEAS.Media.Water,
     tau=60,
-    m_flow_nominal=0.05,
+    m_flow_nominal=0.1,
     T_start=298.15)
     annotation (Placement(transformation(extent={{14,-26},{34,-46}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TIn(
-    tau=0,
     redeclare package Medium = Glycol,
     m_flow_nominal=0.1,
-    T_start=borFie.TExt0_start)
+    T_start=borFie.TExt0_start,
+    tau=0)
     annotation (Placement(transformation(extent={{10,42},{-10,62}})));
   Modelica.Blocks.Sources.RealExpression optVar3(y=0)
     annotation (Placement(transformation(extent={{-32,84},{-12,104}})));
@@ -229,6 +229,12 @@ public
     annotation (Placement(transformation(extent={{98,66},{118,86}})));
   Modelica.Blocks.Continuous.Integrator FhTokWh(k=1/3600/1000)
     annotation (Placement(transformation(extent={{56,-72},{76,-52}})));
+  Modelica.Blocks.Continuous.Integrator Kh(k=1/3600)
+    annotation (Placement(transformation(extent={{136,66},{156,86}})));
+  Modelica.Blocks.Sources.RealExpression discomf(y=if rectangularZoneTemplate.TSensor
+         - nightSetBack.y < 0 then abs(rectangularZoneTemplate.TSensor -
+        nightSetBack.y) else 0) "discomfort"
+    annotation (Placement(transformation(extent={{108,84},{128,104}})));
 equation
   connect(airSystem.Q_flow, optVar2.y)
     annotation (Line(points={{14,4},{19,4}}, color={0,0,127}));
@@ -306,6 +312,8 @@ equation
           -21},{84,76},{96,76}}, color={0,0,127}));
   connect(heaPum.QCon_flow, FhTokWh.u) annotation (Line(points={{73,-39},{82,
           -39},{82,-46},{48,-46},{48,-62},{54,-62}}, color={0,0,127}));
+  connect(discomf.y, Kh.u)
+    annotation (Line(points={{129,94},{134,94},{134,76}}, color={0,0,127}));
  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {160,100}})),                                        Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{160,100}})),

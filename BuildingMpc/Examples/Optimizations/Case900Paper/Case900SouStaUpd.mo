@@ -5,15 +5,16 @@ model Case900SouStaUpd
         optVar3(y=mpc.u3));
 
   Real states[39];
-  MpcCase900SouStaUpd mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect);
+  MpcCase900SouStaUpd mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect,
+                            conTol=1e-10);
 
   model MpcCase900SouStaUpd
     extends UnitTests.MPC.BaseClasses.Mpc(
-      final nOut=18,
-      final nOpt=7,
+      final nOut=17,
+      final nOpt=6,
       final nSta=39,
       final nMeas=0,
-      final nIneq=7,
+      final nIneq=6,
       final nLLIn=0,
       final nLLOut=0,
       final nLLSta=0,
@@ -44,23 +45,23 @@ model Case900SouStaUpd
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput W_comp = getOutput(tableID,2, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput slack[4] = {
+    Modelica.Blocks.Interfaces.RealOutput slack[3] = {
       getOutput(tableID,14, time),
       getOutput(tableID,15, time),
-      getOutput(tableID,16, time),
-      getOutput(tableID,17, time)}
+      getOutput(tableID,16, time)}
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u1 = getOutput(tableID,13, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,12, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,18, time)
+    Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,17, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
   end MpcCase900SouStaUpd;
 
 
 equation
    states = {
+   TRet.T,
 rectangularZoneTemplate.winA.heaCapGla.T,
 rectangularZoneTemplate.winB.heaCapGla.T,
 rectangularZoneTemplate.winC.heaCapGla.T,
@@ -98,7 +99,6 @@ rectangularZoneTemplate.propsBusInt[8].surfRad.T,
 rectangularZoneTemplate.int.layMul.port_gain[2].T,
 rectangularZoneTemplate.propsBusInt[7].surfRad.T,
 rectangularZoneTemplate.radDistr.TRad,
-TRet.T,
 rectangularZoneTemplate.airModel.vol.T}
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));

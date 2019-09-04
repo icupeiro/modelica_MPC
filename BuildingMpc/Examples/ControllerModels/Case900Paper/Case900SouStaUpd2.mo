@@ -1,5 +1,5 @@
 within BuildingMpc.Examples.ControllerModels.Case900Paper;
-model Case900Sou
+model Case900SouStaUpd2
   extends Modelica.Icons.Example;
   package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=278.15, X_a=0.25);
   parameter Real eff = 1.0;
@@ -39,11 +39,11 @@ protected
     annotation (Placement(transformation(extent={{40,-90},{20,-70}})));
 public
   IBPSA.Fluid.Sources.Boundary_pT source(
-    use_T_in=false,
     nPorts=2,
     redeclare package Medium = Glycol,
     p=200000,
-    T=278.15) annotation (Placement(transformation(
+    use_T_in=true)
+              annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
         origin={-36,70})));
@@ -152,17 +152,22 @@ public
     min=0.2,
     start=0.2)
     annotation (Placement(transformation(extent={{-120,-74},{-80,-34}})));
-  UnitTests.Components.Clock clock
-    annotation (Placement(transformation(extent={{-100,52},{-80,72}})));
+  Modelica.Thermal.HeatTransfer.Components.HeatCapacitor heatCapacitor(C=
+        Modelica.Constants.inf, T(fixed=true, start=283.15))
+    annotation (Placement(transformation(extent={{-100,56},{-80,76}})));
+  Modelica.Blocks.Sources.RealExpression T_source(y=heatCapacitor.T)
+    annotation (Placement(transformation(extent={{-76,60},{-56,80}})));
   Modelica.Blocks.Sources.RealExpression nightSetBack(y=if (clock.hour >= 7
          and clock.hour <= 23) then 273.15 + 21 else 273.15 + 16)
     "constraint with night set-back"
-    annotation (Placement(transformation(extent={{-4,24},{16,44}})));
+    annotation (Placement(transformation(extent={{-4,32},{16,52}})));
+  UnitTests.Components.Clock clock
+    annotation (Placement(transformation(extent={{-100,26},{-80,46}})));
   Modelica.Blocks.Interfaces.RealInput[3] slack(each min=0, each start=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
-  Modelica.Blocks.Sources.Constant gasPrice(k=0.117)
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.061)
     annotation (Placement(transformation(extent={{-46,90},{-36,100}})));
-  Modelica.Blocks.Sources.Constant electricityPrice(k=0.196)
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.204)
     annotation (Placement(transformation(extent={{-30,90},{-20,100}})));
   Modelica.Blocks.Interfaces.RealInput u3(
     max=0.1,
@@ -171,7 +176,6 @@ public
     min=0.02)
              annotation (Placement(transformation(extent={{-120,22},{-80,62}})));
 equation
-
 
   connect(source.ports[1], m_flow_source.port_a)
     annotation (Line(points={{-26,72},{58,72}}, color={0,127,255}));
@@ -200,10 +204,12 @@ equation
   end for;
   connect(airSystem.Q_flow, u2)
     annotation (Line(points={{10,0},{10,14},{-100,14}}, color={0,0,127}));
+  connect(T_source.y, source.T_in) annotation (Line(points={{-55,70},{-52,70},{
+          -52,74},{-48,74}}, color={0,0,127}));
   connect(u1, heatPump.y) annotation (Line(points={{-100,-54},{-20,-54},{-20,
           -39},{60,-39}}, color={0,0,127}));
-  connect(u3, m_flow_source.m_flow_in) annotation (Line(points={{-100,42},{-20,
-          42},{-20,80},{62,80}}, color={0,0,127}));
+  connect(m_flow_source.m_flow_in, u3) annotation (Line(points={{62,80},{62,88},
+          {-12,88},{-12,42},{-100,42}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
         coordinateSystem(preserveAspectRatio=false)));
-end Case900Sou;
+end Case900SouStaUpd2;

@@ -12,15 +12,16 @@ model Case900BorFie
   Real buiStates[37];
   Real capStates[20];
   Real watStates[20];
-  MpcCase900BorFie mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect);
+  MpcCase900BorFie mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect,
+                            conTol=1e-10);
 
- model MpcCase900BorFie
+  model MpcCase900BorFie
     extends UnitTests.MPC.BaseClasses.Mpc(
-      final nOut=18,
-      final nOpt=7,
+      final nOut=17,
+      final nOpt=6,
       final nSta=188,
       final nMeas=0,
-      final nIneq=7,
+      final nIneq=6,
       final nLLIn=0,
       final nLLOut=0,
       final nLLSta=0,
@@ -51,19 +52,18 @@ model Case900BorFie
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput W_comp = getOutput(tableID,2, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput slack[4] = {
+    Modelica.Blocks.Interfaces.RealOutput slack[3] = {
       getOutput(tableID,14, time),
       getOutput(tableID,15, time),
-      getOutput(tableID,16, time),
-      getOutput(tableID,17, time)}
+      getOutput(tableID,16, time)}
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u1 = getOutput(tableID,13, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,12, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,18, time)
+    Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,17, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
- end MpcCase900BorFie;
+  end MpcCase900BorFie;
 
 
   IBPSA.Fluid.Geothermal.Borefields.BaseClasses.HeatTransfer.Cylindrical lay(
@@ -80,6 +80,12 @@ model Case900BorFie
         origin={124,76})));
   Modelica.Thermal.HeatTransfer.Sources.FixedTemperature fixedTemperature
     annotation (Placement(transformation(extent={{160,66},{140,86}})));
+
+initial equation
+
+capStates = borFie.TExt0_start*ones(20);
+watStates = borFie.TExt0_start*ones(20);
+
 equation
    buiStates = {
 rectangularZoneTemplate.winA.heaCapGla.T,

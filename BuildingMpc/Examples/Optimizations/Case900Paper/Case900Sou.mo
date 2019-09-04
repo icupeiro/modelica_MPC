@@ -5,15 +5,16 @@ model Case900Sou
     optVar3(y=mpc.u3));
 
   Real states[38];
-  MpcCase900Sou mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect);
+  MpcCase900Sou mpc(stateEstimationType=UnitTests.MPC.BaseClasses.StateEstimationType.Perfect,
+                      conTol=1e-10);
 
   model MpcCase900Sou
     extends UnitTests.MPC.BaseClasses.Mpc(
-      final nOut=17,
-      final nOpt=7,
+      final nOut=16,
+      final nOpt=6,
       final nSta=38,
       final nMeas=0,
-      final nIneq=7,
+      final nIneq=6,
       final nLLIn=0,
       final nLLOut=0,
       final nLLSta=0,
@@ -42,19 +43,19 @@ model Case900Sou
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput W_comp = getOutput(tableID,2, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput slack[4] = {
+    Modelica.Blocks.Interfaces.RealOutput slack[3] = {
       getOutput(tableID,13, time),
       getOutput(tableID,14, time),
-      getOutput(tableID,15, time),
-      getOutput(tableID,16, time)}
+      getOutput(tableID,15, time)}
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u1 = getOutput(tableID,12, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
     Modelica.Blocks.Interfaces.RealOutput u2 = getOutput(tableID,11, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
-    Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,17, time)
+    Modelica.Blocks.Interfaces.RealOutput u3 = getOutput(tableID,16, time)
       annotation (Placement(transformation(extent={{96,50},{116,70}})));
   end MpcCase900Sou;
+
 
 equation
    states = {
