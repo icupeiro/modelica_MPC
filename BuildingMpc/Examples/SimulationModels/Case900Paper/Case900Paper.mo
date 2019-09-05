@@ -2,6 +2,14 @@ within BuildingMpc.Examples.SimulationModels.Case900Paper;
 model Case900Paper
   extends Modelica.Icons.Example;
   package Glycol = IBPSA.Media.Antifreeze.PropyleneGlycolWater(property_T=278.15, X_a=0.25);
+  package Air = IDEAS.Media.Air;
+
+      parameter Modelica.SIunits.SpecificHeatCapacity cpMed=
+      Air.specificHeatCapacityCp(Air.setState_pTX(
+      Air.p_default,
+      Air.T_default,
+      Air.X_default)) "Specific heat capacity of the fluid";
+
 
   IBPSA.Fluid.Sources.Boundary_pT bou(          redeclare package Medium =
         IDEAS.Media.Air, nPorts=1)
@@ -101,9 +109,7 @@ public
   IBPSA.Fluid.Geothermal.Borefields.OneUTube borFie(
                            borFieDat=borFieDat, redeclare package Medium =
         Glycol,
-    r={6},
-    TExt0_start=283.15,
-    nbTem=1)
+    TExt0_start=283.15)
     annotation (Placement(transformation(extent={{0,70},{20,90}})));
   Modelica.Blocks.Sources.RealExpression optVar1(y=0)
     annotation (Placement(transformation(extent={{-8,-30},{12,-10}})));
@@ -116,13 +122,6 @@ public
 public
   Modelica.Thermal.HeatTransfer.Sources.PrescribedHeatFlow auxHeaSystem
     annotation (Placement(transformation(extent={{12,22},{-8,42}})));
-  IDEAS.Controls.Continuous.LimPID conPID1(
-    yMin=0,
-    Ti=30,
-    controllerType=Modelica.Blocks.Types.SimpleController.P,
-    yMax=1225,
-    k=1225)
-    annotation (Placement(transformation(extent={{118,42},{98,22}})));
 
   Modelica.Blocks.Sources.Constant mFlow(k=0.1)
     annotation (Placement(transformation(extent={{-100,40},{-80,60}})));
@@ -235,6 +234,13 @@ public
          - nightSetBack.y < 0 then abs(rectangularZoneTemplate.TSensor -
         nightSetBack.y) else 0) "discomfort"
     annotation (Placement(transformation(extent={{108,84},{128,104}})));
+  Modelica.Blocks.Sources.RealExpression presTem(y=if rectangularZoneTemplate.TSensor
+         >= nightSetBack.y + 0.15 then 0 else max(min(rectangularZoneTemplate.V
+        *cpMed*(nightSetBack.y - rectangularZoneTemplate.TSensor),
+        rectangularZoneTemplate.Q_design - rectangularZoneTemplate.QRH_design
+         - optVar2.y), 0))
+    "constraint with night set-back"
+    annotation (Placement(transformation(extent={{76,22},{56,42}})));
 equation
   connect(airSystem.Q_flow, optVar2.y)
     annotation (Line(points={{14,4},{19,4}}, color={0,0,127}));
@@ -250,8 +256,6 @@ equation
           -36},{-68,-78},{10,-78}}, color={0,127,255}));
   connect(sink.ports[1], tabs_pump.port_b) annotation (Line(points={{-84,-30},{-84,
           -36},{-68,-36},{-68,-78},{10,-78}}, color={0,127,255}));
-  connect(conPID1.y, auxHeaSystem.Q_flow)
-    annotation (Line(points={{97,32},{12,32}}, color={0,0,127}));
   connect(mFlow.y, tabs_pump.m_flow_in) annotation (Line(points={{-79,50},{-70,
           50},{-70,-14},{-60,-14},{-60,-60},{20,-60},{20,-66}}, color={0,0,127}));
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
@@ -268,14 +272,10 @@ equation
   connect(TRet.port_b, borFie_pump.port_a)
     annotation (Line(points={{46,80},{50,80},{50,82},{52,82}},
                                                color={0,127,255}));
-  connect(nightSetBack.y, conPID1.u_s) annotation (Line(points={{127,40},{124,
-          40},{124,32},{120,32}}, color={0,0,127}));
   connect(heaPum.P, totalElecTokWh.u) annotation (Line(points={{73,-30},{88,-30},
           {88,-84},{100,-84}}, color={0,0,127}));
   connect(optVar2.y, totalGas.u2)
     annotation (Line(points={{19,4},{20,4},{20,-4},{56,-4}}, color={0,0,127}));
-  connect(conPID1.y, totalGas.u1)
-    annotation (Line(points={{97,32},{52,32},{52,8},{56,8}}, color={0,0,127}));
   connect(totalGas.y, totalGasTokWh.u) annotation (Line(points={{79,2},{90,2},{
           90,-40},{100,-40}}, color={0,0,127}));
   connect(totalGasTokWh.y, totalEnergy.u1) annotation (Line(points={{123,-40},{
@@ -296,8 +296,6 @@ equation
           -84},{126,-20},{108,-20},{108,-10},{112.8,-10}}, color={0,0,127}));
   connect(optVar1.y, heaPum.y) annotation (Line(points={{13,-20},{32,-20},{32,
           -33},{50,-33}}, color={0,0,127}));
-  connect(rectangularZoneTemplate.TSensor, conPID1.u_m) annotation (Line(points=
-         {{-29,-2},{-24,-2},{-24,44},{108,44}}, color={0,0,127}));
   connect(embeddedPipe.port_b, TCon.port_a)
     annotation (Line(points={{-8,-36},{14,-36}}, color={0,127,255}));
   connect(TCon.port_b, heaPum.port_a1)
@@ -314,6 +312,10 @@ equation
           -39},{82,-46},{48,-46},{48,-62},{54,-62}}, color={0,0,127}));
   connect(discomf.y, Kh.u)
     annotation (Line(points={{129,94},{134,94},{134,76}}, color={0,0,127}));
+  connect(presTem.y, auxHeaSystem.Q_flow)
+    annotation (Line(points={{55,32},{12,32}}, color={0,0,127}));
+  connect(presTem.y, totalGas.u1)
+    annotation (Line(points={{55,32},{42,32},{42,8},{56,8}}, color={0,0,127}));
  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {160,100}})),                                        Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{160,100}})),

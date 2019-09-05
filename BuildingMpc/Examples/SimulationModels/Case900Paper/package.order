@@ -4,3 +4,9 @@ Tuning
 HeatPumpValidation
 COPderivation
 COPderivationConMod
+COPderivationConModmFlow
+COPderivationRandom
+ErrorAnalysis
+factorCalc
+nomCon
+LoadCalculation
