@@ -254,8 +254,8 @@ public
     threeWayValveSwitch1(
     redeclare package Medium = Glycol,
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
-    massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState) annotation (
-      Placement(transformation(
+    massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
+    m_flow_nominal=0.1) annotation (Placement(transformation(
         extent={{-10,10},{10,-10}},
         rotation=90,
         origin={92,42})));
