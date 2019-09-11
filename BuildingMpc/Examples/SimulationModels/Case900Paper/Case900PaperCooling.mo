@@ -277,9 +277,8 @@ public
     portFlowDirection_1=Modelica.Fluid.Types.PortFlowDirection.Entering,
     portFlowDirection_2=Modelica.Fluid.Types.PortFlowDirection.Leaving,
     m_flow_nominal={0.1,0.1,0.1},
-    dp_nominal=0,
-    portFlowDirection_3=Modelica.Fluid.Types.PortFlowDirection.Entering)
-    annotation (Placement(transformation(
+    portFlowDirection_3=Modelica.Fluid.Types.PortFlowDirection.Entering,
+    dp_nominal={0,0,0}) annotation (Placement(transformation(
         extent={{-4,-4},{4,4}},
         rotation=90,
         origin={46,42})));
@@ -291,7 +290,7 @@ public
     portFlowDirection_2=Modelica.Fluid.Types.PortFlowDirection.Leaving,
     portFlowDirection_3=Modelica.Fluid.Types.PortFlowDirection.Leaving,
     m_flow_nominal={0.1,0.1,0.1},
-    dp_nominal=0) annotation (Placement(transformation(
+    dp_nominal={0,0,0}) annotation (Placement(transformation(
         extent={{4,-4},{-4,4}},
         rotation=180,
         origin={42,-36})));
