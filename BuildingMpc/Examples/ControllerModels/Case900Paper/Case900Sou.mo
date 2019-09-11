@@ -160,9 +160,9 @@ public
     annotation (Placement(transformation(extent={{-4,24},{16,44}})));
   Modelica.Blocks.Interfaces.RealInput[3] slack(each min=0, each start=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
-  Modelica.Blocks.Sources.Constant gasPrice(k=0.117)
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.061)
     annotation (Placement(transformation(extent={{-46,90},{-36,100}})));
-  Modelica.Blocks.Sources.Constant electricityPrice(k=0.196)
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.204)
     annotation (Placement(transformation(extent={{-30,90},{-20,100}})));
   Modelica.Blocks.Interfaces.RealInput u3(
     max=0.1,

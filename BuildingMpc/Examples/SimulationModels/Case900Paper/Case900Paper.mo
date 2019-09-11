@@ -109,7 +109,9 @@ public
   IBPSA.Fluid.Geothermal.Borefields.OneUTube borFie(
                            borFieDat=borFieDat, redeclare package Medium =
         Glycol,
-    TExt0_start=283.15)
+    TExt0_start=283.15,
+	r={6},
+	nbTem=1)
     annotation (Placement(transformation(extent={{0,70},{20,90}})));
   Modelica.Blocks.Sources.RealExpression optVar1(y=0)
     annotation (Placement(transformation(extent={{-8,-30},{12,-10}})));
@@ -206,9 +208,9 @@ public
   Modelica.Blocks.Math.Gain elecCost(k=electricityPrice.k)
                                             "in EUR/kWh"
     annotation (Placement(transformation(extent={{114,-16},{126,-4}})));
-  Modelica.Blocks.Sources.Constant gasPrice(k=0.117)
+  Modelica.Blocks.Sources.Constant gasPrice(k=0.061)
     annotation (Placement(transformation(extent={{-100,-96},{-90,-86}})));
-  Modelica.Blocks.Sources.Constant electricityPrice(k=0.197)
+  Modelica.Blocks.Sources.Constant electricityPrice(k=0.204)
     annotation (Placement(transformation(extent={{-84,-96},{-74,-86}})));
   IDEAS.Fluid.Sensors.TemperatureTwoPort TCon(
     redeclare package Medium = IDEAS.Media.Water,
