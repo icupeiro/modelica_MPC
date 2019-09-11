@@ -1,7 +1,7 @@
 within BuildingMpc.Examples.Optimizations.Case900Paper;
 model Case900Cooling
   extends BuildingMpc.Examples.SimulationModels.Case900Paper.Case900PaperCooling(optVar2(y=
-         mpc.u2), optVar1(y=if mpc.u1 < 0.2 then 0 else mpc.u1),
+         mpc.u2), optVar1(y=if mpc.u1 < 0.15 or mpc.u5 == true then 0 else mpc.u1),
     borFie(r=cat(
           1,
           lay.rC,
