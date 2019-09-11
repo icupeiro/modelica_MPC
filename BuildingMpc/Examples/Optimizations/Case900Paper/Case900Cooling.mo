@@ -191,5 +191,17 @@ end for;mpc.uSta[168] = rectangularZoneTemplate.airModel.vol.T;
     annotation (Line(points={{134,76},{140,76}}, color={191,0,0}));
   connect(lay.port_a, fixedTemperature.port) annotation (Line(points={{114,76},{
           106,76},{106,60},{140,60},{140,76}}, color={191,0,0}));
-                          annotation (Placement(transformation(extent={{-100,0},{-80,20}})));
+                          annotation (Placement(transformation(extent={{-100,0},{-80,20}})),
+    experiment(
+      StopTime=31536000,
+      Interval=1800,
+      Tolerance=1e-06,
+      __Dymola_fixedstepsize=10,
+      __Dymola_Algorithm="Euler"),
+    __Dymola_experimentSetupOutput,
+    __Dymola_experimentFlags(
+      Advanced(GenerateVariableDependencies=false, OutputModelicaCode=false),
+      Evaluate=false,
+      OutputCPUtime=true,
+      OutputFlatModelica=false));
 end Case900Cooling;
