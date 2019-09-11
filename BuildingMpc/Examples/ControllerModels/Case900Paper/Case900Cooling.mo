@@ -175,7 +175,7 @@ public
     annotation (Placement(transformation(extent={{-4,32},{16,52}})));
   UnitTests.Components.Clock clock
     annotation (Placement(transformation(extent={{-100,26},{-80,46}})));
-  Modelica.Blocks.Interfaces.RealInput[3] slack(each min=0, start=0)
+  Modelica.Blocks.Interfaces.RealInput[3] slack(each min=0, each start=0)
     annotation (Placement(transformation(extent={{-120,-110},{-80,-70}})));
   Modelica.Blocks.Sources.Constant gasPrice(k=0.061)
     annotation (Placement(transformation(extent={{-46,90},{-36,100}})));
@@ -208,10 +208,10 @@ public
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     m_flow_nominal={0.1,0.1,0.1},
-    dp_nominal=0,
     portFlowDirection_1=Modelica.Fluid.Types.PortFlowDirection.Entering,
     portFlowDirection_2=Modelica.Fluid.Types.PortFlowDirection.Leaving,
-    portFlowDirection_3=Modelica.Fluid.Types.PortFlowDirection.Leaving)
+    portFlowDirection_3=Modelica.Fluid.Types.PortFlowDirection.Leaving,
+    dp_nominal={0,0,0})
     annotation (Placement(transformation(extent={{10,-30},{22,-42}})));
   Modelica.Blocks.Interfaces.RealInput u4(
     max=0.1,
@@ -257,22 +257,21 @@ equation
           {0,38},{0,60},{10,60}}, color={0,127,255}));
   connect(m_flow_sink.port_a, threeWayValveMotor.port_b)
     annotation (Line(points={{40,-80},{54,-80}}, color={0,127,255}));
-  connect(threeWayValveMotor.port_a1, heatPump.port_b1) annotation (Line(points
-        ={{74,-80},{90,-80},{90,-36},{80,-36}}, color={0,127,255}));
+  connect(threeWayValveMotor.port_a1, heatPump.port_b1) annotation (Line(points=
+         {{74,-80},{90,-80},{90,-36},{80,-36}}, color={0,127,255}));
   connect(threeWayValveMotor.port_a2, hex.port_b2) annotation (Line(points={{64,
           -70},{64,-54},{26,-54},{26,-2}}, color={0,127,255}));
   connect(embeddedPipe.port_b, jun.port_1)
     annotation (Line(points={{-8,-36},{10,-36}}, color={0,127,255}));
   connect(jun.port_2, heatPump.port_a1)
     annotation (Line(points={{22,-36},{60,-36}}, color={0,127,255}));
-  connect(jun.port_3, hex.port_a2) annotation (Line(points={{16,-30},{16,26},{
-          26,26},{26,18}}, color={0,127,255}));
+  connect(jun.port_3, hex.port_a2) annotation (Line(points={{16,-30},{16,26},{26,
+          26},{26,18}}, color={0,127,255}));
   connect(m_flow_sink.m_flow_in, u4) annotation (Line(points={{36,-72},{36,-62},
           {-30,-62},{-30,-116},{-100,-116}}, color={0,0,127}));
-  connect(u5, threeWayValveMotor.ctrl) annotation (Line(points={{100,-110},{64,
-          -110},{64,-90.8}}, color={0,0,127}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,
-            -140},{100,100}})),                                  Diagram(
-        coordinateSystem(preserveAspectRatio=false, extent={{-100,-140},{100,
-            100}})));
+  connect(u5, threeWayValveMotor.ctrl) annotation (Line(points={{100,-110},{64,-110},
+          {64,-90.8}}, color={0,0,127}));
+  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-140},
+            {100,100}})),                                        Diagram(
+        coordinateSystem(preserveAspectRatio=false, extent={{-100,-140},{100,100}})));
 end Case900Cooling;
