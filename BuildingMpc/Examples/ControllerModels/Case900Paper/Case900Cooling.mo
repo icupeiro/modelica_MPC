@@ -185,7 +185,8 @@ public
     max=0.1,
     start=0.1,
     nominal=0.1,
-    min=0)   annotation (Placement(transformation(extent={{-120,22},{-80,62}})));
+    min=0.02)
+             annotation (Placement(transformation(extent={{-120,22},{-80,62}})));
   IDEAS.Fluid.HeatExchangers.ConstantEffectiveness hex(
     redeclare package Medium1 = IDEAS.Media.Water,
     m1_flow_nominal=0.1,
@@ -217,7 +218,8 @@ public
     max=0.1,
     start=0.1,
     nominal=0.1,
-    min=0)   annotation (Placement(transformation(extent={{-120,-136},{-80,-96}})));
+    min=0.02)
+             annotation (Placement(transformation(extent={{-120,-136},{-80,-96}})));
   Modelica.Blocks.Interfaces.RealInput u5(
     min=0,
     max=1,
