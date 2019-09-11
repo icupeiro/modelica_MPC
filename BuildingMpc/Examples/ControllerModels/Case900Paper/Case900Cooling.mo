@@ -275,5 +275,22 @@ equation
           {64,-90.8}}, color={0,0,127}));
   annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-140},
             {100,100}})),                                        Diagram(
-        coordinateSystem(preserveAspectRatio=false, extent={{-100,-140},{100,100}})));
+        coordinateSystem(preserveAspectRatio=false, extent={{-100,-140},{100,100}})),
+    experiment(
+      StopTime=31536000,
+      Interval=1800,
+      Tolerance=1e-06,
+      __Dymola_fixedstepsize=10,
+      __Dymola_Algorithm="Euler"),
+    __Dymola_experimentSetupOutput,
+    __Dymola_experimentFlags(
+      Advanced(
+        GenerateVariableDependencies=false,
+        OutputModelicaCode=false,
+        InlineMethod=0,
+        InlineOrder=2,
+        InlineFixedStep=0.001),
+      Evaluate=false,
+      OutputCPUtime=true,
+      OutputFlatModelica=false));
 end Case900Cooling;
