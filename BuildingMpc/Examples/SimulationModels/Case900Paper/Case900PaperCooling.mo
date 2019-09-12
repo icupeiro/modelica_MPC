@@ -84,7 +84,7 @@ public
     tau=60,
     use_inputFilter=false,
     m_flow_nominal=0.1)
-    annotation (Placement(transformation(extent={{30,-88},{10,-68}})));
+    annotation (Placement(transformation(extent={{18,-88},{-2,-68}})));
   IDEAS.Fluid.Movers.FlowControlled_m_flow borFie_pump(
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     allowFlowReversal=false,
@@ -246,7 +246,7 @@ public
     energyDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     massDynamics=Modelica.Fluid.Types.Dynamics.SteadyState,
     m_flow_nominal=0.1)
-    annotation (Placement(transformation(extent={{34,-68},{54,-88}})));
+    annotation (Placement(transformation(extent={{54,-68},{34,-88}})));
   Modelica.Blocks.Sources.BooleanExpression
                                          optVar5(y=0)
     annotation (Placement(transformation(extent={{-40,-106},{-20,-86}})));
@@ -303,10 +303,12 @@ equation
           70},{-14,80},{0,80}}, color={0,127,255}));
   connect(TSup.port_b, embeddedPipe.port_a)
     annotation (Line(points={{-38,-36},{-28,-36}}, color={0,127,255}));
-  connect(TSup.port_a, tabs_pump.port_b) annotation (Line(points={{-58,-36},{-68,
-          -36},{-68,-78},{10,-78}}, color={0,127,255}));
-  connect(sink.ports[1], tabs_pump.port_b) annotation (Line(points={{-84,-30},{-84,
-          -36},{-68,-36},{-68,-78},{10,-78}}, color={0,127,255}));
+  connect(TSup.port_a, tabs_pump.port_b) annotation (Line(points={{-58,-36},{
+          -68,-36},{-68,-78},{-2,-78}},
+                                    color={0,127,255}));
+  connect(sink.ports[1], tabs_pump.port_b) annotation (Line(points={{-84,-30},{
+          -84,-36},{-68,-36},{-68,-78},{-2,-78}},
+                                              color={0,127,255}));
   connect(bou.ports[1], rectangularZoneTemplate.port_a)
     annotation (Line(points={{-50,40},{-38,40},{-38,6}}, color={0,127,255}));
   connect(auxHeaSystem.port, rectangularZoneTemplate.gainCon) annotation (Line(
@@ -362,10 +364,6 @@ equation
   connect(presTem.y, totalGas.u1)
     annotation (Line(points={{21,32},{18,32},{18,14},{52,14},{52,8},{56,8}},
                                                              color={0,0,127}));
-  connect(tabs_pump.port_a, threeWayValveSwitch.port_a1)
-    annotation (Line(points={{30,-78},{34,-78}}, color={0,127,255}));
-  connect(threeWayValveSwitch.port_b, heaPum.port_b1) annotation (Line(points={
-          {54,-78},{86,-78},{86,-36},{72,-36}}, color={0,127,255}));
   connect(optVar5.y, threeWayValveSwitch.switch)
     annotation (Line(points={{-19,-96},{44,-96},{44,-86}}, color={255,0,255}));
   connect(borFie_pump.port_b, threeWayValveSwitch1.port_b)
@@ -389,9 +387,13 @@ equation
   connect(jun1.port_3, hex.port_a1)
     annotation (Line(points={{42,-32},{42,30},{56,30}}, color={0,127,255}));
   connect(optVar4.y, tabs_pump.m_flow_in)
-    annotation (Line(points={{-19,-64},{20,-64},{20,-66}}, color={0,0,127}));
+    annotation (Line(points={{-19,-64},{8,-64},{8,-66}}, color={0,0,127}));
   connect(optVar5.y, threeWayValveSwitch1.switch) annotation (Line(points={{-19,
           -96},{112,-96},{112,42},{100,42}}, color={255,0,255}));
+  connect(threeWayValveSwitch.port_b, tabs_pump.port_a)
+    annotation (Line(points={{34,-78},{18,-78}}, color={0,127,255}));
+  connect(threeWayValveSwitch.port_a1, heaPum.port_b1) annotation (Line(points=
+          {{54,-78},{86,-78},{86,-36},{72,-36}}, color={0,127,255}));
  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},
             {160,100}})),                                        Diagram(
         coordinateSystem(preserveAspectRatio=false, extent={{-100,-100},{160,100}})),
